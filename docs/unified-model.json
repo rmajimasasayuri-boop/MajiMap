@@ -1,0 +1,1118 @@
+{
+  "source": "https://www.med.kindai.ac.jp/floormap_facility.html",
+  "audience": "外来患者・お見舞いの方",
+  "styleReference": "公式フロアマップ6階の病棟の面表示・配色",
+  "palette": {
+    "westA": "#dfedd6",
+    "eastA": "#e5edf2",
+    "westB": "#ffd9d9",
+    "eastB": "#ffe5b8",
+    "hall": "#f9f4e5",
+    "core": "#f5f5f5",
+    "line": "#004f80"
+  },
+  "visitorPolicy": {
+    "wardArrival": "entrance-only",
+    "roomNumbers": false,
+    "roomOutlines": false,
+    "wardToilets": false,
+    "stairs": false,
+    "diagnosticElevators": [
+      "西EV",
+      "東EV"
+    ]
+  },
+  "floors": {
+    "1": {
+      "image": "assets/visitor-floor-1.svg",
+      "size": [
+        1758,
+        1200
+      ],
+      "officialBase": true,
+      "facilityDisplay": "公式フロアマップをそのまま表示。通行可否は経路で案内。",
+      "elevatorGroups": {},
+      "nonStopElevators": []
+    },
+    "2": {
+      "image": "assets/visitor-floor-2.svg",
+      "size": [
+        1994,
+        1200
+      ],
+      "officialBase": true,
+      "facilityDisplay": "公式フロアマップをそのまま表示。通行可否は経路で案内。",
+      "elevatorGroups": {
+        "west": [
+          1126,
+          596
+        ],
+        "east": [
+          1495,
+          596
+        ]
+      },
+      "nonStopElevators": []
+    },
+    "3": {
+      "image": "assets/visitor-floor-3.svg",
+      "size": [
+        1758,
+        892
+      ],
+      "officialBase": true,
+      "facilityDisplay": "公式フロアマップをそのまま表示。通行可否は経路で案内。",
+      "elevatorGroups": {
+        "west": [
+          1126,
+          443
+        ],
+        "east": [
+          1495,
+          443
+        ]
+      },
+      "nonStopElevators": [],
+      "officialRoutePoints": {
+        "generalReception": [
+          1045,
+          777
+        ],
+        "cReceptionApproach": [
+          1045,
+          786
+        ],
+        "cReceptionJunction": [
+          1185,
+          786
+        ],
+        "cReceptionCenter": [
+          1310,
+          786
+        ],
+        "cReceptionEast": [
+          1438,
+          786
+        ],
+        "gateEntryWest": [
+          1185,
+          757
+        ],
+        "c4South": [
+          1185,
+          735
+        ],
+        "c4Mid": [
+          1185,
+          443
+        ],
+        "gateHall2": [
+          1171,
+          443
+        ],
+        "hall2": [
+          1136,
+          443
+        ],
+        "entranceWest": [
+          1185,
+          814
+        ],
+        "entrance": [
+          1310,
+          814
+        ],
+        "entranceEast": [
+          1438,
+          814
+        ],
+        "gateEntryEast": [
+          1438,
+          757
+        ],
+        "c1a": [
+          1438,
+          735
+        ],
+        "c1b": [
+          1438,
+          600
+        ],
+        "c3Mid": [
+          1438,
+          443
+        ],
+        "gateHall1": [
+          1455,
+          443
+        ],
+        "hall1": [
+          1493,
+          443
+        ],
+        "c4North": [
+          1185,
+          316
+        ],
+        "c2b": [
+          1310,
+          316
+        ],
+        "c3North": [
+          1438,
+          316
+        ],
+        "clinicNorth": [
+          915,
+          316
+        ],
+        "clinicBridgeMid": [
+          735,
+          316
+        ],
+        "clinicBridgeJoin": [
+          565,
+          316
+        ],
+        "ev1": [
+          1493,
+          407
+        ],
+        "doorEV1": [
+          1493,
+          427
+        ],
+        "ev2": [
+          1493,
+          407
+        ],
+        "doorEV2": [
+          1493,
+          427
+        ],
+        "ev3": [
+          1493,
+          490
+        ],
+        "doorEV3": [
+          1493,
+          463
+        ],
+        "ev4": [
+          1136,
+          407
+        ],
+        "doorEV4": [
+          1136,
+          427
+        ],
+        "ev5": [
+          1136,
+          407
+        ],
+        "doorEV5": [
+          1136,
+          427
+        ],
+        "ev6": [
+          1136,
+          490
+        ],
+        "doorEV6": [
+          1136,
+          463
+        ]
+      }
+    },
+    "4": {
+      "image": "assets/visitor-floor-4.svg",
+      "size": [
+        1758,
+        1060
+      ],
+      "officialBase": true,
+      "facilityDisplay": "公式フロアマップをそのまま表示。通行可否は経路で案内。",
+      "elevatorGroups": {
+        "west": [
+          1126,
+          596
+        ]
+      },
+      "nonStopElevators": [
+        "東EV"
+      ]
+    },
+    "5": {
+      "image": "assets/visitor-floor-5.svg",
+      "size": [
+        1758,
+        1060
+      ],
+      "officialBase": true,
+      "facilityDisplay": "公式フロアマップをそのまま表示。通行可否は経路で案内。",
+      "elevatorGroups": {
+        "west": [
+          1126,
+          596
+        ],
+        "east": [
+          1495,
+          596
+        ]
+      },
+      "nonStopElevators": []
+    },
+    "6": {
+      "image": "assets/visitor-floor-6.svg",
+      "size": [
+        1758,
+        1060
+      ],
+      "officialBase": true,
+      "facilityDisplay": "診療棟は西EV・東EVのみ。病棟内トイレ・階段は非表示。",
+      "elevatorGroups": {
+        "west": [
+          1126,
+          596
+        ],
+        "east": [
+          1495,
+          596
+        ]
+      },
+      "nonStopElevators": []
+    },
+    "7": {
+      "image": "assets/unified-floor-7.svg",
+      "size": [
+        1758,
+        1060
+      ],
+      "rooms": [],
+      "facilities": [],
+      "sourceOffsetX": 0,
+      "sourceSize": [
+        979,
+        981
+      ],
+      "officialBase": true,
+      "officialDrawingSource": "official-outpatient-7.png",
+      "outpatientWingVisible": false,
+      "courtyards": [
+        {
+          "label": "光庭4",
+          "bounds": [
+            1175,
+            324,
+            82,
+            115
+          ],
+          "walkable": false
+        },
+        {
+          "label": "光庭2",
+          "bounds": [
+            1363,
+            324,
+            83,
+            125
+          ],
+          "walkable": false
+        },
+        {
+          "label": "光庭1",
+          "bounds": [
+            1397,
+            562,
+            51,
+            72
+          ],
+          "walkable": false
+        },
+        {
+          "label": "光庭3",
+          "bounds": [
+            1363,
+            734,
+            82,
+            136
+          ],
+          "walkable": false
+        }
+      ],
+      "wardEntrances": {
+        "westA": {
+          "label": "7西A 病棟入口",
+          "code": "7西A",
+          "departments": [
+            "血液内科"
+          ],
+          "point": [
+            1090.2,
+            570.8
+          ],
+          "routeAnchor": "gateWestA",
+          "labelBounds": [
+            935.0,
+            220,
+            240,
+            97
+          ],
+          "arrow": {
+            "point": [
+              1090.2,
+              570.8
+            ],
+            "angle": 270
+          },
+          "originalDisplayPoint": [
+            1094.605,
+            579.328
+          ],
+          "entrancePointSource": "user-arrow"
+        },
+        "eastA": {
+          "label": "7東A 病棟入口",
+          "code": "7東A",
+          "departments": [
+            "外科",
+            "形成外科",
+            "皮膚科"
+          ],
+          "point": [
+            1529.9,
+            561.8
+          ],
+          "routeAnchor": "gateEastA",
+          "labelBounds": [
+            1445.0,
+            220,
+            260,
+            145
+          ],
+          "arrow": {
+            "point": [
+              1529.9,
+              561.8
+            ],
+            "angle": 270
+          },
+          "originalDisplayPoint": [
+            1524.109,
+            546.445
+          ],
+          "entrancePointSource": "user-arrow"
+        },
+        "eastB": {
+          "label": "7東B 病棟入口",
+          "code": "7東B",
+          "departments": [
+            "整形外科"
+          ],
+          "point": [
+            1528.8,
+            634.2
+          ],
+          "routeAnchor": "gateEastB",
+          "labelBounds": [
+            1457.5,
+            790,
+            255,
+            97
+          ],
+          "arrow": {
+            "point": [
+              1528.8,
+              634.2
+            ],
+            "angle": 90
+          },
+          "originalDisplayPoint": [
+            1524.109,
+            719.513
+          ],
+          "entrancePointSource": "user-arrow"
+        },
+        "rehab": {
+          "label": "リハビリテーション室入口",
+          "code": "",
+          "departments": [
+            "リハビリテーション室"
+          ],
+          "point": [
+            1094.605,
+            789.606
+          ],
+          "routeAnchor": "gateRehab",
+          "labelBounds": [
+            980,
+            830,
+            250,
+            49
+          ]
+        }
+      },
+      "elevatorGroups": {
+        "west": [
+          1126,
+          596
+        ],
+        "east": [
+          1495,
+          596
+        ]
+      },
+      "wardToOfficial": [
+        0.8572916666666667,
+        0,
+        0,
+        0.8653444676409185,
+        887.5697916666667,
+        168.2891440501044
+      ]
+    },
+    "8": {
+      "image": "assets/unified-floor-8.svg",
+      "size": [
+        1758,
+        1060
+      ],
+      "rooms": [],
+      "facilities": [],
+      "sourceOffsetX": 0,
+      "sourceSize": [
+        1188,
+        980
+      ],
+      "officialBase": true,
+      "officialDrawingSource": "official-outpatient-7.png",
+      "outpatientWingVisible": false,
+      "courtyards": [
+        {
+          "label": "光庭4",
+          "bounds": [
+            1175,
+            324,
+            82,
+            115
+          ],
+          "walkable": false
+        },
+        {
+          "label": "光庭2",
+          "bounds": [
+            1363,
+            324,
+            83,
+            125
+          ],
+          "walkable": false
+        },
+        {
+          "label": "光庭1",
+          "bounds": [
+            1397,
+            562,
+            51,
+            72
+          ],
+          "walkable": false
+        },
+        {
+          "label": "光庭3",
+          "bounds": [
+            1363,
+            734,
+            82,
+            136
+          ],
+          "walkable": false
+        },
+        {
+          "label": "光庭5",
+          "bounds": [
+            1175,
+            734,
+            82,
+            136
+          ],
+          "walkable": false
+        }
+      ],
+      "wardEntrances": {
+        "westA": {
+          "label": "8西A 病棟入口",
+          "code": "8西A",
+          "departments": [
+            "消化器内科"
+          ],
+          "point": [
+            1090.3,
+            572.2
+          ],
+          "routeAnchor": "gateWestA",
+          "labelBounds": [
+            935.0,
+            220,
+            240,
+            97
+          ],
+          "arrow": {
+            "point": [
+              1090.3,
+              572.2
+            ],
+            "angle": 270
+          },
+          "originalDisplayPoint": [
+            1094.606,
+            579.328
+          ],
+          "entrancePointSource": "user-arrow"
+        },
+        "eastA": {
+          "label": "8東A 病棟入口",
+          "code": "8東A",
+          "departments": [
+            "脳神経外科",
+            "消化器内科",
+            "整形外科"
+          ],
+          "point": [
+            1529.4,
+            560.1
+          ],
+          "routeAnchor": "gateEastA",
+          "labelBounds": [
+            1445.0,
+            220,
+            260,
+            145
+          ],
+          "arrow": {
+            "point": [
+              1529.4,
+              560.1
+            ],
+            "angle": 270
+          },
+          "originalDisplayPoint": [
+            1524.109,
+            546.444
+          ],
+          "entrancePointSource": "user-arrow"
+        },
+        "eastB": {
+          "label": "8東B 病棟入口",
+          "code": "8東B",
+          "departments": [
+            "呼吸器内科（感染症用）",
+            "消化器内科"
+          ],
+          "point": [
+            1526.8,
+            633.5
+          ],
+          "routeAnchor": "gateEastB",
+          "labelBounds": [
+            1457.5,
+            790,
+            255,
+            121
+          ],
+          "arrow": {
+            "point": [
+              1526.8,
+              633.5
+            ],
+            "angle": 90
+          },
+          "originalDisplayPoint": [
+            1524.109,
+            719.514
+          ],
+          "entrancePointSource": "user-arrow"
+        },
+        "westB": {
+          "label": "8西B 病棟入口",
+          "code": "8西B",
+          "departments": [
+            "呼吸器内科",
+            "内分泌・代謝・糖尿病内科",
+            "消化器内科"
+          ],
+          "point": [
+            1089.1,
+            625.0
+          ],
+          "routeAnchor": "gateWestB",
+          "labelBounds": [
+            917.5,
+            790,
+            255,
+            145
+          ],
+          "arrow": {
+            "point": [
+              1089.1,
+              625.0
+            ],
+            "angle": 90
+          },
+          "originalDisplayPoint": [
+            1094.606,
+            643.363
+          ],
+          "entrancePointSource": "user-arrow"
+        }
+      },
+      "elevatorGroups": {
+        "west": [
+          1126,
+          596
+        ],
+        "east": [
+          1495,
+          596
+        ]
+      },
+      "wardToOfficial": [
+        0.8572916666666667,
+        0,
+        0,
+        0.8653444676409185,
+        887.5697916666667,
+        168.2891440501044
+      ]
+    },
+    "9": {
+      "image": "assets/unified-floor-9.svg",
+      "size": [
+        1758,
+        1060
+      ],
+      "rooms": [],
+      "facilities": [],
+      "sourceOffsetX": 80,
+      "sourceSize": [
+        1188,
+        980
+      ],
+      "officialBase": true,
+      "officialDrawingSource": "official-outpatient-7.png",
+      "outpatientWingVisible": false,
+      "courtyards": [
+        {
+          "label": "光庭4",
+          "bounds": [
+            1175,
+            324,
+            82,
+            115
+          ],
+          "walkable": false
+        },
+        {
+          "label": "光庭2",
+          "bounds": [
+            1363,
+            324,
+            83,
+            125
+          ],
+          "walkable": false
+        },
+        {
+          "label": "光庭1",
+          "bounds": [
+            1397,
+            562,
+            51,
+            72
+          ],
+          "walkable": false
+        },
+        {
+          "label": "光庭3",
+          "bounds": [
+            1363,
+            734,
+            82,
+            136
+          ],
+          "walkable": false
+        },
+        {
+          "label": "光庭5",
+          "bounds": [
+            1175,
+            734,
+            82,
+            136
+          ],
+          "walkable": false
+        }
+      ],
+      "wardEntrances": {
+        "westA": {
+          "label": "9西A 病棟入口",
+          "code": "9西A",
+          "departments": [
+            "外科",
+            "膠原病内科",
+            "腫瘍内科"
+          ],
+          "point": [
+            1090.3,
+            572.2
+          ],
+          "routeAnchor": "gateWestA",
+          "labelBounds": [
+            935.0,
+            220,
+            240,
+            145
+          ],
+          "arrow": {
+            "point": [
+              1090.3,
+              572.2
+            ],
+            "angle": 270
+          },
+          "originalDisplayPoint": [
+            1094.606,
+            579.328
+          ],
+          "entrancePointSource": "user-arrow"
+        },
+        "eastA": {
+          "label": "9東A 病棟入口",
+          "code": "9東A",
+          "departments": [
+            "耳鼻科",
+            "歯科",
+            "外科"
+          ],
+          "point": [
+            1529.4,
+            560.1
+          ],
+          "routeAnchor": "gateEastA",
+          "labelBounds": [
+            1445.0,
+            220,
+            260,
+            145
+          ],
+          "arrow": {
+            "point": [
+              1529.4,
+              560.1
+            ],
+            "angle": 270
+          },
+          "originalDisplayPoint": [
+            1524.109,
+            546.444
+          ],
+          "entrancePointSource": "user-arrow"
+        },
+        "eastB": {
+          "label": "9東B 病棟入口",
+          "code": "9東B",
+          "departments": [
+            "外科"
+          ],
+          "point": [
+            1526.8,
+            633.5
+          ],
+          "routeAnchor": "gateEastB",
+          "labelBounds": [
+            1457.5,
+            790,
+            255,
+            97
+          ],
+          "arrow": {
+            "point": [
+              1526.8,
+              633.5
+            ],
+            "angle": 90
+          },
+          "originalDisplayPoint": [
+            1524.109,
+            719.514
+          ],
+          "entrancePointSource": "user-arrow"
+        },
+        "westB": {
+          "label": "9西B 病棟入口",
+          "code": "9西B",
+          "departments": [
+            "眼科",
+            "腎臓内科",
+            "脳神経内科"
+          ],
+          "point": [
+            1089.1,
+            625.0
+          ],
+          "routeAnchor": "gateWestB",
+          "labelBounds": [
+            917.5,
+            790,
+            255,
+            145
+          ],
+          "arrow": {
+            "point": [
+              1089.1,
+              625.0
+            ],
+            "angle": 90
+          },
+          "originalDisplayPoint": [
+            1094.606,
+            643.363
+          ],
+          "entrancePointSource": "user-arrow"
+        }
+      },
+      "elevatorGroups": {
+        "west": [
+          1126,
+          596
+        ],
+        "east": [
+          1495,
+          596
+        ]
+      },
+      "wardToOfficial": [
+        0.8572916666666667,
+        0,
+        0,
+        0.8653444676409185,
+        887.5697916666667,
+        168.2891440501044
+      ]
+    },
+    "10": {
+      "image": "assets/unified-floor-10.svg",
+      "size": [
+        1758,
+        1060
+      ],
+      "rooms": [],
+      "facilities": [],
+      "sourceOffsetX": 70,
+      "sourceSize": [
+        1188,
+        980
+      ],
+      "officialBase": true,
+      "officialDrawingSource": "official-outpatient-7.png",
+      "outpatientWingVisible": false,
+      "courtyards": [
+        {
+          "label": "光庭4",
+          "bounds": [
+            1175,
+            324,
+            82,
+            115
+          ],
+          "walkable": false
+        },
+        {
+          "label": "光庭2",
+          "bounds": [
+            1363,
+            324,
+            83,
+            125
+          ],
+          "walkable": false
+        },
+        {
+          "label": "光庭1",
+          "bounds": [
+            1397,
+            562,
+            51,
+            72
+          ],
+          "walkable": false
+        },
+        {
+          "label": "光庭3",
+          "bounds": [
+            1363,
+            734,
+            82,
+            136
+          ],
+          "walkable": false
+        },
+        {
+          "label": "光庭5",
+          "bounds": [
+            1175,
+            734,
+            82,
+            136
+          ],
+          "walkable": false
+        }
+      ],
+      "wardEntrances": {
+        "westA": {
+          "label": "10西A 病棟入口",
+          "code": "10西A",
+          "departments": [
+            "循環器内科",
+            "心臓外科",
+            "ER内科",
+            "麻酔科"
+          ],
+          "point": [
+            1090.3,
+            572.2
+          ],
+          "routeAnchor": "gateWestA",
+          "labelBounds": [
+            935.0,
+            220,
+            240,
+            169
+          ],
+          "arrow": {
+            "point": [
+              1090.3,
+              572.2
+            ],
+            "angle": 270
+          },
+          "originalDisplayPoint": [
+            1094.605,
+            579.328
+          ],
+          "entrancePointSource": "user-arrow"
+        },
+        "eastA": {
+          "label": "10東A 病棟入口",
+          "code": "10東A",
+          "departments": [
+            "泌尿器科",
+            "放射線科",
+            "腫瘍内科"
+          ],
+          "point": [
+            1529.4,
+            560.1
+          ],
+          "routeAnchor": "gateEastA",
+          "labelBounds": [
+            1445.0,
+            220,
+            260,
+            145
+          ],
+          "arrow": {
+            "point": [
+              1529.4,
+              560.1
+            ],
+            "angle": 270
+          },
+          "originalDisplayPoint": [
+            1524.109,
+            546.444
+          ],
+          "entrancePointSource": "user-arrow"
+        },
+        "eastB": {
+          "label": "10東B 病棟入口",
+          "code": "10東B",
+          "departments": [
+            "腫瘍内科（緩和ケア含む）"
+          ],
+          "point": [
+            1526.8,
+            633.5
+          ],
+          "routeAnchor": "gateEastB",
+          "labelBounds": [
+            1457.5,
+            790,
+            255,
+            97
+          ],
+          "arrow": {
+            "point": [
+              1526.8,
+              633.5
+            ],
+            "angle": 90
+          },
+          "originalDisplayPoint": [
+            1524.109,
+            719.514
+          ],
+          "entrancePointSource": "user-arrow"
+        },
+        "westB": {
+          "label": "10西B 病棟入口",
+          "code": "10西B",
+          "departments": [
+            "循環器内科"
+          ],
+          "point": [
+            1089.1,
+            625.0
+          ],
+          "routeAnchor": "gateWestB",
+          "labelBounds": [
+            917.5,
+            790,
+            255,
+            97
+          ],
+          "arrow": {
+            "point": [
+              1089.1,
+              625.0
+            ],
+            "angle": 90
+          },
+          "originalDisplayPoint": [
+            1094.605,
+            643.363
+          ],
+          "entrancePointSource": "user-arrow"
+        }
+      },
+      "elevatorGroups": {
+        "west": [
+          1126,
+          596
+        ],
+        "east": [
+          1495,
+          596
+        ]
+      },
+      "wardToOfficial": [
+        0.8572916666666667,
+        0,
+        0,
+        0.8653444676409185,
+        887.5697916666667,
+        168.2891440501044
+      ]
+    }
+  }
+}
