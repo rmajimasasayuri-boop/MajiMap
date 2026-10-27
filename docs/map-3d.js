@@ -8,7 +8,7 @@
   const host=el('map3D');
   const status=el('map3DStatus');
   const scope='route';
-  let mode='2d', library, viewer, pending=0, revision=0;
+  let mode='2d', interaction='move', library, viewer, pending=0, revision=0;
   const buttons=[el('view2D'),el('view3D')];
   function loadScript(src) {
     return new Promise((resolve,reject)=>{
@@ -45,6 +45,7 @@
       if(!viewer) viewer=createViewer(host);
       const data=snapshot();
       viewer.draw(data);
+      el('map3DFocusFloors').replaceChildren(...data.maps.map(map=>{const b=document.createElement('button');b.textContent=map.floor+'階を拡大';b.onclick=()=>viewer?.focusFloor(map.floor);return b;}));
       el('map3DFloor').textContent=scope==='route'?'経路全体 · '+data.maps.map(m=>m.floor+'F').join('・'):mapUI.floor+'階';
       status.textContent='矢印の向きに進んでください。病棟名・施設名をクリックして設定できます。';
     } catch(e) {
@@ -66,11 +67,15 @@
     else {cancelAnimationFrame(pending);if(viewer){viewer.dispose();viewer=null;}fitMap();}
   }
   buttons.forEach(b=>b.onclick=()=>setMode(b.dataset.view));
+  for(const b of document.querySelectorAll('[data-3d-mode]'))b.onclick=()=>{interaction=b.dataset['3dMode'];for(const item of document.querySelectorAll('[data-3d-mode]'))item.setAttribute('aria-pressed',String(item===b));viewer?.setInteraction(interaction);el('map3DGestureHint').textContent=interaction==='move'?'ドラッグで地図を移動':'ドラッグで地図を回転';};
+  for(const [id,x,y]of [['Left',-1,0],['Right',1,0],['Up',0,1],['Down',0,-1]])el('map3DPan'+id).onclick=()=>viewer?.pan(x,y);
+  el('map3DRotateLeft').onclick=()=>viewer?.rotate(-1);
+  el('map3DRotateRight').onclick=()=>viewer?.rotate(1);
   el('map3DHome').onclick=()=>viewer?.home();
   el('map3DZoomIn').onclick=()=>viewer?.zoom(.8);
   el('map3DZoomOut').onclick=()=>viewer?.zoom(1.25);
   el('map3DRetry').onclick=()=>{el('map3DRetry').hidden=true;queueUpdate();};
-  for(const id of ['annToggle','toggleArrowEditor'])el(id).addEventListener('click',()=>setMode('2d'),true);
+  for(const id of ['annToggle','toggleArrowEditor','editMedicineEVMain'])el(id).addEventListener('click',()=>setMode('2d'),true);
   window.addEventListener('maji-map-update',queueUpdate);
   new ResizeObserver(()=>viewer?.resize()).observe(host);
   document.addEventListener('visibilitychange',()=>viewer?.pause(document.hidden));
@@ -91,7 +96,9 @@
     const controls=new T.OrbitControls(camera,renderer.domElement);
     controls.enableDamping=true;controls.maxPolarAngle=Math.PI*.48;
     controls.minDistance=3;controls.maxDistance=100;
-    controls.screenSpacePanning=true;
+    controls.screenSpacePanning=true;controls.enablePan=true;controls.enableRotate=true;
+    function setInteraction(value){controls.mouseButtons.LEFT=value==='rotate'?T.MOUSE.ROTATE:T.MOUSE.PAN;controls.mouseButtons.RIGHT=value==='rotate'?T.MOUSE.PAN:T.MOUSE.ROTATE;controls.touches.ONE=value==='rotate'?T.TOUCH.ROTATE:T.TOUCH.PAN;controls.touches.TWO=value==='rotate'?T.TOUCH.DOLLY_ROTATE:T.TOUCH.DOLLY_PAN;}
+    setInteraction(interaction);
     const textures=new Map(),loader=new T.TextureLoader(), ray=new T.Raycaster();
     const activePointers=new Set();
     const colorValue=color=>new T.Color(color).convertSRGBToLinear();
@@ -200,6 +207,9 @@
       if(reset)home();resize();
     }
     function home(){if(!homeView)return;controls.target.copy(homeView.center);camera.position.copy(homeView.position);controls.update();}
+    function focusFloor(f){const plane=planes.find(p=>p.userData.floor===f);if(!plane)return;const {width,height}=plane.userData,center=at(f,[width/2,height/2],0),offset=new T.Vector3(...map3DHomeOffset([width*S,0,height*S],camera.aspect));controls.target.copy(center);camera.position.copy(center).add(offset);controls.update();clearHover();}
+    function pan(x,y){camera.updateMatrixWorld();const step=camera.position.distanceTo(controls.target)*.09,delta=new T.Vector3().setFromMatrixColumn(camera.matrixWorld,0).multiplyScalar(x*step).addScaledVector(new T.Vector3().setFromMatrixColumn(camera.matrixWorld,1),y*step);camera.position.add(delta);controls.target.add(delta);controls.update();clearHover();}
+    function rotate(direction){camera.position.sub(controls.target).applyAxisAngle(new T.Vector3(0,1,0),direction*Math.PI/12).add(controls.target);controls.update();clearHover();}
     function zoom(factor){camera.position.sub(controls.target).multiplyScalar(factor).add(controls.target);controls.update();}
     function resize(){const w=container.clientWidth,h=container.clientHeight;if(!w||!h)return;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();}
     function loop(time=0){if(disposed||paused)return;frame=requestAnimationFrame(loop);for(const m of motion){const sample=sampleRouteMotion(m.track,m.offset+(reducedMotion.matches?0:time*.00065));m.arrow.position.fromArray(sample.point);m.arrow.quaternion.setFromUnitVectors(new T.Vector3(0,0,1),new T.Vector3(...sample.direction));}controls.update();renderer.render(scene,camera);}
@@ -219,6 +229,6 @@
     document.addEventListener('pointerup',releasePointer);document.addEventListener('pointercancel',releasePointer);
     resize();loop();
     function dispose(){disposed=true;document.removeEventListener('pointerup',releasePointer);document.removeEventListener('pointercancel',releasePointer);cancelAnimationFrame(frame);controls.dispose();freeGroup();for(const t of textures.values())t.dispose();renderer.dispose();renderer.forceContextLoss();renderer.domElement.remove();}
-    return {draw,home,zoom,resize,pause,dispose};
+    return {draw,home,zoom,resize,pause,dispose,pan,rotate,focusFloor,setInteraction};
   }
 })();

@@ -203,3 +203,7 @@ body.map-first:not(.review-embedded):not(.corridor-editing):not(:has(.arrow-edit
 .mobility-controls{position:absolute;top:118px;left:16px;z-index:22;display:flex;gap:6px}.mobility-controls select,.mobility-controls button{height:34px;background:#fff;border:1px solid #d4e0e3;border-radius:9px;color:#315461;font-size:12px;padding:5px 9px;box-shadow:0 2px 9px #193a4112}.review-embedded .mobility-controls{position:static;margin:4px 8px}.map-maximized .mobility-controls{top:70px}@media(max-width:700px){.mobility-controls{top:110px;left:8px;gap:4px}.mobility-controls select,.mobility-controls button{font-size:11px;max-width:165px;height:32px}}
 
 .nearby-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.nearby-grid button{padding:16px;text-align:left}.mobility-controls{max-width:calc(100% - 28px);flex-wrap:wrap}@media(max-width:700px){.mobility-controls{gap:3px}.mobility-controls button,.mobility-controls select{padding:4px 7px;font-size:10px}}
+
+.connector-editing #annPanel{padding:10px;margin:6px 0}
+.connector-editing #annPanel .ann-explainer,.connector-editing #annPanel .ann-legend,.connector-editing #annMetadata,.connector-editing #annPanel .ann-actions:has(#annSelection),.connector-editing #annFinish,.connector-editing [data-ann-tool=arrival],.connector-editing [data-ann-tool=entrance]{display:none}
+.connector-editing #annPanel p{margin:6px 0;font-size:11px}
