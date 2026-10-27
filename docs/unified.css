@@ -209,3 +209,5 @@ body.map-first:not(.review-embedded):not(.corridor-editing):not(:has(.arrow-edit
 .connector-editing #annPanel p{margin:6px 0;font-size:11px}
 
 .navigation-panel{touch-action:pan-y}.navigation-position-note{display:block;font-size:10px;color:#597681;margin:7px 0}.navigation-position-note+div button{min-height:40px}
+
+.navigation-transfer-status{color:#176f68;font-weight:700;font-size:13px}.navigation-transfer-status[hidden]{display:none}

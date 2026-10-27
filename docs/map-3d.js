@@ -212,7 +212,7 @@
       if(!progressMarker){progressMarker=new T.Group();
         const halo=new T.Mesh(new T.SphereGeometry(.19,20,16),new T.MeshBasicMaterial({color:colorValue('#ffffff'),depthTest:false}));
         const dot=new T.Mesh(new T.SphereGeometry(.13,20,16),new T.MeshBasicMaterial({color:colorValue('#2580c5'),depthTest:false}));dot.position.y=.1;halo.renderOrder=19;dot.renderOrder=20;progressMarker.add(halo,dot);group.add(progressMarker);}
-      progressMarker.visible=true;progressMarker.position.copy(at(p.floor,p.point,.12));
+      progressMarker.visible=true;if(p.transfer){progressMarker.position.fromArray(transferPosition(p.transfer,end=>at(end.floor,end.point,.12).toArray()));}else progressMarker.position.copy(at(p.floor,p.point,.12));
     }
     window.addEventListener('maji-navigation-position',updateProgress);
     function home(){if(!homeView)return;controls.target.copy(homeView.center);camera.position.copy(homeView.position);controls.update();}
