@@ -67,7 +67,7 @@
     else {cancelAnimationFrame(pending);if(viewer){viewer.dispose();viewer=null;}fitMap();}
   }
   buttons.forEach(b=>b.onclick=()=>setMode(b.dataset.view));
-  for(const b of document.querySelectorAll('[data-3d-mode]'))b.onclick=()=>{interaction=b.dataset['3dMode'];for(const item of document.querySelectorAll('[data-3d-mode]'))item.setAttribute('aria-pressed',String(item===b));viewer?.setInteraction(interaction);el('map3DGestureHint').textContent=interaction==='move'?'ドラッグで地図を移動':'ドラッグで地図を回転';};
+  for(const b of document.querySelectorAll('[data-3d-mode]'))b.onclick=()=>{interaction=b.dataset['3dMode'];for(const item of document.querySelectorAll('[data-3d-mode]'))item.setAttribute('aria-pressed',String(item===b));viewer?.setInteraction(interaction);el('map3DGestureHint').textContent=interaction==='move'?'1本指で移動 · 2本指で拡大・回転':'マウスで回転 · 指は1本で移動／2本で拡大・回転';};
   for(const [id,x,y]of [['Left',-1,0],['Right',1,0],['Up',0,1],['Down',0,-1]])el('map3DPan'+id).onclick=()=>viewer?.pan(x,y);
   el('map3DRotateLeft').onclick=()=>viewer?.rotate(-1);
   el('map3DRotateRight').onclick=()=>viewer?.rotate(1);
@@ -90,20 +90,20 @@
     const renderer=new T.WebGLRenderer({antialias:true,alpha:false});
     renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
     renderer.setClearColor(0xf0f4f6,1);renderer.outputEncoding=T.sRGBEncoding;
-    renderer.domElement.tabIndex=0;renderer.domElement.setAttribute('aria-label','3Dマップ。ドラッグで回転、ホイールで拡大。');
+    renderer.domElement.tabIndex=0;renderer.domElement.setAttribute('aria-label','3Dマップ。1本指で移動、2本指で拡大縮小・回転。');
     container.replaceChildren(renderer.domElement);
     const scene=new T.Scene(), camera=new T.PerspectiveCamera(42,1,.1,500);
     const controls=new T.OrbitControls(camera,renderer.domElement);
     controls.enableDamping=true;controls.maxPolarAngle=Math.PI*.48;
     controls.minDistance=3;controls.maxDistance=100;
     controls.screenSpacePanning=true;controls.enablePan=true;controls.enableRotate=true;
-    function setInteraction(value){controls.mouseButtons.LEFT=value==='rotate'?T.MOUSE.ROTATE:T.MOUSE.PAN;controls.mouseButtons.RIGHT=value==='rotate'?T.MOUSE.PAN:T.MOUSE.ROTATE;controls.touches.ONE=value==='rotate'?T.TOUCH.ROTATE:T.TOUCH.PAN;controls.touches.TWO=value==='rotate'?T.TOUCH.DOLLY_ROTATE:T.TOUCH.DOLLY_PAN;}
+    function setInteraction(value){controls.mouseButtons.LEFT=value==='rotate'?T.MOUSE.ROTATE:T.MOUSE.PAN;controls.mouseButtons.RIGHT=value==='rotate'?T.MOUSE.PAN:T.MOUSE.ROTATE;controls.touches.ONE=T.TOUCH.PAN;controls.touches.TWO=T.TOUCH.DOLLY_ROTATE;}
     setInteraction(interaction);
     const textures=new Map(),loader=new T.TextureLoader(), ray=new T.Raycaster();
     const activePointers=new Set();
     const colorValue=color=>new T.Color(color).convertSRGBToLinear();
     const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
-    let floorLevels={},motion=[],hoverGroup=null,hoverPlace=null,hoverMode=null;
+    let floorLevels={},motion=[],hoverGroup=null,hoverPlace=null,hoverMode=null,progressMarker=null;
     const hoverCard=el('map3DHover');
     let group=new T.Group(),planes=[],frame,paused=false,disposed=false,previousKey='',homeView,down;
     scene.add(group);
@@ -111,7 +111,7 @@
     const at=(f,p,lift=.1)=>new T.Vector3(p[0]*S,(floorLevels[f]||0)+lift,(p[1]+offset(f))*S);
     function freeGroup() {
       group.traverse(o=>{o.geometry?.dispose();for(const m of Array.isArray(o.material)?o.material:o.material?[o.material]:[]){if(m.userData.ownsTexture)m.map?.dispose();m.dispose();}});
-      scene.remove(group);group=new T.Group();scene.add(group);planes=[];motion=[];hoverGroup=null;hoverPlace=null;hoverMode=null;hoverCard.hidden=true;
+      scene.remove(group);group=new T.Group();scene.add(group);planes=[];motion=[];hoverGroup=null;hoverPlace=null;hoverMode=null;hoverCard.hidden=true;progressMarker=null;
     }
     function texture(src) {
       if(!textures.has(src)) {
@@ -144,7 +144,7 @@
       if(!p?.point||!planes.some(plane=>plane.userData.floor===p.floor))return;
       const pos=at(p.floor,p.point,.2);pos.x+=shift;
       const ball=new T.Mesh(new T.SphereGeometry(.11,16,12),new T.MeshBasicMaterial({color:colorValue(color),depthTest:false,transparent:true}));ball.position.copy(pos);ball.renderOrder=10;group.add(ball);
-      tag(label,pos.clone().add(new T.Vector3(0,.5,0)),color,1.7);
+      line([pos,pos.clone().add(new T.Vector3(0,.4,0))],color);tag(label,pos.clone().add(new T.Vector3(0,.5,0)),color,1.7);
     }
     function movingArrows(points) {
       const track=createRouteMotionTrack(points.map(p=>p.toArray()));if(!track.length)return;
@@ -157,18 +157,18 @@
     }
     function clearHover() {
       if(hoverGroup){hoverGroup.traverse(o=>{o.geometry?.dispose();o.material?.dispose();});group.remove(hoverGroup);}
-      hoverGroup=null;hoverPlace=null;hoverMode=null;hoverCard.hidden=true;container.style.cursor='grab';
+      hoverGroup=null;hoverPlace=null;hoverMode=null;hoverCard.hidden=true;container.style.cursor='grab';schedulePhotoRestore();
     }
     function highlight(d) {
       if(d?.ref===hoverPlace?.ref&&hoverMode===mapUI.pickMode)return;
-      clearHover();if(!d)return;hoverPlace=d;hoverMode=mapUI.pickMode;
+      clearHover();if(!d)return;previewPlacePhoto(d);hoverPlace=d;hoverMode=mapUI.pickMode;
       const color=mapUI.pickMode==='start'?'#2580c5':'#d83a40';hoverGroup=new T.Group();group.add(hoverGroup);
       for(const [x,y,w,h]of placeHitBounds(d)) {
-        const points=[[x,y],[x+w,y],[x+w,y+h],[x,y+h]].map(p=>at(d.floor,p,.16));
-        const fill=new T.Mesh(new T.PlaneGeometry(w*S,h*S),new T.MeshBasicMaterial({color:colorValue(color),side:T.DoubleSide,transparent:true,opacity:.14,depthTest:false}));fill.rotation.x=-Math.PI/2;fill.position.copy(at(d.floor,[x+w/2,y+h/2],.15));fill.renderOrder=12;hoverGroup.add(fill);
+        const points=[[x,y],[x+w,y],[x+w,y+h],[x,y+h]].map(p=>at(d.floor,p,.006));
+        const fill=new T.Mesh(new T.PlaneGeometry(w*S,h*S),new T.MeshBasicMaterial({color:colorValue(color),side:T.DoubleSide,transparent:true,opacity:.12,depthTest:true,depthWrite:false}));fill.rotation.x=-Math.PI/2;fill.position.copy(at(d.floor,[x+w/2,y+h/2],.004));fill.renderOrder=12;hoverGroup.add(fill);
         for(let i=0;i<points.length;i++) {
           const a=points[i],b=points[(i+1)%points.length],delta=b.clone().sub(a);
-          const edge=new T.Mesh(new T.CylinderGeometry(.023,.023,delta.length(),8),new T.MeshBasicMaterial({color:colorValue(color),transparent:true,depthTest:false}));edge.position.copy(a).addScaledVector(delta,.5);edge.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),delta.normalize());edge.renderOrder=13;hoverGroup.add(edge);
+          const edge=new T.Mesh(new T.CylinderGeometry(.009,.009,delta.length(),8),new T.MeshBasicMaterial({color:colorValue(color),depthTest:true,depthWrite:false}));edge.position.copy(a).addScaledVector(delta,.5);edge.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),delta.normalize());edge.renderOrder=13;hoverGroup.add(edge);
         }
       }
       el('map3DHoverName').textContent=d.floor+'階 · '+destinationDisplayName(d);
@@ -182,13 +182,13 @@
       return {floor,point,place:findMap3DPlace(destinationList,floor,point,placeHitBounds)};
     }
     function draw(data) {
-      const key=JSON.stringify([data.floor,data.scope,data.maps.map(m=>m.floor),data.lines,data.transfers,data.start,data.goal]);
-      if(key===previousKey){if(hoverPlace)highlight(hoverPlace);return;}
+      const key=JSON.stringify([data.floor,data.scope,data.maps.map(m=>m.floor),data.lines,data.transfers,data.start,data.goal,navigationState.active]);
+      if(key===previousKey){if(hoverPlace)highlight(hoverPlace);updateProgress();return;}
       const reset=previousKey!==key;previousKey=key;freeGroup();floorLevels=createMap3DLayout(data.maps);
       const box=new T.Box3();
       for(const map of data.maps) {
         const [w,h]=map.size,active=map.floor===data.floor;
-        const mat=new T.MeshBasicMaterial({map:texture(map.image),side:T.DoubleSide,transparent:true,opacity:scope==='floor'||active ? .98 : .78});
+        const mat=new T.MeshBasicMaterial({map:texture(map.image),side:T.DoubleSide,transparent:false,opacity:1});
         const plane=new T.Mesh(new T.PlaneGeometry(w*S,h*S),mat);
         plane.rotation.x=-Math.PI/2;plane.position.copy(at(map.floor,[w/2,h/2],0));
         plane.userData={floor:map.floor,width:w,height:h};planes.push(plane);group.add(plane);
@@ -199,13 +199,22 @@
       for(const l of data.lines){const points=l.points.map(p=>at(l.floor,p));line(points,0x1683d1);movingArrows(points.map(p=>p.clone().add(new T.Vector3(0,.035,0))));}
       for(const t of data.transfers){const a=at(t.from.floor,t.from.point),b=at(t.to.floor,t.to.point);line([a,b],0x1683d1,true);movingArrows([a,b]);tag(t.kind==='elevator'?'EV':'エスカレーター',a.clone().lerp(b,.5), '#216b96',1.9);}
       const same=data.start?.floor===data.goal?.floor&&data.start?.point&&data.goal?.point&&Math.hypot(data.start.point[0]-data.goal.point[0],data.start.point[1]-data.goal.point[1])<1;
-      pin(data.start,'出発地','#2580c5',same?-.13:0);pin(data.goal,'目的地','#d83a40',same?.13:0);
+      if(!navigationState.active)pin(data.start,'出発地','#2580c5',same?-.13:0);pin(data.goal,'目的地','#d83a40',same?.13:0);
       const center=box.getCenter(new T.Vector3()),size=box.getSize(new T.Vector3());
       const cameraOffset=new T.Vector3(...map3DHomeOffset(size.toArray(),camera.aspect));
       // A floor change should frame the new map; pointer selection keeps the view.
       homeView={center,position:center.clone().add(cameraOffset)};
-      if(reset)home();resize();
+      if(reset)home();resize();updateProgress();
     }
+    function updateProgress(){
+      const p=navigationState.active&&navigationState.position;
+      if(!p||!planes.some(plane=>plane.userData.floor===p.floor)){if(progressMarker)progressMarker.visible=false;return;}
+      if(!progressMarker){progressMarker=new T.Group();
+        const halo=new T.Mesh(new T.SphereGeometry(.19,20,16),new T.MeshBasicMaterial({color:colorValue('#ffffff'),depthTest:false}));
+        const dot=new T.Mesh(new T.SphereGeometry(.13,20,16),new T.MeshBasicMaterial({color:colorValue('#2580c5'),depthTest:false}));dot.position.y=.1;halo.renderOrder=19;dot.renderOrder=20;progressMarker.add(halo,dot);group.add(progressMarker);}
+      progressMarker.visible=true;progressMarker.position.copy(at(p.floor,p.point,.12));
+    }
+    window.addEventListener('maji-navigation-position',updateProgress);
     function home(){if(!homeView)return;controls.target.copy(homeView.center);camera.position.copy(homeView.position);controls.update();}
     function focusFloor(f){const plane=planes.find(p=>p.userData.floor===f);if(!plane)return;const {width,height}=plane.userData,center=at(f,[width/2,height/2],0),offset=new T.Vector3(...map3DHomeOffset([width*S,0,height*S],camera.aspect));controls.target.copy(center);camera.position.copy(center).add(offset);controls.update();clearHover();}
     function pan(x,y){camera.updateMatrixWorld();const step=camera.position.distanceTo(controls.target)*.09,delta=new T.Vector3().setFromMatrixColumn(camera.matrixWorld,0).multiplyScalar(x*step).addScaledVector(new T.Vector3().setFromMatrixColumn(camera.matrixWorld,1),y*step);camera.position.add(delta);controls.target.add(delta);controls.update();clearHover();}
@@ -228,7 +237,7 @@
     const releasePointer=e=>{activePointers.delete(e.pointerId);down=null;};
     document.addEventListener('pointerup',releasePointer);document.addEventListener('pointercancel',releasePointer);
     resize();loop();
-    function dispose(){disposed=true;document.removeEventListener('pointerup',releasePointer);document.removeEventListener('pointercancel',releasePointer);cancelAnimationFrame(frame);controls.dispose();freeGroup();for(const t of textures.values())t.dispose();renderer.dispose();renderer.forceContextLoss();renderer.domElement.remove();}
+    function dispose(){disposed=true;window.removeEventListener('maji-navigation-position',updateProgress);document.removeEventListener('pointerup',releasePointer);document.removeEventListener('pointercancel',releasePointer);cancelAnimationFrame(frame);controls.dispose();freeGroup();for(const t of textures.values())t.dispose();renderer.dispose();renderer.forceContextLoss();renderer.domElement.remove();}
     return {draw,home,zoom,resize,pause,dispose,pan,rotate,focusFloor,setInteraction};
   }
 })();

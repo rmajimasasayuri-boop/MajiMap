@@ -6,3 +6,53 @@
 .destination-photo-dialog::backdrop{background:#12374375}.destination-photo-dialog>img{display:block;width:100%;max-height:68dvh;object-fit:contain;background:#f3f6f8;border-radius:8px;margin-top:14px}.destination-photo-dialog p{font-size:11px;margin:10px 0 0}
 .review-embedded .destination-photo-preview,.corridor-editing .destination-photo-preview{display:none!important}
 @media(max-width:700px){.destination-photo-preview{left:10px;bottom:156px;width:125px}.destination-photo-preview img{height:70px}.destination-photo-preview strong{font-size:10px}}
+
+/* One search surface and one facility card, alongside the map. */
+.map-search-bar{position:absolute;left:16px;top:14px;z-index:9;width:336px;height:52px;display:flex;align-items:center;gap:4px;background:white;border:1px solid #dce5e8;border-radius:28px;box-shadow:0 3px 14px #183b4920;padding:3px 8px}
+.map-search-bar input{flex:1;min-width:0;border:0;background:transparent;outline:none;padding:10px 0;font-size:15px;color:#244554}
+.map-search-bar:focus-within{outline:2px solid #91b5c3;outline-offset:1px}
+.map-search-bar button{border:0;background:transparent;font-size:24px;padding:5px;min-width:36px;color:#557681}
+body.map-first:not(.review-embedded):not(.corridor-editing):not(:has(.arrow-editing)) #openPlaceSearch{position:static;display:block;width:36px;padding:5px;margin:0;box-shadow:none;border:0;font-size:24px;background:transparent}
+body.map-first:not(.review-embedded):not(.corridor-editing):not(:has(.arrow-editing)) #settings{top:118px;max-height:calc(100% - 190px);bottom:auto;width:336px;padding:10px}
+body.map-first:not(.review-embedded) #settings .destination-card{display:flex;flex-direction:column;min-height:0;overflow:hidden;gap:4px}
+body.map-first:not(.review-embedded) #settings .place-results{display:block;overflow:auto;min-height:0;max-height:40dvh}
+body.map-first:not(.review-embedded) #settings .start-card,body.map-first:not(.review-embedded) #settings .goal-card{display:none}
+body.map-first:not(.review-embedded) #settings .destination-card h2{display:none}
+body.map-first:not(.review-embedded) #settings .aside-top{min-height:24px}
+body.map-first:not(.review-embedded) #settings .aside-top h1{font-size:12px}
+.facility-details{position:absolute;z-index:6;top:118px;left:16px;width:336px;max-height:calc(100% - 160px);overflow:auto;background:white;border:1px solid #dce5e8;border-radius:14px;box-shadow:0 6px 25px #183b4926;overscroll-behavior:contain;touch-action:pan-x}
+.facility-details[hidden]{display:none}.facility-close{position:absolute;top:8px;right:8px;z-index:2;width:32px;height:32px;padding:0;font-size:24px;border:0;border-radius:50%;background:#fffffff2;color:#31515d}
+.facility-details .destination-photo-preview{position:static;display:block;width:100%;padding:0;margin:0;border:0;box-shadow:none;border-radius:14px 14px 0 0;background:white}
+.facility-details .destination-photo-preview[hidden]{display:none}
+.facility-details .destination-photo-preview button{border-radius:0}.facility-details .destination-photo-preview img{height:180px;width:100%;object-fit:cover}
+.facility-details .destination-photo-preview strong{display:none}.facility-details .destination-photo-preview small{padding:4px 14px;font-size:9px;text-align:right}
+.facility-detail-body{padding:14px 16px 16px}.facility-detail-body>small{font-size:11px;color:#6b828c}.facility-detail-body h2{font-size:20px;line-height:1.5;margin:5px 0 15px}.facility-detail-actions{display:flex;gap:8px}.facility-detail-actions button{flex:1;font-size:13px;min-height:42px;padding:8px}
+.facility-sheet-handle{display:none}
+body.map-first:not(.review-embedded):not(.corridor-editing) .mobility-controls{top:14px;left:370px;z-index:5;max-width:calc(100% - 700px)}
+body.map-first:has(#facilityDetails:not([hidden])) .route-summary{display:none}
+body.map-first:has(main:not(.settings-hidden)) .facility-details{display:none}body.map-first:has(main.navigating) .facility-details:not(.hover-preview){display:none}
+.review-embedded .map-search-bar,.review-embedded .facility-details,.corridor-editing .facility-details,.corridor-editing .map-search-bar,body:has(.arrow-editing) .facility-details,body:has(.arrow-editing) .map-search-bar{display:none!important}
+@media(max-width:1000px){
+ .map-search-bar{left:10px;top:10px;width:310px;max-width:calc(100% - 20px);height:48px}
+ body.map-first:not(.review-embedded):not(.corridor-editing):not(:has(.arrow-editing)) #settings{top:155px;left:10px;max-height:calc(100% - 225px);width:min(336px,calc(100% - 20px));height:auto}
+ body.map-first:not(.review-embedded):not(.corridor-editing) .mobility-controls{top:110px;left:10px;max-width:calc(100% - 20px)}
+ body.map-first:not(.review-embedded):not(.corridor-editing):not(:has(.arrow-editing)) .map-heading{top:65px;right:10px;left:auto}
+ body.map-first:not(.review-embedded) .map-heading #mapInfoButton{display:none}
+ .facility-details{left:10px;top:155px;width:310px;max-height:calc(100% - 225px)}
+}
+@media(max-width:700px){
+ .map-search-bar{width:calc(100% - 20px)}.map-search-bar input{font-size:16px}
+ .facility-details{top:auto;bottom:64px;left:10px;right:10px;width:auto;max-height:42dvh;border-radius:18px;padding-top:10px}
+ .facility-sheet-handle{display:block;position:absolute;top:5px;left:calc(50% - 18px);width:36px;height:4px;border-radius:4px;background:#d6e0e5}
+ .facility-details .destination-photo-preview{float:left;width:110px;margin:10px 0 8px 10px;border-radius:10px;overflow:hidden}
+ .facility-details .destination-photo-preview img{height:90px}.facility-details .destination-photo-preview small{display:none}
+ .facility-detail-body{padding:10px 12px 12px}.facility-detail-body>small,.facility-detail-body h2{margin-left:118px}.facility-detail-body h2{font-size:16px;margin-top:4px;margin-bottom:18px;padding-right:17px;min-height:45px}
+ .facility-detail-actions{clear:both}.facility-close{top:12px;right:8px}
+ .facility-details:has(.destination-photo-preview[hidden]) .facility-detail-body>small,.facility-details:has(.destination-photo-preview[hidden]) .facility-detail-body h2{margin-left:0}
+ .facility-details.expanded{max-height:70dvh}.facility-details.expanded .destination-photo-preview{float:none;width:100%;margin:0;border-radius:0}.facility-details.expanded .destination-photo-preview img{height:190px}.facility-details.expanded .facility-detail-body>small,.facility-details.expanded .facility-detail-body h2{margin-left:0}
+ body.map-first:not(.review-embedded):not(.corridor-editing):not(:has(.arrow-editing)) #settings{top:155px;width:calc(100% - 20px);max-height:calc(100% - 225px)}
+ body.map-first:not(.review-embedded) .map-heading h2{font-size:14px}
+ body.map-first:not(.review-embedded):not(.corridor-editing) .selection-toolbar button{padding:8px;font-size:10px}
+}
+
+.map-search-bar input::-webkit-search-cancel-button{display:none}body.map-first #settings .destination-card{border-color:#dce5e8}

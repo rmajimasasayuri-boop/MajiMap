@@ -29,3 +29,7 @@ body:not(.view-3d) .map-3d-hover{display:none}
 .map-3d-mode,.map-3d-focus{display:flex;gap:4px;flex-wrap:wrap}.map-3d-mode button,.map-3d-focus button{flex:1;white-space:nowrap;padding:6px;font-size:11px}
 .map-3d-mode button[aria-pressed=true]{background:#176f68;color:white;border-color:#176f68}
 #map3DGestureHint{font-size:10px}.map-3d-focus button{color:#176f68;font-weight:700}
+
+.map-3d-extra summary{font-size:11px;cursor:pointer}.map-3d-extra .map-3d-actions{margin-top:6px}
+@media(pointer:coarse){.map-3d-mode{display:none}.map-3d-controls{width:136px;top:165px}.map-3d-focus button{min-height:42px}#map3DGestureHint{display:block}}
+@media(max-width:700px){.map-3d-controls{width:136px}.map-3d-range{display:none}}

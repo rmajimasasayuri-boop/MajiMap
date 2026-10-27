@@ -2,10 +2,14 @@ const officialPhotoCatalog={"outpatient:1::1A": {"files": ["f1A.webp"], "label":
 const officialPhotoBase='https://www.med.kindai.ac.jp/img/floormap_facility/floor/';
 const officialPhotoSource='https://www.med.kindai.ac.jp/floormap_facility.html';
 function officialPhotosFor(d){const entry=d&&officialPhotoCatalog[d.ref];return entry?entry.files.map(file=>({url:officialPhotoBase+file,source:officialPhotoSource})):[];}
-let destinationPhotoState={place:null,photos:[],index:0};
-function updateDestinationPhoto(d){
+let destinationPhotoState={place:null,photos:[],index:0},selectedPhotoPlace=null,hoverPhotoPlace=null,photoRestoreTimer=0;
+function schedulePhotoRestore(){clearTimeout(photoRestoreTimer);photoRestoreTimer=setTimeout(restoreDestinationPhoto,200);}
+function previewPlacePhoto(d){clearTimeout(photoRestoreTimer);if(hoverPhotoPlace?.ref===d?.ref)return;hoverPhotoPlace=d;renderPlacePhoto(d);}
+function restoreDestinationPhoto(){clearTimeout(photoRestoreTimer);if(!hoverPhotoPlace)return;hoverPhotoPlace=null;renderPlacePhoto(selectedPhotoPlace);}
+function updateDestinationPhoto(d){clearTimeout(photoRestoreTimer);selectedPhotoPlace=d;hoverPhotoPlace=null;renderPlacePhoto(d);}
+function renderPlacePhoto(d){
  const photos=officialPhotosFor(d),preview=document.getElementById('destinationPhotoPreview'),image=document.getElementById('destinationPhotoThumb');
- destinationPhotoState={place:d,photos,index:0};preview.hidden=true;
+ destinationPhotoState={place:d,photos,index:0};preview.hidden=true;const panel=document.getElementById('facilityDetails');panel.hidden=!d;panel.classList.toggle('hover-preview',Boolean(hoverPhotoPlace));if(!d)return;document.getElementById('facilityDetailName').textContent=destinationDisplayName(d);document.getElementById('facilityDetailFloor').textContent=d.floor+'階'+(d.code?' · '+d.code:'')+(hoverPhotoPlace?' · 地図上の施設':'');document.getElementById('detailStart').disabled=isGuideOnly(d);document.getElementById('detailNavigate').disabled=isGuideOnly(d);document.getElementById('detailNavigate').textContent=isGuideOnly(d)?'通路未登録':'ナビを開始';
  if(!photos.length){image.removeAttribute('src');return;}
  const name=destinationDisplayName(d);document.getElementById('destinationPhotoLabel').textContent=name;
  image.alt=name+'の公式写真';document.getElementById('viewDestinationPhoto').setAttribute('aria-label',name+'の写真を見る');
@@ -21,3 +25,14 @@ function showDestinationPhoto(){
 }
 document.getElementById('viewDestinationPhoto').onclick=showDestinationPhoto;
 document.getElementById('closeDestinationPhoto').onclick=()=>document.getElementById('destinationPhotoDialog').close();
+
+const facilityDetails=document.getElementById('facilityDetails');
+facilityDetails.onpointerenter=()=>clearTimeout(photoRestoreTimer);
+facilityDetails.onpointerleave=schedulePhotoRestore;
+document.getElementById('closeFacilityDetails').onclick=()=>{clearTimeout(photoRestoreTimer);hoverPhotoPlace=null;facilityDetails.hidden=true;};
+document.getElementById('detailStart').onclick=()=>{const d=destinationPhotoState.place;if(d){selectStartPlace(d,true);updateDestinationPhoto(null);}};
+document.getElementById('detailNavigate').onclick=()=>{const d=destinationPhotoState.place;if(d){choosePlace(d,true);routePlan();if(navigationState.steps.length)startNavigation();}};
+let facilityTouch=null;
+facilityDetails.addEventListener('pointerdown',e=>{e.stopPropagation();if(e.target.closest('button'))return;facilityDetails.setPointerCapture(e.pointerId);facilityTouch={x:e.clientX,y:e.clientY};});
+facilityDetails.addEventListener('pointerup',e=>{if(!facilityTouch)return;const dy=e.clientY-facilityTouch.y,dx=e.clientX-facilityTouch.x;facilityTouch=null;if(Math.abs(dy)>45&&Math.abs(dy)>Math.abs(dx)){if(dy>0)facilityDetails.classList.remove('expanded');else facilityDetails.classList.add('expanded');}});
+facilityDetails.addEventListener('pointercancel',()=>{facilityTouch=null;});
