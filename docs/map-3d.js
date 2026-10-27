@@ -157,11 +157,11 @@
     }
     function clearHover() {
       if(hoverGroup){hoverGroup.traverse(o=>{o.geometry?.dispose();o.material?.dispose();});group.remove(hoverGroup);}
-      hoverGroup=null;hoverPlace=null;hoverMode=null;hoverCard.hidden=true;container.style.cursor='grab';schedulePhotoRestore();
+      hoverGroup=null;hoverPlace=null;hoverMode=null;container.style.cursor='grab';schedulePhotoRestore();
     }
-    function highlight(d) {
-      if(d?.ref===hoverPlace?.ref&&hoverMode===mapUI.pickMode)return;
-      clearHover();if(!d)return;previewPlacePhoto(d);hoverPlace=d;hoverMode=mapUI.pickMode;
+    function highlight(d,anchor) {
+      if(d?.ref===hoverPlace?.ref&&hoverMode===mapUI.pickMode){if(d&&anchor)previewPlacePhoto(d,anchor);return;}
+      clearHover();if(!d)return;if(anchor)previewPlacePhoto(d,anchor);hoverPlace=d;hoverMode=mapUI.pickMode;
       const color=mapUI.pickMode==='start'?'#2580c5':'#d83a40';hoverGroup=new T.Group();group.add(hoverGroup);
       for(const [x,y,w,h]of placeHitBounds(d)) {
         const points=[[x,y],[x+w,y],[x+w,y+h],[x,y+h]].map(p=>at(d.floor,p,.006));
@@ -171,9 +171,7 @@
           const edge=new T.Mesh(new T.CylinderGeometry(.009,.009,delta.length(),8),new T.MeshBasicMaterial({color:colorValue(color),depthTest:true,depthWrite:false}));edge.position.copy(a).addScaledVector(delta,.5);edge.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),delta.normalize());edge.renderOrder=13;hoverGroup.add(edge);
         }
       }
-      el('map3DHoverName').textContent=d.floor+'階 · '+destinationDisplayName(d);
-      el('map3DHoverAction').textContent='クリックで'+(mapUI.pickMode==='start'?'出発地':'目的地')+'に設定';
-      hoverCard.dataset.mode=mapUI.pickMode;hoverCard.hidden=false;container.style.cursor='pointer';
+      container.style.cursor='pointer';
     }
     function pointerHit(e) {
       const r=renderer.domElement.getBoundingClientRect();ray.setFromCamera(new T.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),camera);
@@ -224,13 +222,13 @@
     function loop(time=0){if(disposed||paused)return;frame=requestAnimationFrame(loop);for(const m of motion){const sample=sampleRouteMotion(m.track,m.offset+(reducedMotion.matches?0:time*.00065));m.arrow.position.fromArray(sample.point);m.arrow.quaternion.setFromUnitVectors(new T.Vector3(0,0,1),new T.Vector3(...sample.direction));}controls.update();renderer.render(scene,camera);}
     function pause(value){paused=value;cancelAnimationFrame(frame);if(!paused&&!disposed)loop();}
     renderer.domElement.addEventListener('pointerdown',e=>{activePointers.add(e.pointerId);down=activePointers.size===1?{x:e.clientX,y:e.clientY,id:e.pointerId,moved:false}:null;});
-    renderer.domElement.addEventListener('pointermove',e=>{if(down){if(Math.hypot(e.clientX-down.x,e.clientY-down.y)>5)down.moved=true;clearHover();return;}if(activePointers.size)return;highlight(pointerHit(e)?.place);});
+    renderer.domElement.addEventListener('pointermove',e=>{if(down){if(Math.hypot(e.clientX-down.x,e.clientY-down.y)>5){down.moved=true;hidePlacePreview();}clearHover();return;}if(activePointers.size)return;highlight(pointerHit(e)?.place,{x:e.clientX,y:e.clientY});});
     renderer.domElement.addEventListener('pointerleave',()=>clearHover());
     renderer.domElement.addEventListener('pointerup',e=>{
       const pressed=down;down=null;activePointers.delete(e.pointerId);if(!pressed||pressed.id!==e.pointerId||pressed.moved||e.button!==0)return;
       const hit=pointerHit(e);if(!hit)return;
       // A facility is selected on the first click, including on another visible floor.
-      if(hit.place)selectPlace(hit.place,true);
+      if(hit.place)previewPlacePhoto(hit.place,{x:e.clientX,y:e.clientY},true);
       else {if(mapUI.floor!==hit.floor)showFloor(hit.floor,false);selectMapPoint(hit.point);}
     });
     renderer.domElement.addEventListener('pointercancel',e=>{activePointers.delete(e.pointerId);down=null;});
