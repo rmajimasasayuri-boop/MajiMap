@@ -56,3 +56,49 @@ body.map-first:has(main:not(.settings-hidden)) .facility-details{display:none}bo
 }
 
 .map-search-bar input::-webkit-search-cancel-button{display:none}body.map-first #settings .destination-card{border-color:#dce5e8}
+
+/* Nearby equipment remains visible as one swipeable row. */
+.nearby-equipment-bar{position:absolute;top:14px;left:370px;right:16px;z-index:6;display:flex;align-items:center;gap:7px;overflow-x:auto;overflow-y:hidden;padding:4px 2px 8px;scrollbar-width:thin;overscroll-behavior-x:contain;touch-action:pan-x}
+.equipment-chip{flex:none;white-space:nowrap;border:1px solid #dce5e8;border-radius:22px;background:#fff;box-shadow:0 2px 8px #183b4918;padding:10px 13px;font-size:12px;color:#31515d;min-height:40px}
+.equipment-chip:hover{background:#edf5f6}.equipment-chip:focus-visible{outline:2px solid #176f68}
+body.map-first:not(.review-embedded):not(.corridor-editing):not(:has(.arrow-editing)) .map-heading{top:74px}
+body.map-first:not(.review-embedded):not(.corridor-editing):not(:has(.arrow-editing)) .floor-toolbar{top:128px}
+.mobility-controls[hidden]{display:none!important}
+.route-planner{padding:12px 14px 10px;border-bottom:1px solid #e2eaed;background:#fff}
+.route-planner[hidden]{display:none}.route-travel-tabs{display:flex;gap:8px;margin-bottom:10px;padding-right:20px}
+.route-travel-tabs button{border:0;border-radius:22px;background:#f1f5f6;color:#466574;padding:8px 12px;font-size:12px;min-height:38px}
+.route-travel-tabs button[aria-pressed=true]{background:#d9eef1;color:#176f68;font-weight:700}
+.route-place-fields{display:flex;flex-direction:column;gap:7px}.route-place-field{display:flex;align-items:center;gap:9px;width:100%;text-align:left;border:1px solid #dce5e8;background:white;border-radius:8px;padding:7px 9px;min-height:48px}
+.route-place-field>span:nth-child(2){min-width:0;flex:1}.route-place-field small,.route-place-field strong{display:block}.route-place-field small{font-size:9px;color:#738a93}.route-place-field strong{font-size:12px;line-height:1.5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#244554}
+.route-field-dot{width:11px;height:11px;border:3px solid #2580c5;border-radius:50%;flex:none}.route-goal-field .route-field-dot{border-color:#d83a40}.route-field-edit{font-size:10px;color:#6c848d}
+.route-current-link{border:0;background:transparent;color:#176f68;font-size:11px;padding:7px 0 0;text-align:left}
+.facility-details:has(.route-planner:not([hidden])){top:76px;max-height:calc(100% - 98px)}
+.map-first:has(#routePlanner:not([hidden])) .selection-toolbar{visibility:hidden}
+.map-first:has(#routePlanner:not([hidden])) #settings{top:76px!important}
+.review-embedded .nearby-equipment-bar{position:static;max-width:100%;margin:5px 8px}.corridor-editing .nearby-equipment-bar,body:has(.arrow-editing) .nearby-equipment-bar{display:none}
+@media(max-width:1000px){
+ .nearby-equipment-bar{top:65px;left:10px;right:10px}
+ body.map-first:not(.review-embedded):not(.corridor-editing):not(:has(.arrow-editing)) .selection-toolbar{top:115px}
+ body.map-first:not(.review-embedded):not(.corridor-editing):not(:has(.arrow-editing)) .map-heading{top:115px}
+ body.map-first:not(.review-embedded):not(.corridor-editing):not(:has(.arrow-editing)) .floor-toolbar{top:auto;bottom:10px}
+ body.map-first:not(.review-embedded):not(.corridor-editing):not(:has(.arrow-editing)) #settings{top:157px;max-height:calc(100% - 225px)}
+ .map-first:has(#routePlanner:not([hidden])) #settings{top:157px!important}
+ .facility-details:has(.route-planner:not([hidden])){top:157px;max-height:calc(100% - 225px)}
+}
+@media(max-width:700px){
+ .nearby-equipment-bar{gap:6px;padding-bottom:5px}.equipment-chip{font-size:12px;padding:9px 12px}
+ .route-planner{padding:8px 12px}.route-travel-tabs{margin-bottom:6px}.route-travel-tabs button{min-height:34px;padding:6px 11px}
+ .route-place-fields{gap:5px}.route-place-field{min-height:40px;padding:5px 8px}.route-current-link{font-size:10px}
+ .facility-details:has(.route-planner:not([hidden])){top:auto;bottom:64px;max-height:49dvh;padding-top:10px}
+ .facility-details:has(.route-planner:not([hidden])) .destination-photo-preview img{height:72px}
+ .facility-details:has(.route-planner:not([hidden])) .facility-detail-body h2{margin-bottom:8px;min-height:40px}
+ .facility-details .route-planner{clear:both}.facility-details:has(.route-planner:not([hidden])).expanded{max-height:75dvh}
+ body.map-first:not(.review-embedded) .zoom-tools{top:170px}
+}
+
+body.map-first[data-pick-mode=start] .selection-toolbar{visibility:visible}
+
+.place-row-copy{flex:1;min-width:0}.place-result-photo{display:block;width:64px;height:48px;object-fit:cover;border-radius:7px;flex:none;background:#f1f5f6}.place-row .code{flex:none}.place-row-copy strong{font-size:12px!important}.place-row{min-height:62px}
+
+/* Exact wheelchair pictogram viewport from the retained official 2F map. */
+.route-travel-tabs button{display:flex;align-items:center;gap:6px}.official-wheelchair-icon{display:inline-block;flex:none;width:20px;height:20px;border-radius:3px;background-image:url('assets/visitor-floor-2.svg');background-size:997px 600px;background-position:-740px -202.5px;background-repeat:no-repeat}

@@ -2,6 +2,10 @@ const officialPhotoCatalog={"outpatient:1::1A": {"files": ["f1A.webp"], "label":
 const officialPhotoBase='https://www.med.kindai.ac.jp/img/floormap_facility/floor/';
 const officialPhotoSource='https://www.med.kindai.ac.jp/floormap_facility.html';
 function officialPhotosFor(d){const entry=d&&officialPhotoCatalog[d.ref];return entry?entry.files.map(file=>({url:officialPhotoBase+file,source:officialPhotoSource})):[];}
+function appendPlaceResultPhoto(row,d){
+ const photo=officialPhotosFor(d)[0];if(!photo)return;
+ const image=document.createElement('img');image.className='place-result-photo';image.alt='';image.title='近畿大学病院 公式写真';image.loading='lazy';image.decoding='async';image.referrerPolicy='no-referrer';image.width=64;image.height=48;image.onerror=()=>image.remove();image.src=photo.url;row.append(image);
+}
 let destinationPhotoState={place:null,photos:[],index:0},selectedPhotoPlace=null,hoverPhotoPlace=null,photoRestoreTimer=0;
 function schedulePhotoRestore(){clearTimeout(photoRestoreTimer);photoRestoreTimer=setTimeout(restoreDestinationPhoto,200);}
 function previewPlacePhoto(d){clearTimeout(photoRestoreTimer);if(hoverPhotoPlace?.ref===d?.ref)return;hoverPhotoPlace=d;renderPlacePhoto(d);}
@@ -9,7 +13,7 @@ function restoreDestinationPhoto(){clearTimeout(photoRestoreTimer);if(!hoverPhot
 function updateDestinationPhoto(d){clearTimeout(photoRestoreTimer);selectedPhotoPlace=d;hoverPhotoPlace=null;renderPlacePhoto(d);}
 function renderPlacePhoto(d){
  const photos=officialPhotosFor(d),preview=document.getElementById('destinationPhotoPreview'),image=document.getElementById('destinationPhotoThumb');
- destinationPhotoState={place:d,photos,index:0};preview.hidden=true;const panel=document.getElementById('facilityDetails');panel.hidden=!d;panel.classList.toggle('hover-preview',Boolean(hoverPhotoPlace));if(!d)return;document.getElementById('facilityDetailName').textContent=destinationDisplayName(d);document.getElementById('facilityDetailFloor').textContent=d.floor+'階'+(d.code?' · '+d.code:'')+(hoverPhotoPlace?' · 地図上の施設':'');document.getElementById('detailStart').disabled=isGuideOnly(d);document.getElementById('detailNavigate').disabled=isGuideOnly(d);document.getElementById('detailNavigate').textContent=isGuideOnly(d)?'通路未登録':'ナビを開始';
+ destinationPhotoState={place:d,photos,index:0};if(typeof updateRoutePlanner==='function')updateRoutePlanner();preview.hidden=true;const panel=document.getElementById('facilityDetails');panel.hidden=!d;panel.classList.toggle('hover-preview',Boolean(hoverPhotoPlace));if(!d)return;document.getElementById('facilityDetailName').textContent=destinationDisplayName(d);document.getElementById('facilityDetailFloor').textContent=d.floor+'階'+(d.code?' · '+d.code:'')+(hoverPhotoPlace?' · 地図上の施設':'');document.getElementById('detailStart').disabled=isGuideOnly(d);document.getElementById('detailNavigate').disabled=isGuideOnly(d);document.getElementById('detailNavigate').textContent=isGuideOnly(d)?'通路未登録':'ナビを開始';
  if(!photos.length){image.removeAttribute('src');return;}
  const name=destinationDisplayName(d);document.getElementById('destinationPhotoLabel').textContent=name;
  image.alt=name+'の公式写真';document.getElementById('viewDestinationPhoto').setAttribute('aria-label',name+'の写真を見る');
