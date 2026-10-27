@@ -81,7 +81,7 @@
   for(const event of ['pointerdown','wheel','keydown'])el('map3DControls').addEventListener(event,e=>e.stopPropagation());
 
   function createViewer(container) {
-    const T=window.THREE, S=.01, GAP=3;
+    const T=window.THREE, S=.01;
     const renderer=new T.WebGLRenderer({antialias:true,alpha:false});
     renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
     renderer.setClearColor(0xf0f4f6,1);renderer.outputEncoding=T.sRGBEncoding;
@@ -96,12 +96,12 @@
     const activePointers=new Set();
     const colorValue=color=>new T.Color(color).convertSRGBToLinear();
     const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
-    let motion=[],hoverGroup=null,hoverPlace=null,hoverMode=null;
+    let floorLevels={},motion=[],hoverGroup=null,hoverPlace=null,hoverMode=null;
     const hoverCard=el('map3DHover');
     let group=new T.Group(),planes=[],frame,paused=false,disposed=false,previousKey='',homeView,down;
     scene.add(group);
     const offset=f=>f===3?153:0;
-    const at=(f,p,lift=.1)=>new T.Vector3(p[0]*S,(f-1)*GAP+lift,(p[1]+offset(f))*S);
+    const at=(f,p,lift=.1)=>new T.Vector3(p[0]*S,(floorLevels[f]||0)+lift,(p[1]+offset(f))*S);
     function freeGroup() {
       group.traverse(o=>{o.geometry?.dispose();for(const m of Array.isArray(o.material)?o.material:o.material?[o.material]:[]){if(m.userData.ownsTexture)m.map?.dispose();m.dispose();}});
       scene.remove(group);group=new T.Group();scene.add(group);planes=[];motion=[];hoverGroup=null;hoverPlace=null;hoverMode=null;hoverCard.hidden=true;
@@ -177,7 +177,7 @@
     function draw(data) {
       const key=JSON.stringify([data.floor,data.scope,data.maps.map(m=>m.floor),data.lines,data.transfers,data.start,data.goal]);
       if(key===previousKey){if(hoverPlace)highlight(hoverPlace);return;}
-      const reset=previousKey!==key;previousKey=key;freeGroup();
+      const reset=previousKey!==key;previousKey=key;freeGroup();floorLevels=createMap3DLayout(data.maps);
       const box=new T.Box3();
       for(const map of data.maps) {
         const [w,h]=map.size,active=map.floor===data.floor;
@@ -194,9 +194,9 @@
       const same=data.start?.floor===data.goal?.floor&&data.start?.point&&data.goal?.point&&Math.hypot(data.start.point[0]-data.goal.point[0],data.start.point[1]-data.goal.point[1])<1;
       pin(data.start,'出発地','#2580c5',same?-.13:0);pin(data.goal,'目的地','#d83a40',same?.13:0);
       const center=box.getCenter(new T.Vector3()),size=box.getSize(new T.Vector3());
-      const radius=Math.max(size.x/Math.min(camera.aspect,1.6),size.z,size.y*1.5,10);
+      const cameraOffset=new T.Vector3(...map3DHomeOffset(size.toArray(),camera.aspect));
       // A floor change should frame the new map; pointer selection keeps the view.
-      homeView={center,position:center.clone().add(new T.Vector3(-radius*.2,radius*.94,radius*.86))};
+      homeView={center,position:center.clone().add(cameraOffset)};
       if(reset)home();resize();
     }
     function home(){if(!homeView)return;controls.target.copy(homeView.center);camera.position.copy(homeView.position);controls.update();}

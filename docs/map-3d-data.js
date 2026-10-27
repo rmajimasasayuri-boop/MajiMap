@@ -38,3 +38,19 @@ function sampleRouteMotion(track,distance) {
 function findMap3DPlace(places,floor,point,boundsAt) {
   return places.find(d=>d.floor===floor&&boundsAt(d).some(([x,y,w,h])=>point[0]>=x&&point[0]<=x+w&&point[1]>=y&&point[1]<=y+h))||null;
 }
+
+// Display spacing is based on drawing extents, not real storey heights.
+// All floor geometry, pins, transfer lines and hit testing share this layout.
+function createMap3DLayout(maps) {
+  const sorted=[...maps].sort((a,b)=>a.floor-b.floor),levels={};
+  let y=0;
+  sorted.forEach((map,i)=>{
+    if(i){const before=sorted[i-1];y+=Math.max(15,(before.size[1]+map.size[1])*.0065+2);}
+    levels[map.floor]=y;
+  });
+  return levels;
+}
+function map3DHomeOffset(size,aspect) {
+  const radius=Math.max(size[0]/Math.min(aspect,1.6),size[2],size[1]*1.5,10);
+  return [-radius*.2,radius*.94,radius*.86];
+}
