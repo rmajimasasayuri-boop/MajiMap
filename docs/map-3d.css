@@ -16,3 +16,11 @@
 @media(max-height:650px){.map-3d-controls{top:145px}.map-3d-controls p{display:none}}
 
 #map3DFloor{display:block;margin-bottom:4px}
+
+.map-3d-range{font-size:12px;font-weight:700;text-align:center}
+.map-3d-hover{position:absolute;z-index:7;right:18px;bottom:172px;width:min(300px,calc(100% - 36px));padding:11px 14px;border:2px solid #d83a40;border-radius:10px;background:#fffffff5;box-shadow:0 3px 18px #123b4920;pointer-events:none}
+.map-3d-hover[data-mode=start]{border-color:#2580c5}
+.map-3d-hover[hidden]{display:none}
+.map-3d-hover strong,.map-3d-hover span{display:block}.map-3d-hover strong{font-size:13px}.map-3d-hover span{font-size:11px;color:#597681}
+body:not(.view-3d) .map-3d-hover{display:none}
+@media(max-width:700px){.map-3d-hover{right:10px;bottom:216px;width:220px;padding:8px 10px}}

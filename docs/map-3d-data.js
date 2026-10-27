@@ -17,3 +17,24 @@ function createMap3DData({model, floor, scope, graph, path, nodeFloor, pointAt, 
   }
   return {floor,scope,maps,lines,transfers,start,goal};
 }
+
+// Arc-length sampling follows each straight segment, including sharp turns.
+function createRouteMotionTrack(points) {
+  const segments=[];let length=0;
+  for(let i=1;i<points.length;i++) {
+    const a=points[i-1],b=points[i],size=Math.hypot(...b.map((v,j)=>v-a[j]));
+    if(size<.00001)continue;
+    segments.push({a,b,start:length,length:size});length+=size;
+  }
+  return {segments,length};
+}
+function sampleRouteMotion(track,distance) {
+  if(!track.length)return null;
+  const at=((distance%track.length)+track.length)%track.length;
+  const s=track.segments.find(s=>at<s.start+s.length)||track.segments.at(-1);
+  const t=(at-s.start)/s.length;
+  return {point:s.a.map((v,j)=>v+(s.b[j]-v)*t),direction:s.b.map((v,j)=>(v-s.a[j])/s.length)};
+}
+function findMap3DPlace(places,floor,point,boundsAt) {
+  return places.find(d=>d.floor===floor&&boundsAt(d).some(([x,y,w,h])=>point[0]>=x&&point[0]<=x+w&&point[1]>=y&&point[1]<=y+h))||null;
+}
