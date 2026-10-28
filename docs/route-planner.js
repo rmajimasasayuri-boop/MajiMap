@@ -1,7 +1,7 @@
 function updateRoutePlanner(){
  const panel=document.getElementById('routePlanner');if(!panel)return;
- panel.hidden=!mapUI.goal||destinationPhotoState.place?.ref!==mapUI.goal.ref;
- const start=mapUI.manual?'地図で指定した現在地':ui('currentName').textContent;
+ panel.hidden=!mapUI.goal;
+ const start=!mapUI.startConfirmed?'現在地を設定してください':mapUI.manual?'地図で指定した現在地':ui('currentName').textContent;
  ui('routeStartLabel').textContent=start;ui('routeGoalLabel').textContent=mapUI.goal?destinationDisplayName(mapUI.goal):'目的地を選択';
  ui('routeStartField').setAttribute('aria-label','出発地を変更：'+start);
  ui('routeGoalField').setAttribute('aria-label','目的地を変更：'+(mapUI.goal?destinationDisplayName(mapUI.goal):'未設定'));

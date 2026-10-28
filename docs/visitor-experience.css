@@ -1,0 +1,82 @@
+body.visitor-experience>header{display:none!important}
+body.visitor-experience.map-first:not(.review-embedded):not(.corridor-editing):not(:has(.arrow-editing))>main{height:100dvh!important}
+body.visitor-experience .place-preview{display:none!important}
+.maji-attribution{position:absolute;left:10px;bottom:7px;z-index:4;font-size:10px;font-weight:700;color:#46646d;background:#ffffffb8;padding:2px 5px;border-radius:4px;pointer-events:none}
+.campus-map-button{position:absolute;left:96px;bottom:6px;z-index:5;padding:4px 8px;border:1px solid #dae5e8;background:white;border-radius:12px;font-size:10px;color:#315461}
+.campus-dialog{width:min(1050px,95vw)}.campus-dialog img{width:100%;max-height:65dvh;object-fit:contain}
+body.visitor-experience .facility-details{top:auto!important;bottom:50px!important;left:12px;right:auto;width:min(430px,calc(100% - 24px));max-height:60dvh!important;overflow:auto}
+body.visitor-experience .destination-photo-preview{float:right;width:100px;margin:10px 14px 0 8px;border-radius:8px;overflow:hidden}
+body.visitor-experience .destination-photo-preview img{height:74px}
+body.visitor-experience .destination-photo-preview small,body.visitor-experience .destination-photo-preview strong{display:none}
+body.visitor-experience .facility-detail-body{padding:12px 14px}
+body.visitor-experience .facility-detail-body h2{font-size:17px;margin:5px 0 12px;min-height:40px}
+body.visitor-experience .facility-detail-actions{clear:both;display:flex;flex-wrap:wrap;gap:6px}
+body.visitor-experience .facility-detail-actions>*{flex:1;min-width:92px;font-size:12px;text-align:center;text-decoration:none;padding:11px 7px;border-radius:8px;line-height:1.3}
+body.visitor-experience #detailStart{flex:0 1 auto;min-width:90px;font-size:10px;order:4;padding:6px;background:none;border:0;color:#2580c5}
+body.visitor-experience #mapPlaceCard{display:none!important}
+.facility-pict{height:24px;width:24px;flex:none;border-radius:3px}.equipment-chip{display:flex;gap:6px;align-items:center}
+.walking-pict{color:#176f68;background:#e7f0f0;border-radius:4px;padding:2px;width:24px;height:24px}
+.official-wheelchair-icon{filter:sepia(.3) hue-rotate(105deg);background-color:#e7f0f0}
+.result-floor-filter{display:flex;align-items:center;gap:8px;font-size:12px;color:#46646d;padding:6px 0}.result-floor-filter select{font:inherit;padding:6px;border:1px solid #dce5e8;border-radius:7px;background:white}
+.result-floor-heading{position:sticky;top:0;background:#edf4f5;padding:8px;margin:8px 0 3px;font-size:13px;z-index:1}
+.return-position{position:absolute;right:16px;bottom:180px;z-index:8;background:white;color:#176f68;border:1px solid #d5e2e7;border-radius:22px;padding:10px 15px;box-shadow:0 2px 12px #24455422}
+.return-position[hidden]{display:none}.navigation-mode-badge{display:inline-block;color:#176f68;font-weight:700;font-size:12px;padding:5px 9px;background:#e2f2ee;border-radius:7px;grid-column:1/-1}
+.navigation-mode-badge[data-kind=elevator]{color:#07527c;background:#e1effa}.navigation-mode-badge[data-kind=escalator]{color:#8b4500;background:#fff0d8}
+body.navigation-active .map-search-bar,body.navigation-active .nearby-equipment-bar,body.navigation-active .selection-toolbar,body.navigation-active .facility-details,body.navigation-active #settings,body.navigation-active .map-heading,body.navigation-active #walkingHint,body.navigation-active .campus-map-button{display:none!important}
+body.visitor-experience.navigation-active .navigation-panel{bottom:48px!important;left:12px!important;width:min(560px,calc(100% - 24px))!important}
+body.navigation-active .view-switch{bottom:auto;top:12px;right:12px}
+body.navigation-active .zoom-tools{top:70px!important}
+body.navigation-active .map-3d-controls{top:65px;bottom:auto;max-height:40dvh;overflow:auto}
+body.navigation-active .map-3d-controls>p,body.navigation-active .map-3d-extra,body.navigation-active .map-3d-mode{display:none}
+body.navigation-active .map-3d-range{display:none}
+body.navigation-active .floor-toolbar{top:10px!important;bottom:auto!important;left:10px!important;right:auto!important;max-width:calc(100% - 130px);overflow:auto}
+@media(max-width:700px){
+ body.visitor-experience .map-search-bar{top:8px;left:8px;width:calc(100% - 16px)}
+ body.visitor-experience .nearby-equipment-bar{top:64px;left:8px;right:8px}
+ body.visitor-experience .selection-toolbar{top:116px!important}
+ body.visitor-experience .map-heading{top:116px!important}
+ body.visitor-experience main:not(.settings-hidden) #settings{position:fixed!important;inset:0!important;width:100%!important;max-height:none!important;height:100dvh!important;border:0;border-radius:0!important;z-index:30;padding:76px 12px 12px!important;display:flex;flex-direction:column}
+ body.visitor-experience main:not(.settings-hidden) .map-search-bar{position:fixed;z-index:32;top:10px}
+ body.visitor-experience main:not(.settings-hidden) #settings .destination-card{flex:1;min-height:0;display:flex}
+ body.visitor-experience #placeResults{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain}
+ body.visitor-experience #settings .aside-top{position:absolute;top:65px;right:12px;z-index:3}
+ body.visitor-experience #settings .destination-card h2{display:none!important}
+ body.visitor-experience #settings .start-card,body.visitor-experience #settings .goal-card{display:none!important}
+ body.visitor-experience #settings .filters{padding-right:60px}
+ body.visitor-experience .facility-details{bottom:48px!important;left:8px;right:8px;width:auto;max-height:47dvh!important;padding-top:0}
+ body.visitor-experience .facility-detail-body>small,body.visitor-experience .facility-detail-body h2{margin-left:0!important}
+ body.visitor-experience .route-planner{padding:8px 12px}
+ body.visitor-experience .facility-detail-body h2{font-size:15px;min-height:32px;margin-bottom:8px}
+ body.visitor-experience .destination-photo-preview{width:88px;float:right;margin:8px 12px 0 8px}
+ body.visitor-experience .destination-photo-preview img{height:62px}
+ body.visitor-experience .route-place-field{min-height:36px}
+ body.visitor-experience .route-travel-tabs{margin-bottom:5px}
+ body.visitor-experience .navigation-panel h3{font-size:16px}.navigation-panel .navigation-position-note{font-size:9px}
+ body.visitor-experience.navigation-active .navigation-panel{bottom:12px!important;max-height:38dvh;overflow:auto}
+ body.visitor-experience.navigation-active .navigation-panel p{max-height:70px}
+ body.visitor-experience.navigation-active .return-position{bottom:calc(38dvh + 20px);right:10px;padding:9px 12px}
+ body.visitor-experience.navigation-active .map-3d-controls{top:64px;max-width:155px}
+ body.visitor-experience.navigation-active .floor-toolbar{display:none!important}
+}
+body.visitor-experience.navigation-active .navigation-panel{display:block!important;padding:12px!important}
+body.visitor-experience.navigation-active .navigation-panel>div:first-child{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+body.visitor-experience.navigation-active .navigation-panel h3{width:auto!important;font-size:17px!important;line-height:1.4;margin:7px 0!important;overflow-wrap:anywhere}
+body.visitor-experience.navigation-active .navigation-panel p{font-size:12px!important;line-height:1.5;margin:5px 0!important;max-height:56px}
+body.visitor-experience.navigation-active .navigation-buttons{display:flex!important;justify-content:space-between!important;margin-top:9px;gap:12px}
+body.visitor-experience.navigation-active .navigation-buttons button{min-width:100px!important}
+body.visitor-experience.navigation-active .return-position{bottom:265px}
+@media(max-width:700px){body.visitor-experience.navigation-active .navigation-panel{max-height:250px!important}body.visitor-experience.navigation-active .navigation-position-note{font-size:9px}}
+@media(max-width:700px){
+ body.visitor-experience main:not(.settings-hidden) #settings#settings{position:fixed!important;top:0!important;left:0!important;right:0!important;bottom:0!important;width:100vw!important;height:100dvh!important;max-height:100dvh!important;padding-top:76px!important}
+ body.visitor-experience main:not(.settings-hidden) #settings#settings .aside-top h1{display:none!important}
+ body.visitor-experience main:not(.settings-hidden) .nearby-equipment-bar,body.visitor-experience main:not(.settings-hidden) .map-heading{visibility:hidden}
+ body.visitor-experience .result-floor-filter{white-space:nowrap}.result-floor-filter select{min-width:0;flex:1}
+}
+@media(max-width:700px){
+ body.visitor-experience .map-3d-controls{width:122px!important;right:8px!important;top:166px!important;max-height:210px;overflow:auto;padding:6px!important}
+ body.visitor-experience .map-3d-controls>p,body.visitor-experience .map-3d-extra,body.visitor-experience .map-3d-mode,body.visitor-experience .map-3d-range{display:none!important}
+ body.visitor-experience .map-3d-focus button{padding:7px;font-size:11px;min-height:32px}
+ body.visitor-experience .map-3d-actions button{padding:7px;font-size:11px}
+ body.visitor-experience.navigation-active .map-3d-controls{top:66px!important}
+}
+.review-embedded .maji-attribution,.review-embedded .campus-map-button{display:none}

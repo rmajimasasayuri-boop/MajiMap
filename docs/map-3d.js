@@ -43,8 +43,12 @@
       await libraries();
       if(mode!=='3d'||task!==revision)return;
       if(!viewer) viewer=createViewer(host);
-      const data=snapshot();
-      viewer.draw(data);
+      let data=snapshot();
+      if(navigationState.active){
+       const step=navigationState.steps[navigationState.index],fs=step.kind==='transfer'?[referenceFloor(step.from),referenceFloor(step.to)]:[step.floor];
+       data={...data,maps:data.maps.filter(m=>fs.includes(m.floor)),lines:data.lines.filter(l=>fs.includes(l.floor)),transfers:step.kind==='transfer'?data.transfers.filter(t=>fs.includes(t.from.floor)&&fs.includes(t.to.floor)):[]};
+      }
+      viewer.draw(data);if(navigationState.active&&navigationFollow)viewer.focusStep();
       el('map3DFocusFloors').replaceChildren(...data.maps.map(map=>{const b=document.createElement('button');b.textContent=map.floor+'階を拡大';b.onclick=()=>viewer?.focusFloor(map.floor);return b;}));
       el('map3DFloor').textContent=scope==='route'?'経路全体 · '+data.maps.map(m=>m.floor+'F').join('・'):mapUI.floor+'階';
       status.textContent='矢印の向きに進んでください。病棟名・施設名をクリックして設定できます。';
@@ -76,7 +80,7 @@
   el('map3DZoomOut').onclick=()=>viewer?.zoom(1.25);
   el('map3DRetry').onclick=()=>{el('map3DRetry').hidden=true;queueUpdate();};
   for(const id of ['annToggle','toggleArrowEditor','editMedicineEVMain'])el(id).addEventListener('click',()=>setMode('2d'),true);
-  window.addEventListener('maji-map-update',queueUpdate);
+  window.addEventListener('maji-map-update',queueUpdate);window.addEventListener('maji-navigation-focus',()=>viewer?.focusStep());
   new ResizeObserver(()=>viewer?.resize()).observe(host);
   document.addEventListener('visibilitychange',()=>viewer?.pause(document.hidden));
   window.addEventListener('pagehide',()=>viewer?.dispose());
@@ -103,11 +107,11 @@
     const activePointers=new Set();
     const colorValue=color=>new T.Color(color).convertSRGBToLinear();
     const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
-    let floorLevels={},motion=[],hoverGroup=null,hoverPlace=null,hoverMode=null,progressMarker=null;
+    let floorLevels={},floorDepths={},motion=[],hoverGroup=null,hoverPlace=null,hoverMode=null,progressMarker=null;
     const hoverCard=el('map3DHover');
     let group=new T.Group(),planes=[],frame,paused=false,disposed=false,previousKey='',homeView,down;
     scene.add(group);
-    const offset=f=>f===3?153:0;
+    const offset=f=>(f===3?153:0)+(floorDepths[f]||0)/S;
     const at=(f,p,lift=.1)=>new T.Vector3(p[0]*S,(floorLevels[f]||0)+lift,(p[1]+offset(f))*S);
     function freeGroup() {
       group.traverse(o=>{o.geometry?.dispose();for(const m of Array.isArray(o.material)?o.material:o.material?[o.material]:[]){if(m.userData.ownsTexture)m.map?.dispose();m.dispose();}});
@@ -182,7 +186,7 @@
     function draw(data) {
       const key=JSON.stringify([data.floor,data.scope,data.maps.map(m=>m.floor),data.lines,data.transfers,data.start,data.goal,navigationState.active]);
       if(key===previousKey){if(hoverPlace)highlight(hoverPlace);updateProgress();return;}
-      const reset=previousKey!==key;previousKey=key;freeGroup();floorLevels=createMap3DLayout(data.maps);
+      const reset=previousKey!==key;previousKey=key;freeGroup();floorLevels=createMap3DLayout(data.maps);floorDepths=createMap3DDepths(data.maps);
       const box=new T.Box3();
       for(const map of data.maps) {
         const [w,h]=map.size,active=map.floor===data.floor;
@@ -195,7 +199,7 @@
         box.expandByPoint(at(map.floor,[0,0],0));box.expandByPoint(at(map.floor,[w,h],0));
       }
       for(const l of data.lines){const points=l.points.map(p=>at(l.floor,p));line(points,0x1683d1);movingArrows(points.map(p=>p.clone().add(new T.Vector3(0,.035,0))));}
-      for(const t of data.transfers){const a=at(t.from.floor,t.from.point),b=at(t.to.floor,t.to.point);line([a,b],0x1683d1,true);movingArrows([a,b]);tag(t.kind==='elevator'?'EV':'エスカレーター',a.clone().lerp(b,.5), '#216b96',1.9);}
+      for(const t of data.transfers){const a=at(t.from.floor,t.from.point),b=at(t.to.floor,t.to.point);line([a,b],t.kind==='elevator'?0x07527c:0xd47717,true);movingArrows([a,b]);tag(t.kind==='elevator'?'エレベーター EV':'エスカレーター',a.clone().lerp(b,.5),t.kind==='elevator'?'#07527c':'#ad5a0d',2.3);}
       const same=data.start?.floor===data.goal?.floor&&data.start?.point&&data.goal?.point&&Math.hypot(data.start.point[0]-data.goal.point[0],data.start.point[1]-data.goal.point[1])<1;
       if(!navigationState.active)pin(data.start,'出発地','#2580c5',same?-.13:0);pin(data.goal,'目的地','#d83a40',same?.13:0);
       const center=box.getCenter(new T.Vector3()),size=box.getSize(new T.Vector3());
@@ -204,6 +208,7 @@
       homeView={center,position:center.clone().add(cameraOffset)};
       if(reset)home();resize();updateProgress();
     }
+    let trackedPosition=null;
     function updateProgress(){
       const p=navigationState.active&&navigationState.position;
       if(!p||!planes.some(plane=>plane.userData.floor===p.floor)){if(progressMarker)progressMarker.visible=false;return;}
@@ -211,9 +216,21 @@
         const halo=new T.Mesh(new T.SphereGeometry(.19,20,16),new T.MeshBasicMaterial({color:colorValue('#ffffff'),depthTest:false}));
         const dot=new T.Mesh(new T.SphereGeometry(.13,20,16),new T.MeshBasicMaterial({color:colorValue('#2580c5'),depthTest:false}));dot.position.y=.1;halo.renderOrder=19;dot.renderOrder=20;progressMarker.add(halo,dot);group.add(progressMarker);}
       progressMarker.visible=true;if(p.transfer){progressMarker.position.fromArray(transferPosition(p.transfer,end=>at(end.floor,end.point,.12).toArray()));}else progressMarker.position.copy(at(p.floor,p.point,.12));
+      if(navigationFollow&&p.transfer&&trackedPosition){const delta=progressMarker.position.clone().sub(trackedPosition);camera.position.add(delta);controls.target.add(delta);controls.update();}trackedPosition=progressMarker.position.clone();
     }
     window.addEventListener('maji-navigation-position',updateProgress);
     function home(){if(!homeView)return;controls.target.copy(homeView.center);camera.position.copy(homeView.position);controls.update();}
+    function focusStep(){
+      if(!navigationState.active||!navigationFollow)return;
+      const step=navigationState.steps[navigationState.index];if(!step)return;
+      if(step.kind==='transfer'){
+       const p=navigationState.position;if(!p)return;const target=p.transfer?new T.Vector3(...transferPosition(p.transfer,e=>at(e.floor,e.point,.12).toArray())):at(p.floor,p.point,.12);
+       controls.target.copy(target);camera.position.copy(target).add(new T.Vector3(-1.5,6,5));trackedPosition=target.clone();controls.update();return;
+      }
+      const ps=instructionSegments(step).flatMap(s=>s.points).map(p=>at(step.floor,p));if(!ps.length)return;
+      const box=new T.Box3().setFromPoints(ps),size=box.getSize(new T.Vector3()),center=box.getCenter(new T.Vector3()),radius=Math.max(size.x/Math.max(camera.aspect,.4),size.z,3.5);
+      controls.target.copy(center);camera.position.copy(center).add(new T.Vector3(-radius*.12,radius*1.2,radius*.8));trackedPosition=null;controls.update();clearHover();
+    }
     function focusFloor(f){const plane=planes.find(p=>p.userData.floor===f);if(!plane)return;const {width,height}=plane.userData,center=at(f,[width/2,height/2],0),offset=new T.Vector3(...map3DHomeOffset([width*S,0,height*S],camera.aspect));controls.target.copy(center);camera.position.copy(center).add(offset);controls.update();clearHover();}
     function pan(x,y){camera.updateMatrixWorld();const step=camera.position.distanceTo(controls.target)*.09,delta=new T.Vector3().setFromMatrixColumn(camera.matrixWorld,0).multiplyScalar(x*step).addScaledVector(new T.Vector3().setFromMatrixColumn(camera.matrixWorld,1),y*step);camera.position.add(delta);controls.target.add(delta);controls.update();clearHover();}
     function rotate(direction){camera.position.sub(controls.target).applyAxisAngle(new T.Vector3(0,1,0),direction*Math.PI/12).add(controls.target);controls.update();clearHover();}
@@ -221,7 +238,7 @@
     function resize(){const w=container.clientWidth,h=container.clientHeight;if(!w||!h)return;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();}
     function loop(time=0){if(disposed||paused)return;frame=requestAnimationFrame(loop);for(const m of motion){const sample=sampleRouteMotion(m.track,m.offset+(reducedMotion.matches?0:time*.00065));m.arrow.position.fromArray(sample.point);m.arrow.quaternion.setFromUnitVectors(new T.Vector3(0,0,1),new T.Vector3(...sample.direction));}controls.update();renderer.render(scene,camera);}
     function pause(value){paused=value;cancelAnimationFrame(frame);if(!paused&&!disposed)loop();}
-    renderer.domElement.addEventListener('pointerdown',e=>{activePointers.add(e.pointerId);down=activePointers.size===1?{x:e.clientX,y:e.clientY,id:e.pointerId,moved:false}:null;});
+    renderer.domElement.addEventListener('pointerdown',e=>{if(navigationState.active)navigationFollow=false;activePointers.add(e.pointerId);down=activePointers.size===1?{x:e.clientX,y:e.clientY,id:e.pointerId,moved:false}:null;});
     renderer.domElement.addEventListener('pointermove',e=>{if(down){if(Math.hypot(e.clientX-down.x,e.clientY-down.y)>5){down.moved=true;hidePlacePreview();}clearHover();return;}if(activePointers.size)return;highlight(pointerHit(e)?.place,{x:e.clientX,y:e.clientY});});
     renderer.domElement.addEventListener('pointerleave',()=>clearHover());
     renderer.domElement.addEventListener('pointerup',e=>{
@@ -236,6 +253,6 @@
     document.addEventListener('pointerup',releasePointer);document.addEventListener('pointercancel',releasePointer);
     resize();loop();
     function dispose(){disposed=true;window.removeEventListener('maji-navigation-position',updateProgress);document.removeEventListener('pointerup',releasePointer);document.removeEventListener('pointercancel',releasePointer);cancelAnimationFrame(frame);controls.dispose();freeGroup();for(const t of textures.values())t.dispose();renderer.dispose();renderer.forceContextLoss();renderer.domElement.remove();}
-    return {draw,home,zoom,resize,pause,dispose,pan,rotate,focusFloor,setInteraction};
+    return {draw,home,zoom,resize,pause,dispose,pan,rotate,focusFloor,focusStep,setInteraction};
   }
 })();

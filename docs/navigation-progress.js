@@ -65,7 +65,7 @@ function moveNavigationStep(delta){
  if(!navigationState.active)return;
  const next=navigationState.index+delta;if(next<0)return;
  if(next>=navigationState.steps.length){stopNavigation();ui('mapMessage').textContent='案内を終了しました。';return;}
- navigationState.index=next;renderNavigation();
+ navigationState.index=next;if(typeof navigationFollow!=='undefined')navigationFollow=true;renderNavigation();
 }
 function initNavigationGestures(){
  const panel=ui('navigationPanel');let down=null;
