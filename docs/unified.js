@@ -110,7 +110,7 @@ function renderOverlay(){const svg=ui('unifiedOverlay');svg.replaceChildren();if
 
  if(!arrowEditor.active&&!corridorEditor.active)for(const d of destinationList.filter(d=>d.floor===mapUI.floor)){
  const regions=placeHitBounds(d);if(!regions.length)continue;
- const hit=svgNode('g',{role:'button',tabindex:0,'aria-label':d.name+'を'+(mapUI.pickMode==='start'?'出発地':'目的地')+'に設定',class:'place-map-target',style:'','data-place-ref':d.ref});
+ const hit=svgNode('g',{role:'button',tabindex:0,'aria-label':d.name+'を'+(mapUI.pickMode==='start'?'出発地':'目的地')+'に設定',class:'place-map-target','data-selected':mapUI.goal?.ref===d.ref?'goal':mapUI.startConfirmed&&navigationTargetReference(d)===mapUI.from?'start':'','data-place-ref':d.ref});
  for(const [x,y,width,height] of regions)hit.append(svgNode('rect',{x,y,width,height,fill:'transparent','pointer-events':'all',rx:4}));
  hit.onclick=e=>{if(e.detail===0)previewPlacePhoto(d,hit.getBoundingClientRect(),true);};hit.onpointerenter=e=>previewPlacePhoto(d,{x:e.clientX,y:e.clientY});hit.onpointerleave=()=>schedulePhotoRestore();hit.onfocus=()=>previewPlacePhoto(d,hit.getBoundingClientRect());hit.onblur=()=>schedulePhotoRestore();hit.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();previewPlacePhoto(d,hit.getBoundingClientRect(),true);}};svg.append(hit);
  }

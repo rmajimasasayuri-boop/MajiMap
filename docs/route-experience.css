@@ -40,3 +40,31 @@ body.visitor-experience #placeResults{max-height:none!important;min-height:0;fle
  body.visitor-experience #settings .filters{padding-right:0!important}
 }
 body.visitor-experience.navigation-active .view-switch{bottom:auto!important;top:12px!important}
+
+/* Selection remains visible after the pointer leaves, in both endpoint colours. */
+body.visitor-experience .place-map-target[data-selected="goal"] rect{fill:#d83a4014!important;stroke:#d83a40!important;stroke-width:2!important;vector-effect:non-scaling-stroke}
+body.visitor-experience .place-map-target[data-selected="start"] rect{fill:#2580c514!important;stroke:#2580c5!important;stroke-width:2!important;vector-effect:non-scaling-stroke}
+body.visitor-experience .selection-toolbar{display:none!important}
+body.visitor-experience #routePlanner>.route-travel-tabs{display:flex;gap:8px;margin:0 0 10px;padding:0;border:0}
+body.visitor-experience #routePlanner>.route-travel-tabs button{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:24px;padding:9px 6px;font-size:12px}
+body.visitor-experience .swap-route-places{top:116px}
+body.visitor-experience .route-options-dock{left:auto;right:12px;border:0;padding:0;background:transparent;box-shadow:none;bottom:58px}
+body.visitor-experience .route-options-dock>.primary{border-radius:28px;min-width:155px;min-height:48px;box-shadow:0 3px 14px #2445542a}
+body.visitor-experience.navigation-active .navigation-panel{left:8px!important;bottom:8px!important;width:min(420px,calc(100% - 16px))!important;padding:10px 12px!important;max-height:40dvh!important;overflow:auto;border-radius:18px!important}
+body.visitor-experience.navigation-active .navigation-panel>div:first-child{margin:0!important;min-height:24px;font-size:11px}
+body.visitor-experience.navigation-active #stopNavigation{border:0;background:transparent;padding:0 5px;font-size:25px;min-height:28px;line-height:1;color:#46646d}
+body.visitor-experience.navigation-active #navigationModeBadge{display:none!important}
+body.visitor-experience.navigation-active .navigation-panel h3{font-size:15px!important;line-height:1.35!important;margin:2px 0 6px!important}
+body.visitor-experience.navigation-active .navigation-buttons{margin-top:6px!important;gap:8px!important}
+body.visitor-experience.navigation-active .navigation-buttons button{padding:8px 12px!important;min-height:36px!important;min-width:80px!important;border-radius:22px;font-size:12px}
+.navigation-more{font-size:11px;color:#46646d}.navigation-more summary{cursor:pointer;width:max-content;padding:3px 0}
+body.visitor-experience.navigation-active .navigation-panel .navigation-more p{max-height:none!important}
+body.visitor-experience.navigation-active .zoom-tools,body.visitor-experience.navigation-active #map3DControls{display:none!important}
+body.visitor-experience.navigation-active .return-position{bottom:190px!important;right:10px;padding:9px 12px;font-size:11px}
+body.visitor-experience.navigation-active .navigation-transfer-status{font-size:11px!important}
+@media(max-width:700px){
+ body.visitor-experience .route-options-dock{left:auto;right:12px;bottom:56px;display:block}
+ body.visitor-experience .route-options-dock>.primary{min-width:155px}
+ body.route-planning .view-switch{top:252px!important;bottom:auto!important;right:8px!important}
+ body.route-planning .map-3d-controls{top:310px!important}
+}

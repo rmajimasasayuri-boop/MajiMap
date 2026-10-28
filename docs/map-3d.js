@@ -167,15 +167,19 @@
       if(d?.ref===hoverPlace?.ref&&hoverMode===mapUI.pickMode){if(d&&anchor)previewPlacePhoto(d,anchor);return;}
       clearHover();if(!d)return;if(anchor)previewPlacePhoto(d,anchor);hoverPlace=d;hoverMode=mapUI.pickMode;
       const color=mapUI.pickMode==='start'?'#2580c5':'#d83a40';hoverGroup=new T.Group();group.add(hoverGroup);
+      outlinePlace(d,color,hoverGroup);
+      container.style.cursor='pointer';
+    }
+    function outlinePlace(d,color,target) {
+      if(!planes.some(p=>p.userData.floor===d.floor))return;
       for(const [x,y,w,h]of placeHitBounds(d)) {
         const points=[[x,y],[x+w,y],[x+w,y+h],[x,y+h]].map(p=>at(d.floor,p,.006));
-        const fill=new T.Mesh(new T.PlaneGeometry(w*S,h*S),new T.MeshBasicMaterial({color:colorValue(color),side:T.DoubleSide,transparent:true,opacity:.12,depthTest:true,depthWrite:false}));fill.rotation.x=-Math.PI/2;fill.position.copy(at(d.floor,[x+w/2,y+h/2],.004));fill.renderOrder=12;hoverGroup.add(fill);
+        const fill=new T.Mesh(new T.PlaneGeometry(w*S,h*S),new T.MeshBasicMaterial({color:colorValue(color),side:T.DoubleSide,transparent:true,opacity:.12,depthTest:true,depthWrite:false}));fill.rotation.x=-Math.PI/2;fill.position.copy(at(d.floor,[x+w/2,y+h/2],.004));fill.renderOrder=12;target.add(fill);
         for(let i=0;i<points.length;i++) {
           const a=points[i],b=points[(i+1)%points.length],delta=b.clone().sub(a);
-          const edge=new T.Mesh(new T.CylinderGeometry(.009,.009,delta.length(),8),new T.MeshBasicMaterial({color:colorValue(color),depthTest:true,depthWrite:false}));edge.position.copy(a).addScaledVector(delta,.5);edge.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),delta.normalize());edge.renderOrder=13;hoverGroup.add(edge);
+          const edge=new T.Mesh(new T.CylinderGeometry(.009,.009,delta.length(),8),new T.MeshBasicMaterial({color:colorValue(color),depthTest:true,depthWrite:false}));edge.position.copy(a).addScaledVector(delta,.5);edge.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),delta.normalize());edge.renderOrder=13;target.add(edge);
         }
       }
-      container.style.cursor='pointer';
     }
     function pointerHit(e) {
       const r=renderer.domElement.getBoundingClientRect();ray.setFromCamera(new T.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),camera);
@@ -184,7 +188,7 @@
       return {floor,point,place:findMap3DPlace(destinationList,floor,point,placeHitBounds)};
     }
     function draw(data) {
-      const key=JSON.stringify([data.floor,data.scope,data.maps.map(m=>m.floor),data.lines,data.transfers,data.start,data.goal,navigationState.active]);
+      const key=JSON.stringify([data.floor,data.scope,data.maps.map(m=>m.floor),data.lines,data.transfers,data.start,data.goal,mapUI.goal?.ref,mapUI.from,mapUI.startConfirmed,navigationState.active]);
       if(key===previousKey){if(hoverPlace)highlight(hoverPlace);updateProgress();return;}
       const reset=previousKey!==key;previousKey=key;freeGroup();floorLevels=createMap3DLayout(data.maps);floorDepths=createMap3DDepths(data.maps);floorRegistration=createMap3DRegistration(data.maps,data.transfers);
       const box=new T.Box3();
@@ -200,6 +204,8 @@
       }
       for(const l of data.lines){const points=l.points.map(p=>at(l.floor,p));line(points,0x1683d1);movingArrows(points.map(p=>p.clone().add(new T.Vector3(0,.035,0))));}
       for(const t of data.transfers){const a=at(t.from.floor,t.from.point),b=at(t.to.floor,t.to.point);line([a,b],t.kind==='elevator'?0x07527c:0xd47717,true);movingArrows([a,b]);tag(t.kind==='elevator'?'エレベーター EV':'エスカレーター',a.clone().lerp(b,.5),t.kind==='elevator'?'#07527c':'#ad5a0d',2.3);}
+      if(mapUI.startConfirmed){const start=destinationList.find(d=>navigationTargetReference(d)===mapUI.from);if(start)outlinePlace(start,'#2580c5',group);}
+      if(mapUI.goal)outlinePlace(mapUI.goal,'#d83a40',group);
       const same=data.start?.floor===data.goal?.floor&&data.start?.point&&data.goal?.point&&Math.hypot(data.start.point[0]-data.goal.point[0],data.start.point[1]-data.goal.point[1])<1;
       if(!navigationState.active)pin(data.start,'出発地','#2580c5',same?-.13:0);pin(data.goal,'目的地','#d83a40',same?.13:0);
       const center=box.getCenter(new T.Vector3()),size=box.getSize(new T.Vector3());
