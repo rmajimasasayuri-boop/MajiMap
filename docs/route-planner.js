@@ -1,6 +1,6 @@
 function updateRoutePlanner(){
  const panel=document.getElementById('routePlanner');if(!panel)return;
- panel.hidden=!mapUI.goal;
+ panel.hidden=!mapUI.goal||!document.body.classList.contains('route-planning');
  const start=!mapUI.startConfirmed?'現在地を設定してください':mapUI.manual?'地図で指定した現在地':ui('currentName').textContent;
  ui('routeStartLabel').textContent=start;ui('routeGoalLabel').textContent=mapUI.goal?destinationDisplayName(mapUI.goal):'目的地を選択';
  ui('routeStartField').setAttribute('aria-label','出発地を変更：'+start);

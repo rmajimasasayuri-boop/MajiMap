@@ -1,0 +1,42 @@
+body.visitor-experience .maji-attribution{background:transparent!important;padding:0;box-shadow:none;border:0;border-radius:0}
+body.visitor-experience .walking-pict{color:#fff!important;fill:currentColor;background:#444!important;border-radius:3px;padding:2px;width:22px;height:22px;box-sizing:border-box}
+body.visitor-experience .official-wheelchair-icon{filter:none!important;width:20px;height:20px;background-color:#444}
+body.visitor-experience #toggleSettings{display:none!important}
+body.visitor-experience #clearPlaceSearch[hidden]{display:none!important}
+body.visitor-experience .search-back{font:32px/1 sans-serif!important;padding:0 5px!important;color:#46646d}
+body.visitor-experience .search-back:focus-visible{outline:2px solid #2580c5}
+body.visitor-experience.place-selected:not(.place-searching) .nearby-equipment-bar{display:none!important}
+body.visitor-experience .department-website-link{display:block;padding:14px;border:1px solid #d8e4e7;margin:8px 0;border-radius:8px;color:#176f68;text-decoration:none}
+body.visitor-experience #routePlanner{position:absolute;z-index:7;top:12px;left:12px;width:min(350px,calc(100% - 24px));padding:10px 43px 10px 12px;border:1px solid #dce5e8;border-radius:16px;background:white;box-shadow:0 3px 15px #183b4917}
+body.visitor-experience #routePlanner[hidden]{display:none!important}
+.route-planning-header{display:flex;gap:5px;align-items:center;color:#46646d;font-size:11px;margin-bottom:6px}.route-planning-header button{border:0;background:transparent;font-size:27px;line-height:1;color:#46646d;padding:0 5px}
+.swap-route-places{position:absolute;right:9px;top:65px;border:0;background:transparent;color:#46646d;font-size:25px;padding:6px}
+.route-options-dock{position:absolute;z-index:7;bottom:46px;left:12px;display:flex;align-items:center;gap:10px;padding:12px;background:white;border:1px solid #dce5e8;border-radius:16px;box-shadow:0 3px 15px #183b4917}
+.route-options-dock[hidden]{display:none!important}.route-options-dock .route-travel-tabs{margin:0;padding:0}.route-options-dock>.primary{min-height:42px;padding:10px 16px;white-space:nowrap}
+body.route-planning:not(.place-searching) .map-search-bar,body.route-planning .nearby-equipment-bar,body.route-planning .selection-toolbar,body.route-planning .facility-details,body.route-planning .route-summary{display:none!important}
+body.place-searching #routePlanner,body.place-searching .route-options-dock{display:none!important}
+body.navigation-active #routePlanner,body.navigation-active .route-options-dock{display:none!important}
+.navigation-floor-strip{position:absolute;left:12px;top:12px;display:flex;gap:6px;z-index:8}.navigation-floor-strip[hidden]{display:none}.navigation-floor-strip button{background:white;border:1px solid #d6e3e7;border-radius:16px;padding:9px 12px;color:#176f68;font-size:12px;font-weight:bold;box-shadow:0 2px 10px #24455417}
+body.visitor-experience.navigation-active .floor-toolbar{display:none!important}
+body.route-planning .map-heading{top:12px!important}body.route-planning .floor-toolbar{top:67px!important}
+body.visitor-experience #settings .destination-card{min-height:0;display:flex;flex-direction:column;overflow:hidden}
+body.visitor-experience #placeResults{max-height:none!important;min-height:0;flex:1;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(max-width:700px){
+ body.visitor-experience #routePlanner{left:8px;top:8px;width:calc(100% - 16px);padding-top:7px;padding-bottom:7px}
+ body.route-planning .map-heading{display:none!important}
+ body.visitor-experience .route-place-field{min-height:39px}
+ body.visitor-experience .route-options-dock{left:8px;right:8px;bottom:47px;flex-wrap:wrap;gap:8px;padding:10px}
+ body.visitor-experience .route-options-dock .route-travel-tabs{flex:1;gap:6px}
+ body.visitor-experience .route-options-dock .route-travel-tabs button{font-size:11px;padding:7px 9px;white-space:nowrap}
+ body.visitor-experience .route-options-dock>.primary{flex:1;min-width:100%;min-height:42px}
+ body.route-planning .floor-toolbar{top:auto!important;bottom:8px!important}
+ body.route-planning .map-3d-controls{top:175px!important}
+ body.route-planning .view-switch{bottom:190px!important}
+ body.visitor-experience .navigation-floor-strip{top:10px;left:10px;max-width:calc(100% - 130px)}
+ body.visitor-experience .navigation-floor-strip button{font-size:11px;padding:9px}
+ body.visitor-experience main:not(.settings-hidden) #settings#settings{padding:70px 8px 0!important;gap:3px}
+ body.visitor-experience #settings .aside-top{display:none!important}
+ body.visitor-experience #settings .destination-card{padding:6px 4px 0!important;gap:0}
+ body.visitor-experience #settings .filters{padding-right:0!important}
+}
+body.visitor-experience.navigation-active .view-switch{bottom:auto!important;top:12px!important}

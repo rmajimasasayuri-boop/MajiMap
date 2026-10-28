@@ -41,6 +41,7 @@
 "5","5A","腎臓内科","outpatient:5::5A"
 "5","設備","5階 自動販売機","outpatient:5::equipment-vending"
 "5","設備","5階 AED","outpatient:5::equipment-aed"
+"5","WC","診療棟南側（CCMC側） トイレ","outpatient:5::publicToilet-wardSouthOpposite"
 "5","WC","診療棟北側 トイレ","outpatient:5::publicToilet-wardNorth"
 "5","WC","診療棟南側 トイレ","outpatient:5::publicToilet-wardSouth"
 "5","WC","診療棟東側 トイレ","outpatient:5::publicToilet-wardEast"

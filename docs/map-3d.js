@@ -45,7 +45,7 @@
       if(!viewer) viewer=createViewer(host);
       let data=snapshot();
       if(navigationState.active){
-       const step=navigationState.steps[navigationState.index],fs=step.kind==='transfer'?[referenceFloor(step.from),referenceFloor(step.to)]:[step.floor];
+       const step=navigationState.steps[navigationState.index],next=navigationState.steps.slice(navigationState.index+1).find(s=>s.kind==='transfer'),fs=step.kind==='transfer'?[referenceFloor(step.from),referenceFloor(step.to)]:[step.floor,...(next?[referenceFloor(next.to)]:[])];
        data={...data,maps:data.maps.filter(m=>fs.includes(m.floor)),lines:data.lines.filter(l=>fs.includes(l.floor)),transfers:step.kind==='transfer'?data.transfers.filter(t=>fs.includes(t.from.floor)&&fs.includes(t.to.floor)):[]};
       }
       viewer.draw(data);if(navigationState.active&&navigationFollow)viewer.focusStep();
@@ -107,12 +107,12 @@
     const activePointers=new Set();
     const colorValue=color=>new T.Color(color).convertSRGBToLinear();
     const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
-    let floorLevels={},floorDepths={},motion=[],hoverGroup=null,hoverPlace=null,hoverMode=null,progressMarker=null;
+    let floorLevels={},floorDepths={},floorRegistration={},motion=[],hoverGroup=null,hoverPlace=null,hoverMode=null,progressMarker=null;
     const hoverCard=el('map3DHover');
     let group=new T.Group(),planes=[],frame,paused=false,disposed=false,previousKey='',homeView,down;
     scene.add(group);
     const offset=f=>(f===3?153:0)+(floorDepths[f]||0)/S;
-    const at=(f,p,lift=.1)=>new T.Vector3(p[0]*S,(floorLevels[f]||0)+lift,(p[1]+offset(f))*S);
+    const at=(f,p,lift=.1)=>new T.Vector3((p[0]+(floorRegistration[f]?.[0]||0))*S,(floorLevels[f]||0)+lift,(p[1]+offset(f)+(floorRegistration[f]?.[1]||0))*S);
     function freeGroup() {
       group.traverse(o=>{o.geometry?.dispose();for(const m of Array.isArray(o.material)?o.material:o.material?[o.material]:[]){if(m.userData.ownsTexture)m.map?.dispose();m.dispose();}});
       scene.remove(group);group=new T.Group();scene.add(group);planes=[];motion=[];hoverGroup=null;hoverPlace=null;hoverMode=null;hoverCard.hidden=true;progressMarker=null;
@@ -148,7 +148,7 @@
       if(!p?.point||!planes.some(plane=>plane.userData.floor===p.floor))return;
       const pos=at(p.floor,p.point,.2);pos.x+=shift;
       const ball=new T.Mesh(new T.SphereGeometry(.11,16,12),new T.MeshBasicMaterial({color:colorValue(color),depthTest:false,transparent:true}));ball.position.copy(pos);ball.renderOrder=10;group.add(ball);
-      line([pos,pos.clone().add(new T.Vector3(0,.4,0))],color);tag(label,pos.clone().add(new T.Vector3(0,.5,0)),color,1.7);
+      // Pins retain their color without a floating name label.
     }
     function movingArrows(points) {
       const track=createRouteMotionTrack(points.map(p=>p.toArray()));if(!track.length)return;
@@ -180,13 +180,13 @@
     function pointerHit(e) {
       const r=renderer.domElement.getBoundingClientRect();ray.setFromCamera(new T.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),camera);
       const hit=ray.intersectObjects(planes)[0];if(!hit)return null;
-      const floor=hit.object.userData.floor,point=[hit.point.x/S,hit.point.z/S-offset(floor)];
+      const floor=hit.object.userData.floor,point=[hit.point.x/S-(floorRegistration[floor]?.[0]||0),hit.point.z/S-offset(floor)-(floorRegistration[floor]?.[1]||0)];
       return {floor,point,place:findMap3DPlace(destinationList,floor,point,placeHitBounds)};
     }
     function draw(data) {
       const key=JSON.stringify([data.floor,data.scope,data.maps.map(m=>m.floor),data.lines,data.transfers,data.start,data.goal,navigationState.active]);
       if(key===previousKey){if(hoverPlace)highlight(hoverPlace);updateProgress();return;}
-      const reset=previousKey!==key;previousKey=key;freeGroup();floorLevels=createMap3DLayout(data.maps);floorDepths=createMap3DDepths(data.maps);
+      const reset=previousKey!==key;previousKey=key;freeGroup();floorLevels=createMap3DLayout(data.maps);floorDepths=createMap3DDepths(data.maps);floorRegistration=createMap3DRegistration(data.maps,data.transfers);
       const box=new T.Box3();
       for(const map of data.maps) {
         const [w,h]=map.size,active=map.floor===data.floor;

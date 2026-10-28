@@ -42,13 +42,21 @@ function findMap3DPlace(places,floor,point,boundsAt) {
 // Display spacing is based on drawing extents, not real storey heights.
 // All floor geometry, pins, transfer lines and hit testing share this layout.
 function createMap3DLayout(maps) {
- const levels={};[...maps].sort((a,b)=>a.floor-b.floor).forEach((m,i)=>levels[m.floor]=i*4);return levels;
+ const sorted=[...maps].sort((a,b)=>a.floor-b.floor),levels={};let y=0;
+ sorted.forEach((m,i)=>{if(i)y+=Math.max(sorted[i-1].size[1],m.size[1])*.012+1.2;levels[m.floor]=y;});return levels;
 }
-function createMap3DDepths(maps){
- const sorted=[...maps].sort((a,b)=>a.floor-b.floor),depths={};let z=0;
- sorted.forEach((m,i)=>{if(i){const compact=sorted[i-1].floor===2&&m.floor===3;z-=Math.max(sorted[i-1].size[1],m.size[1])*(compact?.009:.01)+(compact?.8:1);}depths[m.floor]=z;});return depths;
+function createMap3DRegistration(maps,transfers=[]){
+ const offsets={};if(!maps.length)return offsets;offsets[maps[0].floor]=[0,0];
+ const raw=e=>[e.point[0],e.point[1]+(e.floor===3?153:0)];
+ for(let pass=0;pass<maps.length;pass++)for(const t of transfers.filter(t=>t.kind==='elevator')){
+  const a=raw(t.from),b=raw(t.to),oa=offsets[t.from.floor],ob=offsets[t.to.floor];
+  if(oa&&!ob)offsets[t.to.floor]=[a[0]+oa[0]-b[0],a[1]+oa[1]-b[1]];
+  if(ob&&!oa)offsets[t.from.floor]=[b[0]+ob[0]-a[0],b[1]+ob[1]-a[1]];
+ }
+ for(const m of maps)offsets[m.floor]??=[0,0];return offsets;
 }
+function createMap3DDepths(maps){return Object.fromEntries(maps.map(m=>[m.floor,0]));}
 function map3DHomeOffset(size,aspect) {
   const radius=Math.max(size[0]/Math.min(aspect,1.6),size[2],size[1]*1.5,10);
-  return [-radius*.2,radius*.94,radius*.86];
+  return [0,radius*.94,radius*.86];
 }
