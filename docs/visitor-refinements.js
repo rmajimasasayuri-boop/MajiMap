@@ -15,7 +15,7 @@ function setVisitorWaypoint(d){
 function addVisitorWaypoint(){setVisitorWaypoint(destinationPhotoState.place);}
 function beginWaypointSelection(){
  if(!mapUI.goal)return;if(mapUI.addingWaypoint){mapUI.addingWaypoint=false;syncVisitorRefinements();return;}
- closeVisitorPreview();mapUI.addingWaypoint=true;setSelectionMode('goal');togglePlacePanel(false);ui('mapMessage').dataset.important='true';ui('mapMessage').textContent='経由地にする施設を地図で選んでください。写真カードの「経由地を追加」で確定します。';syncVisitorRefinements();
+ closeVisitorPreview();mapUI.addingWaypoint=true;setSelectionMode('goal');togglePlacePanel(true);ui('findPlace').placeholder='経由地を検索';ui('findPlace').focus({preventScroll:true});syncVisitorRefinements();
 }
 function navigateVisitorPreview(){
  const d=destinationPhotoState.place;if(!d)return;if(previewOffersWaypoint(d)){addVisitorWaypoint();return;}
@@ -51,15 +51,16 @@ function initVisitorFavorites(){
 }
 function visitorSafeArea(){const c=getComputedStyle(document.documentElement);return Object.fromEntries(['top','bottom','left','right'].map(side=>[side,parseFloat(c.getPropertyValue('--visitor-safe-'+side))||0]));}
 function visitorRailLayout({height,top,bottom,wide}){
- const available=Math.max(0,height-top-bottom);return {compact:false,height:Math.max(32,Math.min(320,available-132))};
+ return {compact:false,height:320};
 }
 function layoutVisitorControls(){
  const v=ui('mapViewport'),box=v.getBoundingClientRect(),planner=ui('routePlanner'),p=planner.getBoundingClientRect(),planning=document.body.classList.contains('route-planning'),active=navigationState.active,safe=visitorSafeArea(),wide=box.width>box.height;
- const top=wide?8+safe.top:active?12+safe.top:planning&&!planner.hidden?p.bottom-box.top+10:72+safe.top;
- let bottom=ui('routeOptionsDock').hidden?40+safe.bottom:Math.max(40+safe.bottom,box.bottom-ui('routeOptionsDock').getBoundingClientRect().top+12);for(const id of ['facilityDetails','navigationPanel']){const el=ui(id),r=el.getBoundingClientRect();if(!el.hidden&&getComputedStyle(el).display!=='none'&&r.height)bottom=Math.max(bottom,box.bottom-r.top+8);}
+ const visible=el=>!el.hidden&&getComputedStyle(el).display!=='none'&&el.getBoundingClientRect().height>0;
+ const top=8+safe.top;
+ const dock=ui('routeOptionsDock');let bottom=visible(dock)?Math.max(40+safe.bottom,box.bottom-dock.getBoundingClientRect().top+12):40+safe.bottom;for(const id of ['facilityDetails','navigationPanel']){const el=ui(id),r=el.getBoundingClientRect();if(visible(el))bottom=Math.max(bottom,box.bottom-r.top+8);}
  const rail=visitorRailLayout({height:box.height,top,bottom,wide});document.body.classList.toggle('compact-floor-rail',rail.compact);
  document.documentElement.style.setProperty('--route-panel-bottom',top+'px');document.documentElement.style.setProperty('--visitor-floor-height',rail.height+'px');
- const floors=ui('allFloors'),activeFloor=floors.querySelector('[data-floor="'+mapUI.floor+'"]');if(activeFloor&&(floors.dataset.visibleFloor!==String(mapUI.floor)||floors.dataset.layoutHeight!==String(rail.height))){floors.dataset.visibleFloor=mapUI.floor;floors.dataset.layoutHeight=rail.height;const f=activeFloor.getBoundingClientRect(),r=floors.getBoundingClientRect();if(f.top<r.top)floors.scrollTop+=f.top-r.top;else if(f.bottom>r.bottom)floors.scrollTop+=f.bottom-r.bottom;}document.documentElement.style.setProperty('--visitor-floor-height',rail.height+'px');
+ const floors=ui('allFloors');for(const b of floors.querySelectorAll('[data-floor]'))b.style.setProperty('--floor-number',b.dataset.floor);const activeFloor=floors.querySelector('[data-floor="'+mapUI.floor+'"]');if(activeFloor&&(floors.dataset.visibleFloor!==String(mapUI.floor)||floors.dataset.layoutHeight!==String(rail.height))){floors.dataset.visibleFloor=mapUI.floor;floors.dataset.layoutHeight=rail.height;const f=activeFloor.getBoundingClientRect(),r=floors.getBoundingClientRect();if(f.top<r.top)floors.scrollTop+=f.top-r.top;else if(f.bottom>r.bottom)floors.scrollTop+=f.bottom-r.bottom;}document.documentElement.style.setProperty('--visitor-floor-height',rail.height+'px');
 }
 function syncVisitorVisualViewport(){
  const viewport=window.visualViewport,height=viewport&&Math.abs(viewport.scale-1)<.02?viewport.height:window.innerHeight;

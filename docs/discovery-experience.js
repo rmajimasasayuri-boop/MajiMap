@@ -40,7 +40,7 @@ function chooseSearchCurrentPlace(){
 function initSearchChoices(){
  const box=document.createElement('section');box.id='searchChoices';box.className='search-choices';box.setAttribute('aria-label','場所の選び方');box.innerHTML='<div class="search-choice-buttons"><button id="searchCurrentPlace">◎ 現在地</button><button id="searchMapPoint">地図上で選択</button><button id="searchCandidateList">候補から選択</button></div><div class="recent-heading">履歴</div><div id="recentPlaces" class="recent-places"></div><small id="recentEmpty">まだ履歴はありません</small>';ui('settings').querySelector('.destination-card').prepend(box);
  ui('searchCurrentPlace').onclick=chooseSearchCurrentPlace;
- ui('searchMapPoint').onclick=()=>{if(mapUI.pickMode==='start')mapUI.selectingStartOnMap=true;ui('findPlace').blur();togglePlacePanel(false);ui('facilityDetails').hidden=true;ui('mapMessage').dataset.important='true';ui('mapMessage').textContent=(mapUI.pickMode==='start'?'出発地':'目的地')+'にする施設や通路を地図上で選んでください。';};
+ ui('searchMapPoint').onclick=()=>{if(mapUI.pickMode==='start')mapUI.selectingStartOnMap=true;ui('findPlace').blur();togglePlacePanel(false);ui('facilityDetails').hidden=true;ui('mapMessage').dataset.important='true';ui('mapMessage').textContent=(mapUI.addingWaypoint?'経由地':mapUI.pickMode==='start'?'出発地':'目的地')+'にする施設や通路を地図上で選んでください。';};
  ui('searchCandidateList').onclick=()=>{setPlaceSearchView('browse');ui('findPlace').blur();ui('findPlace').value='';mapUI.filter='all';document.querySelectorAll('[data-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.filter==='all')));renderResults();requestAnimationFrame(()=>jumpToCandidateFloor(3));};
  const select=selectPlace,start=selectStartPlace;selectPlace=function(d,...args){rememberPlace(d);return select(d,...args);};selectStartPlace=function(d,...args){if(!isGuideOnly(d))rememberPlace(d);return start(d,...args);};
  const input=ui('findPlace');let saved=0,lockingFrame=0;
@@ -55,7 +55,7 @@ function activateIndexedFloor(floor){if(!document.querySelector('main').classLis
 function fitFloorRail(){if(reviewEmbedded)return;document.documentElement.style.setProperty('--floor-rail-height','320px');}
 function initFloorSlide(){
  const floors=ui('allFloors');let pointer=null,last=null;
- const move=e=>{for(const b of floors.querySelectorAll('[data-floor]')){const r=b.getBoundingClientRect();if(e.clientY>=r.top&&e.clientY<=r.bottom&&!b.disabled){const f=Number(b.dataset.floor);if(f!==last){last=f;activateIndexedFloor(f);}return;}}};
+ const move=e=>{for(const b of floors.querySelectorAll('[data-floor]')){const r=b.getBoundingClientRect();if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom&&!b.disabled){const f=Number(b.dataset.floor);if(f!==last){last=f;activateIndexedFloor(f);}return;}}};
  floors.addEventListener('pointerdown',e=>{if(e.button!==0||floors.scrollHeight>floors.clientHeight+1)return;e.stopPropagation();e.preventDefault();pointer=e.pointerId;last=null;floors.setPointerCapture(e.pointerId);move(e);},{capture:true});
  floors.addEventListener('pointermove',e=>{if(e.pointerId!==pointer)return;e.stopPropagation();e.preventDefault();move(e);});
  for(const name of ['pointerup','pointercancel'])floors.addEventListener(name,e=>{if(e.pointerId!==pointer)return;e.stopPropagation();if(floors.hasPointerCapture(pointer))floors.releasePointerCapture(pointer);pointer=null;last=null;});

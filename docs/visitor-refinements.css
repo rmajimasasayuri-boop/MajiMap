@@ -1,5 +1,5 @@
 /* Base size is a design choice, not a universal age-based threshold. */
-html{font-size:max(18px,112.5%)}
+html{font-size:max(16px,100%)}
 body.visitor-experience:not(#original-type):not(#small-type):not(#tiny-type) :is(button,input,select,summary,a,p,small,output,span,strong,label,li){font-size:1rem!important;line-height:1.45}
 body.visitor-experience:not(#original-type):not(#small-type):not(#tiny-type) :is(h2,h3){font-size:1.225rem!important;line-height:1.4}
 body.visitor-experience button,body.visitor-experience a{min-height:44px}
@@ -175,3 +175,33 @@ body.visitor-experience.place-searching[data-search-view=results] #equipmentKind
 body.visitor-experience #facilityDetails#facilityDetails{z-index:16!important}
 body.visitor-experience:not(#original-type):not(#small-type):not(#tiny-type) #closeRoutePlanning,body.visitor-experience:not(#original-type):not(#small-type):not(#tiny-type) #openPlaceSearch.search-back{font-size:36px!important;line-height:1!important}
 body.visitor-experience .map-navigation-rail #allFloors#allFloors button{height:32px!important;min-height:32px!important;max-height:32px!important;flex:0 0 32px!important}
+
+/* Compact copy preserves the map; touch targets stay generous. */
+body.visitor-experience .place-row{min-height:76px!important;padding:7px 5px!important}
+body.visitor-experience .place-result-photo{width:68px;height:54px}
+body.visitor-experience .route-place-field{min-height:48px!important;padding:6px 8px!important}
+body.visitor-experience .route-via-row{min-height:48px;padding-top:0;padding-bottom:0}
+body.visitor-experience .search-choice-buttons button{min-height:48px!important;padding:5px 2px!important}
+body.visitor-experience .recent-places button,body.visitor-experience .favorite-place-row button:first-child{min-height:48px!important;padding:8px 6px!important}
+/* Fixed boxes must not collapse when the search or keyboard uses space. */
+body.visitor-experience .map-navigation-rail #allFloors#allFloors button{height:36px!important;min-height:36px!important;max-height:36px!important;flex:0 0 36px!important;line-height:1.2!important;white-space:nowrap}
+
+/* A dedicated single column keeps every floor visible without scrolling. */
+body.visitor-experience .map-navigation-rail{top:calc(8px + var(--visitor-safe-top))!important;width:58px!important}
+body.visitor-experience.place-searching .map-navigation-rail{top:calc(72px + var(--visitor-safe-top))!important}
+body.visitor-experience .map-navigation-rail .floor-toolbar{width:56px!important}
+body.visitor-experience .map-navigation-rail #allFloors#allFloors{height:320px!important;min-height:320px!important;max-height:320px!important;grid-template-columns:1fr!important;grid-template-rows:repeat(10,32px)!important;overflow:hidden!important}
+body.visitor-experience .map-navigation-rail #allFloors#allFloors button{height:32px!important;min-height:32px!important;max-height:32px!important;flex:none!important;line-height:1.2!important}
+body.visitor-experience .map-search-bar,body.visitor-experience #routePlanner{width:min(520px,calc(100% - 84px - var(--visitor-safe-left) - var(--visitor-safe-right)))!important}
+body.visitor-experience #facilityDetails#facilityDetails{width:min(520px,calc(100% - 76px - var(--visitor-safe-right)))!important}
+@media(max-height:520px){
+ body.visitor-experience .map-navigation-rail .view-switch{position:absolute!important;top:0!important;right:64px!important}
+ body.visitor-experience #visitorMapHome{position:absolute!important;top:64px!important;right:64px!important}
+ body.visitor-experience #routePlanner,body.visitor-experience .map-search-bar{width:min(520px,calc(100% - 148px - var(--visitor-safe-left) - var(--visitor-safe-right)))!important}
+ body.visitor-experience.place-searching .map-navigation-rail{top:calc(8px + var(--visitor-safe-top))!important}
+}
+
+body.visitor-experience .map-navigation-rail #allFloors button{order:calc(10 - var(--floor-number));width:100%;touch-action:none!important}
+body.visitor-experience.route-planning .map-navigation-rail{top:calc(8px + var(--visitor-safe-top))!important}
+body.visitor-experience.route-planning.place-searching .map-navigation-rail{top:calc(72px + var(--visitor-safe-top))!important}
+@media(max-height:520px){body.visitor-experience.route-planning.place-searching .map-navigation-rail{top:calc(8px + var(--visitor-safe-top))!important}}
