@@ -48,7 +48,7 @@ function initVisitorFavorites(){
  const section=document.createElement('section');section.className='favorite-section';section.innerHTML='<h3>お気に入り</h3><p id="favoriteStatus" role="status">よく行く外来や病棟を保存し、出発地・目的地に選べます。</p><div id="favoritePlaces"></div><p id="favoriteEmpty">施設の写真カードの☆から登録できます。</p>';ui('searchChoices').append(section);
  const b=document.createElement('button');b.id='favoritePlaceButton';b.className='favorite-place-button';b.onclick=()=>toggleVisitorFavorite();ui('facilityDetails').querySelector('.facility-detail-body').append(b);updateVisitorFavorites();
 }
-function visitorSafeArea(){const c=getComputedStyle(document.documentElement);return Object.fromEntries(['top','bottom','left','right'].map(side=>[side,parseFloat(c.getPropertyValue('--visitor-safe-'+side))||0]));}
+function visitorSafeArea(){const c=getComputedStyle(document.documentElement);return Object.fromEntries(['top','bottom','left','right'].map(side=>[side,(parseFloat(c.getPropertyValue('--visitor-safe-'+side))||0)+8]));}
 function visitorRailLayout({height,top,bottom,wide}){
  const available=Math.max(0,height-top-bottom),compact=wide||available<440;return {compact,height:Math.max(180,Math.min(320,available-(compact?10:132)))};
 }
