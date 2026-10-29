@@ -2,7 +2,7 @@
 function syncSearchControls(){
  if(reviewEmbedded)return;const searching=!document.querySelector('main').classList.contains('settings-hidden'),button=ui('openPlaceSearch');
  button.textContent=searching?'‹':'⌕';button.setAttribute('aria-label',searching?'マップへ戻る':'検索候補を開く');button.classList.toggle('search-back',searching);
- ui('clearPlaceSearch').hidden=!ui('findPlace').value;
+ ui('clearPlaceSearch').hidden=!ui('findPlace').value;if(typeof syncDiscoveryFloors==='function')syncDiscoveryFloors();
 }
 function swapRoutePlaces(){
  if(!mapUI.goal||!mapUI.startConfirmed)return;
