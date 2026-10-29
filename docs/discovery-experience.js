@@ -6,6 +6,10 @@ function routeProximityFor(matches){
  for(const d of matches){let best=Infinity;if(d.nearestEligible!==false&&!isGuideOnly(d))for(const start of starts){const end=navigationTargetReference(d),via3F=routeNeeds3F(graph,start,end),key=start+'|'+via3F;let tree=trees.get(key);if(!tree){tree=auditedRouteTree(graph,start,via3F);trees.set(key,tree);}best=Math.min(best,tree.labels.get(end)?.cost??Infinity);}scores.set(d.ref,best);}return scores;
 }
 let searchFocusLock=false;
+let placeSearchView='home';
+function setPlaceSearchView(view){placeSearchView=view;document.body.dataset.searchView=view;fitFloorRail();}
+function beginPlaceSearch(){ui('findPlace').value='';mapUI.filter='all';mapUI.resultFloor=null;document.querySelectorAll('[data-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.filter==='all')));setPlaceSearchView('home');renderResults();updateSearchChoices();}
+
 let candidateIndexOpen=false,candidateIndexFrame=0,candidateIndexSignature='';
 function jumpToCandidateFloor(floor){
  const list=ui('placeResults'),heading=list.querySelector('.result-floor-heading[data-floor="'+floor+'"]'),row=heading||[...list.querySelectorAll('.place-row')].find(b=>b.dataset.floor===String(floor));
@@ -37,12 +41,12 @@ function initSearchChoices(){
  const box=document.createElement('section');box.id='searchChoices';box.className='search-choices';box.setAttribute('aria-label','場所の選び方');box.innerHTML='<div class="search-choice-buttons"><button id="searchCurrentPlace">◎ 現在地</button><button id="searchMapPoint">地図上で選択</button><button id="searchCandidateList">候補から選択</button></div><div class="recent-heading">履歴</div><div id="recentPlaces" class="recent-places"></div><small id="recentEmpty">まだ履歴はありません</small>';ui('settings').querySelector('.destination-card').prepend(box);
  ui('searchCurrentPlace').onclick=chooseSearchCurrentPlace;
  ui('searchMapPoint').onclick=()=>{ui('findPlace').blur();togglePlacePanel(false);ui('facilityDetails').hidden=true;ui('mapMessage').dataset.important='true';ui('mapMessage').textContent=(mapUI.pickMode==='start'?'出発地':'目的地')+'にする施設や通路を地図上で選んでください。';};
- ui('searchCandidateList').onclick=()=>{ui('findPlace').blur();ui('findPlace').value='';mapUI.filter='all';document.querySelectorAll('[data-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.filter==='all')));renderResults();requestAnimationFrame(()=>jumpToCandidateFloor(3));};
+ ui('searchCandidateList').onclick=()=>{setPlaceSearchView('browse');ui('findPlace').blur();ui('findPlace').value='';mapUI.filter='all';document.querySelectorAll('[data-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.filter==='all')));renderResults();requestAnimationFrame(()=>jumpToCandidateFloor(3));};
  const select=selectPlace,start=selectStartPlace;selectPlace=function(d,...args){rememberPlace(d);return select(d,...args);};selectStartPlace=function(d,...args){if(!isGuideOnly(d))rememberPlace(d);return start(d,...args);};
  const input=ui('findPlace');let saved=0,lockingFrame=0;
  input.addEventListener('pointerdown',()=>{saved=ui('placeResults').scrollTop;},{capture:true});
  input.addEventListener('focus',()=>{searchFocusLock=true;cancelAnimationFrame(candidateIndexFrame);cancelAnimationFrame(lockingFrame);lockingFrame=requestAnimationFrame(()=>{ui('placeResults').scrollTop=saved;window.scrollTo(0,0);lockingFrame=requestAnimationFrame(()=>{searchFocusLock=false;candidateIndexOpen=true;candidateIndexSignature=input.value.trim()+'|'+mapUI.filter;});});});
- input.addEventListener('input',()=>{searchFocusLock=false;});updateSearchChoices();
+ input.addEventListener('input',()=>{searchFocusLock=false;setPlaceSearchView(input.value.trim()?'results':'home');});updateSearchChoices();
 }
 function activateIndexedFloor(floor){if(!document.querySelector('main').classList.contains('settings-hidden'))jumpToCandidateFloor(floor);else if(mapUI.floor!==floor)showFloor(floor);}
 function fitFloorRail(){if(reviewEmbedded)return;requestAnimationFrame(()=>{const floors=ui('allFloors'),top=floors.getBoundingClientRect().top,height=window.visualViewport?.height||window.innerHeight;document.documentElement.style.setProperty('--floor-rail-height',Math.max(80,Math.min(340,height-top-24))+'px');});}
@@ -57,8 +61,8 @@ function initFloorSlide(){
 function initDiscoveryExperience(){
  if(reviewEmbedded)return;
  const rail=document.createElement('nav');rail.className='map-navigation-rail';rail.setAttribute('aria-label','地図の表示と階選択');rail.append(document.querySelector('.view-switch'),document.querySelector('.floor-toolbar'));ui('mapViewport').append(rail);
- initFloorSlide();initSearchChoices();
- const equipment=ui('nearbyEquipmentBar');equipment.className='candidate-equipment';for(const b of [...equipment.querySelectorAll('button')]){const copy=b.cloneNode(true);b.replaceWith(copy);copy.onclick=()=>{mapUI.filter='all';mapUI.resultFloor=null;ui('findPlace').value=({payment:'自動支払機',parking:'駐車場精算機',vending:'自動販売機',aed:'AED',phone:'公衆電話',baby:'ベビールーム',scale:'身長 体重'})[copy.dataset.nearbyCategory]||'トイレ';document.querySelectorAll('[data-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.filter==='all')));renderResults();syncSearchControls();};}ui('placeResults').before(equipment);
+ initFloorSlide();initSearchChoices();setPlaceSearchView('home');
+ const equipment=ui('nearbyEquipmentBar');equipment.className='candidate-equipment';for(const b of [...equipment.querySelectorAll('button')]){const copy=b.cloneNode(true);b.replaceWith(copy);copy.onclick=()=>{setPlaceSearchView('results');mapUI.filter='all';mapUI.resultFloor=null;ui('findPlace').value=({payment:'自動支払機',parking:'駐車場精算機',vending:'自動販売機',aed:'AED',phone:'公衆電話',baby:'ベビールーム',scale:'身長 体重'})[copy.dataset.nearbyCategory]||'トイレ';document.querySelectorAll('[data-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.filter==='all')));renderResults();syncSearchControls();};}ui('placeResults').before(equipment);
  const hours=document.createElement('div');hours.id='facilityHours';hours.className='facility-hours';hours.hidden=true;ui('facilityDetails').querySelector('.facility-detail-body').append(hours);
  for(const b of document.querySelectorAll('[data-filter]'))b.addEventListener('click',syncDiscoveryFloors);
  window.addEventListener('maji-map-update',()=>{scheduleCandidateIndex();syncDiscoveryFloors();updateFacilityHours(destinationPhotoState.place);updateSearchChoices();fitFloorRail();});
