@@ -68,3 +68,16 @@ body.visitor-experience.navigation-active .navigation-transfer-status{font-size:
  body.route-planning .view-switch{top:252px!important;bottom:auto!important;right:8px!important}
  body.route-planning .map-3d-controls{top:310px!important}
 }
+
+/* Gesture-first public map: remove duplicate controls on every screen. */
+body.visitor-experience #maximizeMap,body.visitor-experience .zoom-tools,body.visitor-experience #map3DZoomIn,body.visitor-experience #map3DZoomOut,body.visitor-experience #detailStart{display:none!important}
+body.visitor-experience #detailWebsite{border:1px solid #abc3ce!important;background:#fff!important;color:#176f68;box-sizing:border-box}
+body.visitor-experience .view-switch{padding:5px!important;border-radius:50%!important;width:52px;height:52px;display:flex;align-items:center;justify-content:center}
+body.visitor-experience #toggleMapView{width:42px;height:42px;min-width:42px;border:0;border-radius:50%;padding:0;background:#fff;color:#176f68;font-size:13px;font-weight:700}
+body.visitor-experience #toggleMapView:focus-visible{outline:2px solid #2580c5;outline-offset:2px}
+
+body.visitor-experience #wardFocus,body.visitor-experience #map3DFocusFloors{display:none!important}
+@media(max-width:700px){
+ body.visitor-experience:not(.navigation-active):not(.route-planning) .view-switch{top:174px!important;bottom:auto!important;right:8px!important}
+ body.visitor-experience:not(.navigation-active):not(.route-planning) .map-3d-controls{top:236px!important}
+}

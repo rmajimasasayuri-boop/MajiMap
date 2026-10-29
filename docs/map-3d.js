@@ -9,7 +9,7 @@
   const status=el('map3DStatus');
   const scope='route';
   let mode='2d', interaction='move', library, viewer, pending=0, revision=0;
-  const buttons=[el('view2D'),el('view3D')];
+  const toggle=el('toggleMapView');
   function loadScript(src) {
     return new Promise((resolve,reject)=>{
       const s=document.createElement('script');s.src=src;
@@ -62,7 +62,7 @@
     if(next==='3d'&&(corridorEditor.active||arrowEditor.active))return;
     mode=next;revision++;
     document.body.classList.toggle('view-3d',mode==='3d');
-    for(const b of buttons)b.setAttribute('aria-pressed',String(b.dataset.view===mode));
+    toggle.textContent=mode==='3d'?'2D':'3D';toggle.setAttribute('aria-label',mode==='3d'?'2Dマップに切り替える':'3Dマップに切り替える');toggle.dataset.currentView=mode;
     el('mapSheet').hidden=mode==='3d';host.hidden=mode!=='3d';
     el('map3DControls').hidden=mode!=='3d';
     el('map3DRetry').hidden=true;
@@ -70,7 +70,7 @@
     if(mode==='3d') {status.textContent='3Dマップを準備しています…';queueUpdate();}
     else {cancelAnimationFrame(pending);if(viewer){viewer.dispose();viewer=null;}fitMap();}
   }
-  buttons.forEach(b=>b.onclick=()=>setMode(b.dataset.view));
+  toggle.onclick=()=>setMode(mode==='2d'?'3d':'2d');
   for(const b of document.querySelectorAll('[data-3d-mode]'))b.onclick=()=>{interaction=b.dataset['3dMode'];for(const item of document.querySelectorAll('[data-3d-mode]'))item.setAttribute('aria-pressed',String(item===b));viewer?.setInteraction(interaction);el('map3DGestureHint').textContent=interaction==='move'?'1本指で移動 · 2本指で拡大・回転':'マウスで回転 · 指は1本で移動／2本で拡大・回転';};
   for(const [id,x,y]of [['Left',-1,0],['Right',1,0],['Up',0,1],['Down',0,-1]])el('map3DPan'+id).onclick=()=>viewer?.pan(x,y);
   el('map3DRotateLeft').onclick=()=>viewer?.rotate(-1);
