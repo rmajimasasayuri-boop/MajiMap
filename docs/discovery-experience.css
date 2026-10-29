@@ -57,3 +57,36 @@ body.visitor-experience.navigation-active .navigation-panel{bottom:calc(24px + e
 
 .nearest-place-badge{display:inline-block;background:#08766b;color:#fff;font-size:13px;font-weight:800;padding:3px 10px;border-radius:20px;align-self:flex-start;margin-bottom:4px}.place-row.nearest-place{border:2px solid #08766b!important;background:#effaf6!important}.place-row-copy{display:flex;flex-direction:column;align-items:flex-start}.result-floor-heading{scroll-margin-top:0}
 body.visitor-experience .result-floor-heading{position:static!important}
+
+/* One floor index fits the available viewport without its own scrollbar. */
+body.visitor-experience .map-navigation-rail #allFloors{display:flex!important;flex-direction:column-reverse!important;height:var(--floor-rail-height,300px)!important;max-height:none!important;min-height:0;overflow:hidden!important;gap:0!important;touch-action:none;user-select:none}
+body.visitor-experience .map-navigation-rail #allFloors button{flex:1 1 0!important;min-height:0!important;height:auto!important;line-height:1!important;padding:0 1px!important;font-size:11px;display:flex;align-items:center;justify-content:center;touch-action:none;user-select:none}
+body.visitor-experience #allSearchFloors{display:none!important}
+body.visitor-experience #chooseCurrentMapPoint{display:none!important}
+body.visitor-experience #routePlanner{padding:7px 40px 8px 9px!important}
+body.visitor-experience .route-planning-header{margin-bottom:4px;gap:4px;white-space:nowrap}
+body.visitor-experience .route-planning-header .route-travel-tabs{display:flex;gap:3px;margin:0 0 0 auto!important;padding:0!important;border:0}
+body.visitor-experience .route-planning-header .route-travel-tabs button{display:flex;align-items:center;justify-content:center;gap:3px;border:0;border-radius:20px;font-size:10px!important;line-height:1.2;padding:5px 6px!important;white-space:nowrap}
+body.visitor-experience .route-planning-header .walking-pict,body.visitor-experience .route-planning-header .official-wheelchair-icon{width:16px!important;height:16px!important}
+body.visitor-experience .route-place-field{min-height:38px!important;padding:6px 8px!important;margin-bottom:5px!important}
+body.visitor-experience .route-place-field small{font-size:9px!important}
+body.visitor-experience .route-place-field strong{font-size:12px!important}
+body.visitor-experience .swap-route-places{top:66px!important;right:5px}
+body.visitor-experience.route-planning .map-navigation-rail{top:166px!important}
+body.visitor-experience.route-planning .map-3d-controls{top:168px!important}
+body.visitor-experience .search-choices{flex:none;margin:0 0 5px}
+.search-choice-buttons{display:flex;gap:4px}
+.search-choice-buttons button{flex:1;padding:7px 3px;border:1px solid #d6e3e7;border-radius:18px;font-size:11px;color:#176f68;background:#fff;white-space:nowrap}
+.recent-heading{font-size:10px;font-weight:bold;color:#536d79;margin:7px 0 3px}
+.recent-places{display:flex;gap:4px;overflow:auto;max-width:100%;scrollbar-width:none;touch-action:pan-x}
+.recent-places button{flex:none;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border:0;border-radius:12px;background:#edf4f6;color:#46646d;font-size:10px;padding:5px 8px}
+#recentEmpty{font-size:10px;color:#81949e}
+body.visitor-experience #settings .filters{gap:3px!important;margin:2px 0!important}
+body.visitor-experience #settings .filters button{font-size:9px!important;padding:4px!important}
+body.visitor-experience .candidate-equipment{gap:3px;margin:3px 0 4px}
+body.visitor-experience .candidate-equipment .equipment-chip{min-height:25px;font-size:9px;padding:3px 5px;gap:3px}
+body.visitor-experience .candidate-equipment .facility-pict{width:15px;height:15px}
+body.visitor-experience #resultCount{margin:2px 0!important;font-size:10px}
+body.visitor-experience.place-searching .map-navigation-rail{top:72px!important}
+body.visitor-experience .map-search-bar input{font-size:16px!important;scroll-margin:0}
+body.visitor-experience.place-searching #settings{overflow-anchor:none}
