@@ -140,3 +140,12 @@ body.visitor-experience .popular-places small{font-size:11px;color:#6b828c}
  body.visitor-experience:not(.navigation-active) .map-navigation-rail .floor-toolbar{margin:0!important}
 }
 body.visitor-experience .map-navigation-rail #allFloors#allFloors{gap:0!important}
+
+/* Three equal entry choices, followed immediately by history. */
+body.visitor-experience .search-choice-buttons{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px}
+body.visitor-experience .search-choice-buttons button,body.visitor-experience #searchCandidateList{grid-column:auto!important;min-height:48px!important;font-size:12px!important;padding:8px 3px!important;font-weight:500}
+body.visitor-experience .search-choice-buttons #searchCandidateList{font-weight:700}
+body.visitor-experience #settings .filters{display:flex;flex-wrap:wrap;gap:5px!important;padding:4px 0!important;margin:2px 0 6px!important}
+body.visitor-experience #settings .filters button{font-size:11px!important;min-height:34px;padding:7px 9px!important;border-radius:18px}
+body.visitor-experience.place-searching[data-search-view=results] #settings .filters,body.visitor-experience.place-searching[data-search-view=home] #settings .filters{display:none!important}
+body.visitor-experience .route-options-dock #chooseCurrentMapPoint[hidden]{display:none!important}

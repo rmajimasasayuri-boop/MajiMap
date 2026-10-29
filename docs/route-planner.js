@@ -11,6 +11,6 @@ function initRoutePlanner(){
  for(const b of document.querySelectorAll('[data-travel-choice]'))b.onclick=()=>{ui('travelChoice').value=b.dataset.travelChoice;ui('travelChoice').onchange();updateRoutePlanner();};
  ui('routeStartField').onclick=()=>{setSelectionMode('start');ui('findPlace').value='';renderResults();togglePlacePanel(true,true);};
  ui('routeGoalField').onclick=()=>{setSelectionMode('goal');togglePlacePanel(true,true);};
- ui('chooseCurrentMapPoint').onclick=()=>{setSelectionMode('start');togglePlacePanel(false);ui('facilityDetails').hidden=true;ui('mapMessage').dataset.important='true';ui('mapMessage').textContent='現在いる場所に近い、登録済み通路または施設名を押してください。青い点が出発地になります。';};
+ ui('chooseCurrentMapPoint').onclick=()=>{mapUI.selectingStartOnMap=true;setSelectionMode('start');togglePlacePanel(false);ui('facilityDetails').hidden=true;ui('mapMessage').dataset.important='true';ui('mapMessage').textContent='現在いる場所に近い、登録済み通路または施設名を押してください。青い点が出発地になります。';};
  window.addEventListener('maji-map-update',updateRoutePlanner);
 }
