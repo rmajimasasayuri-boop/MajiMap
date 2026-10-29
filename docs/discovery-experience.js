@@ -1,4 +1,4 @@
-function resultCategoryMatches(d){return mapUI.filter==='all'||d.type===mapUI.filter||mapUI.filter==='equipment'&&d.type==='toilet'||mapUI.filter==='service'&&['reception','entrance'].includes(d.type)||mapUI.filter==='ward'&&d.type==='rehab';}
+function resultCategoryMatches(d){if(mapUI.filter==='food')return ['services::restaurant','services::cafe'].includes(d.ref);if(mapUI.filter==='shopping')return ['services::seven','services::green','services::cosmetics','services::glasses','services::hair'].includes(d.ref);return mapUI.filter==='all'||d.type===mapUI.filter||mapUI.filter==='equipment'&&d.type==='toilet'||mapUI.filter==='service'&&['reception','entrance'].includes(d.type)||mapUI.filter==='ward'&&d.type==='rehab';}
 function routeProximityFor(matches){
  const scores=new Map();if(!mapUI.startConfirmed||mapUI.pickMode==='start'||!matches.length||!matches.every(d=>['toilet','equipment'].includes(d.type)))return scores;
  const categories=new Set(matches.map(d=>d.type==='toilet'?'toilet':d.category));if(categories.size!==1)return scores;
@@ -38,18 +38,22 @@ function chooseSearchCurrentPlace(){
  else{const d=destinationList.find(p=>navigationTargetReference(p)===mapUI.from||p.ref===mapUI.from);if(d)selectPlace(d);else{togglePlacePanel(false);showFloor(referenceFloor(mapUI.from));}}
 }
 function initSearchChoices(){
- const box=document.createElement('section');box.id='searchChoices';box.className='search-choices';box.setAttribute('aria-label','場所の選び方');box.innerHTML='<div class="search-choice-buttons"><button id="searchCurrentPlace">◎ 現在地</button><button id="searchMapPoint">地図上で選択</button><button id="searchCandidateList">候補から選択</button></div><div class="recent-heading">履歴</div><div id="recentPlaces" class="recent-places"></div><small id="recentEmpty">まだ履歴はありません</small>';ui('settings').querySelector('.destination-card').prepend(box);
+ const box=document.createElement('section');box.id='searchChoices';box.className='search-choices';box.setAttribute('aria-label','場所の選び方');box.innerHTML='<div class="search-choice-buttons"><button id="searchCurrentPlace">◎ 現在地</button><button id="searchMapPoint">地図上で選択</button><button id="searchCandidateList">すべての候補</button></div><div id="popularPlaces" class="popular-places" aria-label="よく探す場所"></div><div class="recent-heading">履歴</div><div id="recentPlaces" class="recent-places"></div><small id="recentEmpty">まだ履歴はありません</small>';ui('settings').querySelector('.destination-card').prepend(box);
+ for(const [value,label,detail]of [['hospital:3::generalReception','総合受付','3階'],['food','食事・カフェ','レストラン・喫茶'],['shopping','売店・買い物','コンビニ・医療用品など'],['equipment','トイレ・設備','支払機・自販機など']]){const b=document.createElement('button'),name=document.createElement('strong'),sub=document.createElement('small');name.textContent=label;sub.textContent=detail;b.append(name,sub);b.onclick=()=>{ui('findPlace').blur();const d=destinationList.find(p=>p.ref===value);if(d){selectPlace(d);return;}ui('findPlace').value='';mapUI.filter=value;mapUI.resultFloor=null;preferredCandidateFloor=null;document.querySelectorAll('[data-filter]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.filter===value)));setPlaceSearchView('browse');renderResults();};ui('popularPlaces').append(b);}
  ui('searchCurrentPlace').onclick=chooseSearchCurrentPlace;
  ui('searchMapPoint').onclick=()=>{ui('findPlace').blur();togglePlacePanel(false);ui('facilityDetails').hidden=true;ui('mapMessage').dataset.important='true';ui('mapMessage').textContent=(mapUI.pickMode==='start'?'出発地':'目的地')+'にする施設や通路を地図上で選んでください。';};
  ui('searchCandidateList').onclick=()=>{setPlaceSearchView('browse');ui('findPlace').blur();ui('findPlace').value='';mapUI.filter='all';document.querySelectorAll('[data-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.filter==='all')));renderResults();requestAnimationFrame(()=>jumpToCandidateFloor(3));};
  const select=selectPlace,start=selectStartPlace;selectPlace=function(d,...args){rememberPlace(d);return select(d,...args);};selectStartPlace=function(d,...args){if(!isGuideOnly(d))rememberPlace(d);return start(d,...args);};
  const input=ui('findPlace');let saved=0,lockingFrame=0;
  input.addEventListener('pointerdown',()=>{saved=ui('placeResults').scrollTop;},{capture:true});
- input.addEventListener('focus',()=>{searchFocusLock=true;cancelAnimationFrame(candidateIndexFrame);cancelAnimationFrame(lockingFrame);lockingFrame=requestAnimationFrame(()=>{ui('placeResults').scrollTop=saved;window.scrollTo(0,0);lockingFrame=requestAnimationFrame(()=>{searchFocusLock=false;candidateIndexOpen=true;candidateIndexSignature=input.value.trim()+'|'+mapUI.filter;});});});
+ input.addEventListener('focus',()=>{document.body.classList.add('search-input-active');searchFocusLock=true;cancelAnimationFrame(candidateIndexFrame);cancelAnimationFrame(lockingFrame);lockingFrame=requestAnimationFrame(()=>{ui('placeResults').scrollTop=saved;window.scrollTo(0,0);lockingFrame=requestAnimationFrame(()=>{searchFocusLock=false;candidateIndexOpen=true;candidateIndexSignature=input.value.trim()+'|'+mapUI.filter;});});});
+ input.addEventListener('blur',()=>document.body.classList.remove('search-input-active'));
+ input.setAttribute('enterkeyhint','search');input.setAttribute('autocomplete','off');
+ input.addEventListener('keydown',e=>{if(e.key!=='Enter'||e.isComposing||e.keyCode===229)return;e.preventDefault();setPlaceSearchView(input.value.trim()?'results':'home');input.blur();});
  input.addEventListener('input',()=>{searchFocusLock=false;setPlaceSearchView(input.value.trim()?'results':'home');});updateSearchChoices();
 }
 function activateIndexedFloor(floor){if(!document.querySelector('main').classList.contains('settings-hidden')){preferredCandidateFloor=floor;jumpToCandidateFloor(floor);}else if(mapUI.floor!==floor)showFloor(floor);}
-function fitFloorRail(){if(reviewEmbedded)return;requestAnimationFrame(()=>{const floors=ui('allFloors'),top=floors.getBoundingClientRect().top,height=window.visualViewport?.height||window.innerHeight;document.documentElement.style.setProperty('--floor-rail-height',Math.max(80,Math.min(340,height-top-24))+'px');});}
+function fitFloorRail(){if(reviewEmbedded)return;document.documentElement.style.setProperty('--floor-rail-height','300px');}
 function initFloorSlide(){
  const floors=ui('allFloors');let pointer=null,last=null;
  const move=e=>{for(const b of floors.querySelectorAll('[data-floor]')){const r=b.getBoundingClientRect();if(e.clientY>=r.top&&e.clientY<=r.bottom&&!b.disabled){const f=Number(b.dataset.floor);if(f!==last){last=f;activateIndexedFloor(f);}return;}}};
@@ -67,7 +71,7 @@ function initDiscoveryExperience(){
  for(const b of document.querySelectorAll('[data-filter]'))b.addEventListener('click',syncDiscoveryFloors);
  window.addEventListener('maji-map-update',()=>{scheduleCandidateIndex();syncDiscoveryFloors();updateFacilityHours(destinationPhotoState.place);updateSearchChoices();fitFloorRail();});
  ui('placeResults').addEventListener('scroll',()=>{if(document.querySelector('main').classList.contains('settings-hidden'))return;const list=ui('placeResults'),top=list.getBoundingClientRect().top;let active=null;for(const h of list.querySelectorAll('.result-floor-heading')){if(h.getBoundingClientRect().top<=top+8)active=Number(h.dataset.floor);else break;}if(active&&active!==mapUI.resultFloor){mapUI.resultFloor=active;syncDiscoveryFloors();}},{passive:true});
- window.addEventListener('resize',fitFloorRail);window.visualViewport?.addEventListener('resize',fitFloorRail);requestAnimationFrame(fitFloorRail);
+ fitFloorRail();
  setInterval(()=>updateFacilityHours(destinationPhotoState.place),60000);updateFacilityHours(destinationPhotoState.place);syncDiscoveryFloors();
 }
 initDiscoveryExperience();
