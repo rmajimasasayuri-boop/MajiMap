@@ -3,7 +3,7 @@ function closeVisitorPreview(){mapUI.previewPlace=null;document.body.classList.r
 function showVisitorPreview(d){
  mapUI.previewPlace=d;renderPlacePhoto(d);document.body.classList.add('place-preview-open');ui('facilityDetails').hidden=false;updatePreviewActions();renderOverlay();
 }
-function previewOffersWaypoint(d){return Boolean(d&&mapUI.goal&&d.ref!==mapUI.goal.ref);}
+function previewOffersWaypoint(d){return Boolean(mapUI.addingWaypoint&&d&&mapUI.goal&&d.ref!==mapUI.goal.ref);}
 function updatePreviewActions(){
  const d=destinationPhotoState.place,b=ui('detailNavigate'),via=previewOffersWaypoint(d);b.textContent=via?'経由地を追加':'ナビ開始';b.disabled=!d||isGuideOnly(d)||(via&&d.type==='manual');b.title=via?'この場所を通る経路に変更します':'';
  ui('facilityDetails').dataset.previewAction=via?'waypoint':'navigate';
@@ -14,14 +14,15 @@ function setVisitorWaypoint(d){
 }
 function addVisitorWaypoint(){setVisitorWaypoint(destinationPhotoState.place);}
 function beginWaypointSelection(){
- if(!mapUI.goal)return;mapUI.addingWaypoint=true;setSelectionMode('goal');togglePlacePanel(true,true);ui('findPlace').value='';beginPlaceSearch();ui('findPlace').placeholder='経由地を検索';
+ if(!mapUI.goal)return;if(mapUI.addingWaypoint){mapUI.addingWaypoint=false;syncVisitorRefinements();return;}
+ closeVisitorPreview();mapUI.addingWaypoint=true;setSelectionMode('goal');togglePlacePanel(false);ui('mapMessage').dataset.important='true';ui('mapMessage').textContent='経由地にする施設を地図で選んでください。写真カードの「経由地を追加」で確定します。';syncVisitorRefinements();
 }
 function navigateVisitorPreview(){
  const d=destinationPhotoState.place;if(!d)return;if(previewOffersWaypoint(d)){addVisitorWaypoint();return;}
  closeVisitorPreview();choosePlace(d,true);rememberPlace(d);enterRoutePlanning();if(ensureIndoorStart()&&navigationState.steps.length){navigationFollow=true;startNavigation();syncRoutePanels();}
 }
 function syncVisitorRefinements(){
- updatePreviewActions();
+ updatePreviewActions();const add=ui('routeAddWaypoint');if(add){add.textContent=mapUI.addingWaypoint?'経由地選択中':'経由地を追加';add.setAttribute('aria-pressed',String(Boolean(mapUI.addingWaypoint)));}
  const row=ui('routeViaRow');if(row){row.hidden=!mapUI.waypoint;if(mapUI.waypoint)ui('routeViaLabel').textContent=destinationDisplayName(mapUI.waypoint);}
  ui('chooseCurrentMapPoint').hidden=true;
  requestAnimationFrame(layoutVisitorControls);
@@ -50,7 +51,7 @@ function initVisitorFavorites(){
 }
 function visitorSafeArea(){const c=getComputedStyle(document.documentElement);return Object.fromEntries(['top','bottom','left','right'].map(side=>[side,parseFloat(c.getPropertyValue('--visitor-safe-'+side))||0]));}
 function visitorRailLayout({height,top,bottom,wide}){
- const available=Math.max(0,height-top-bottom);return {compact:false,height:Math.max(96,Math.min(320,available-132))};
+ const available=Math.max(0,height-top-bottom);return {compact:false,height:Math.max(32,Math.min(320,available-132))};
 }
 function layoutVisitorControls(){
  const v=ui('mapViewport'),box=v.getBoundingClientRect(),planner=ui('routePlanner'),p=planner.getBoundingClientRect(),planning=document.body.classList.contains('route-planning'),active=navigationState.active,safe=visitorSafeArea(),wide=box.width>box.height;
@@ -78,7 +79,7 @@ function initVisitorRefinements(){
  ui('openPlaceSearch').addEventListener('click',()=>{if(!document.querySelector('main').classList.contains('settings-hidden'))mapUI.addingWaypoint=false;},true);
  const originalPhoto=renderPlacePhoto;renderPlacePhoto=function(d){originalPhoto(d);updatePreviewActions();updateVisitorFavorites();};
  const originalHide=hidePlacePreview;hidePlacePreview=function(){originalHide();mapUI.previewPlace=null;document.body.classList.remove('place-preview-open');};
- previewPlacePhoto=function(d,anchor,pinned=false){if(!pinned||!d)return;if(mapUI.pickMode==='start'){selectStartPlace(d,true);return;}if(mapUI.addingWaypoint){setVisitorWaypoint(d);return;}showVisitorPreview(d);};
+ previewPlacePhoto=function(d,anchor,pinned=false){if(!pinned||!d)return;if(mapUI.pickMode==='start'){selectStartPlace(d,true);return;}showVisitorPreview(d);};
  const select=selectPlace;selectPlace=function(d,...args){if(mapUI.addingWaypoint){setVisitorWaypoint(d);return;}return select(d,...args);};
  ui('detailRoute').onclick=()=>{const d=destinationPhotoState.place;if(!d)return;closeVisitorPreview();choosePlace(d,true);rememberPlace(d);enterRoutePlanning();};
  ui('detailNavigate').onclick=navigateVisitorPreview;ui('detailWebsite').textContent='ウェブサイト';ui('detailWebsite').setAttribute('aria-label','ウェブサイト');

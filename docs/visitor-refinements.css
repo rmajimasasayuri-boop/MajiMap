@@ -174,3 +174,4 @@ body.visitor-experience .map-navigation-rail .floor-toolbar{flex:none}
 body.visitor-experience.place-searching[data-search-view=results] #equipmentKindField,body.visitor-experience.place-searching[data-search-view=home] #equipmentKindField{display:none!important}
 body.visitor-experience #facilityDetails#facilityDetails{z-index:16!important}
 body.visitor-experience:not(#original-type):not(#small-type):not(#tiny-type) #closeRoutePlanning,body.visitor-experience:not(#original-type):not(#small-type):not(#tiny-type) #openPlaceSearch.search-back{font-size:36px!important;line-height:1!important}
+body.visitor-experience .map-navigation-rail #allFloors#allFloors button{height:32px!important;min-height:32px!important;max-height:32px!important;flex:0 0 32px!important}
