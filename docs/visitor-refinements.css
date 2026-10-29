@@ -1,5 +1,5 @@
 /* Base size is a design choice, not a universal age-based threshold. */
-html{font-size:112.5%}
+html{font-size:max(18px,112.5%)}
 body.visitor-experience:not(#original-type):not(#small-type):not(#tiny-type) :is(button,input,select,summary,a,p,small,output,span,strong,label,li){font-size:1rem!important;line-height:1.45}
 body.visitor-experience:not(#original-type):not(#small-type):not(#tiny-type) :is(h2,h3){font-size:1.225rem!important;line-height:1.4}
 body.visitor-experience button,body.visitor-experience a{min-height:44px}
@@ -68,3 +68,15 @@ body.visitor-experience .maji-attribution{line-height:28px;bottom:0}
 
 body.visitor-experience .equipment-subfilters::before{content:'設備の種類';flex-basis:100%;font-weight:700;font-size:1rem}
 body.visitor-experience .facility-details,body.visitor-experience .route-options-dock,body.visitor-experience.navigation-active .navigation-panel{bottom:calc(36px + env(safe-area-inset-bottom,0px))!important}
+
+body.visitor-experience .favorite-section{margin-top:16px;border-top:1px solid #cbd9df;padding-top:8px}
+body.visitor-experience .favorite-section h3{margin:4px 0}
+body.visitor-experience .favorite-section p{margin:6px 0;color:#46616d}
+body.visitor-experience .favorite-place-row{display:flex;align-items:stretch;border-bottom:1px solid #d8e3e7}
+body.visitor-experience .favorite-place-row button{border:0;border-radius:0;text-align:left;padding:12px 6px;background:white;min-height:54px}
+body.visitor-experience .favorite-place-row button:first-child{flex:1}
+body.visitor-experience .favorite-place-row button:last-child{flex:0 0 48px;text-align:center}
+body.visitor-experience .favorite-place-button{grid-column:1/-1;grid-row:2;min-height:44px;padding:7px 10px;border-radius:10px;color:#176f68;text-align:center;margin:0}
+body.visitor-experience .favorite-place-button[aria-pressed=true]{background:#eaf4ed;border-color:#76aa8a}
+body.visitor-experience .facility-detail-body .facility-detail-actions{grid-row:3!important}
+body.visitor-experience #facilityHours{grid-row:4!important}
