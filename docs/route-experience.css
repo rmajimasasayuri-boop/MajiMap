@@ -81,3 +81,22 @@ body.visitor-experience #wardFocus,body.visitor-experience #map3DFocusFloors{dis
  body.visitor-experience:not(.navigation-active):not(.route-planning) .view-switch{top:174px!important;bottom:auto!important;right:8px!important}
  body.visitor-experience:not(.navigation-active):not(.route-planning) .map-3d-controls{top:236px!important}
 }
+
+/* Larger photo inside the same compact card; reserve the close button separately. */
+body.visitor-experience .facility-heading>small{font-size:10px;color:#6b828c}
+body.visitor-experience #destinationPhotoPreview button span{display:none!important}
+body.visitor-experience .facility-detail-body:has(>.destination-photo-preview:not([hidden])){display:grid;grid-template-columns:128px minmax(0,1fr);grid-template-rows:72px auto;gap:6px 10px;padding:10px 12px 8px}
+body.visitor-experience .facility-detail-body:has(>.destination-photo-preview:not([hidden])) .destination-photo-preview{float:none;position:static;width:128px!important;height:72px;padding:0;margin:0!important;border-radius:8px;grid-column:1;grid-row:1}
+body.visitor-experience .facility-detail-body:has(>.destination-photo-preview:not([hidden])) .destination-photo-preview img{height:72px!important;width:100%;object-fit:cover}
+body.visitor-experience .facility-detail-body:has(>.destination-photo-preview:not([hidden])) .facility-heading{grid-column:2;grid-row:1;align-self:center;padding-right:24px;min-width:0}
+body.visitor-experience .facility-detail-body:has(>.destination-photo-preview:not([hidden])) h2{font-size:14px;line-height:1.3;margin:3px 0 0;min-height:0}
+body.visitor-experience .facility-detail-body:has(>.destination-photo-preview:not([hidden])) .facility-detail-actions{grid-column:1/-1;grid-row:2;gap:6px}
+body.visitor-experience .facility-detail-body:has(>.destination-photo-preview:not([hidden])) .facility-detail-actions>*{min-height:36px;padding:8px 6px;font-size:11px}
+body.visitor-experience .maji-attribution{bottom:calc(1px + env(safe-area-inset-bottom,0px))}
+@media(max-width:700px){
+ body.visitor-experience .floor-toolbar{bottom:calc(22px + env(safe-area-inset-bottom,0px))!important;padding:3px!important}
+ body.visitor-experience .floor-toolbar .floors button{padding:5px 6px;line-height:16px}
+ body.visitor-experience .facility-details{bottom:calc(62px + env(safe-area-inset-bottom,0px))!important}
+ body.visitor-experience .route-options-dock{bottom:calc(68px + env(safe-area-inset-bottom,0px))!important}
+ body.visitor-experience .campus-map-button{bottom:calc(0px + env(safe-area-inset-bottom,0px));padding:0 6px;line-height:18px;font-size:9px}
+}

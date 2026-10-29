@@ -27,6 +27,7 @@ function syncRoutePanels(){
 }
 function initRouteExperience(){
  if(reviewEmbedded)return;
+ const detailBody=ui('facilityDetails').querySelector('.facility-detail-body'),heading=document.createElement('div');heading.className='facility-heading';heading.append(ui('facilityDetailFloor'),ui('facilityDetailName'));detailBody.prepend(heading);detailBody.prepend(ui('destinationPhotoPreview'));
  const planner=ui('routePlanner'),header=document.createElement('div');header.className='route-planning-header';header.innerHTML='<button id="closeRoutePlanning" aria-label="施設の案内に戻る">‹</button><span>経路</span>';planner.prepend(header);
  const swap=document.createElement('button');swap.id='swapRoutePlaces';swap.className='swap-route-places';swap.textContent='↕';swap.setAttribute('aria-label','出発地と目的地を入れ替える');planner.append(swap);swap.onclick=swapRoutePlaces;ui('mapViewport').append(planner);
  const dock=document.createElement('section');dock.id='routeOptionsDock';dock.className='route-options-dock';dock.setAttribute('aria-label','ナビ開始');dock.hidden=true;header.after(document.querySelector('.route-travel-tabs'));const start=document.createElement('button');start.id='routeDockNavigate';start.className='primary';start.textContent='ナビを開始';start.onclick=()=>{if(!ensureIndoorStart())return;routePlan();startNavigation();syncRoutePanels();};dock.append(start);ui('mapViewport').append(dock);
