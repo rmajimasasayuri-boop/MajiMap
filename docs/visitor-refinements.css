@@ -205,3 +205,4 @@ body.visitor-experience .map-navigation-rail #allFloors button{order:calc(10 - v
 body.visitor-experience.route-planning .map-navigation-rail{top:calc(8px + var(--visitor-safe-top))!important}
 body.visitor-experience.route-planning.place-searching .map-navigation-rail{top:calc(72px + var(--visitor-safe-top))!important}
 @media(max-height:520px){body.visitor-experience.route-planning.place-searching .map-navigation-rail{top:calc(8px + var(--visitor-safe-top))!important}}
+body.visitor-experience .map-navigation-rail #allFloors#allFloors{display:grid!important;grid-auto-flow:row!important;touch-action:none!important}
