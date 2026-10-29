@@ -56,7 +56,7 @@ function fitFloorRail(){if(reviewEmbedded)return;document.documentElement.style.
 function initFloorSlide(){
  const floors=ui('allFloors');let pointer=null,last=null;
  const move=e=>{for(const b of floors.querySelectorAll('[data-floor]')){const r=b.getBoundingClientRect();if(e.clientY>=r.top&&e.clientY<=r.bottom&&!b.disabled){const f=Number(b.dataset.floor);if(f!==last){last=f;activateIndexedFloor(f);}return;}}};
- floors.addEventListener('pointerdown',e=>{if(e.button!==0)return;e.stopPropagation();e.preventDefault();pointer=e.pointerId;last=null;floors.setPointerCapture(e.pointerId);move(e);},{capture:true});
+ floors.addEventListener('pointerdown',e=>{if(e.button!==0||floors.scrollHeight>floors.clientHeight+1)return;e.stopPropagation();e.preventDefault();pointer=e.pointerId;last=null;floors.setPointerCapture(e.pointerId);move(e);},{capture:true});
  floors.addEventListener('pointermove',e=>{if(e.pointerId!==pointer)return;e.stopPropagation();e.preventDefault();move(e);});
  for(const name of ['pointerup','pointercancel'])floors.addEventListener(name,e=>{if(e.pointerId!==pointer)return;e.stopPropagation();if(floors.hasPointerCapture(pointer))floors.releasePointerCapture(pointer);pointer=null;last=null;});
  floors.addEventListener('click',e=>{const b=e.target.closest('[data-floor]');if(!b)return;e.stopImmediatePropagation();if(!b.disabled)activateIndexedFloor(Number(b.dataset.floor));},{capture:true});

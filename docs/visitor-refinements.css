@@ -112,31 +112,65 @@ body.visitor-experience .map-message.message-fading{opacity:0;transition:opacity
 body.visitor-experience .map-message.message-faded{visibility:hidden}
 @media(max-width:420px){body.visitor-experience #routeOptionsDock{left:100px!important;margin-left:0!important;right:8px!important;max-width:none;bottom:calc(2px + env(safe-area-inset-bottom,0px))!important}body.visitor-experience #routeOptionsDock>button:not([hidden]){flex:1 1 0!important;padding:7px 6px!important}body.visitor-experience #routeOptionsDock #routeAddWaypoint{max-width:160px}}
 body.visitor-experience.place-preview-open #routeOptionsDock,body.visitor-experience.place-searching #routeOptionsDock,body.visitor-experience.navigation-active #routeOptionsDock{display:none!important}
-/* Keep controls an additional 8px inside the device safe area. */
 /* Safari's changing toolbars, notch, home indicator and standalone safe areas. */
 :root{--visitor-safe-top:env(safe-area-inset-top,0px);--visitor-safe-right:env(safe-area-inset-right,0px);--visitor-safe-bottom:env(safe-area-inset-bottom,0px);--visitor-safe-left:env(safe-area-inset-left,0px)}
 body.visitor-experience.map-first:not(.review-embedded):not(.corridor-editing):not(:has(.arrow-editing))>main{height:min(100dvh,var(--visitor-screen-height,100dvh))!important}
-body.visitor-experience .map-search-bar{top:calc(16px + var(--visitor-safe-top))!important;left:calc(16px + var(--visitor-safe-left))!important;width:min(520px,calc(100% - 32px - var(--visitor-safe-left) - var(--visitor-safe-right)))!important}
-body.visitor-experience #routePlanner{top:calc(16px + var(--visitor-safe-top))!important;left:calc(16px + var(--visitor-safe-left))!important;width:min(520px,calc(100% - 32px - var(--visitor-safe-left) - var(--visitor-safe-right)))!important}
-body.visitor-experience .map-navigation-rail{right:calc(16px + var(--visitor-safe-right))!important;top:var(--route-panel-bottom,calc(80px + var(--visitor-safe-top)))!important}
-body.visitor-experience.place-searching .map-navigation-rail{top:calc(80px + var(--visitor-safe-top))!important}
-body.visitor-experience main:not(.settings-hidden) #settings#settings{padding-top:calc(78px + var(--visitor-safe-top))!important;padding-left:calc(16px + var(--visitor-safe-left))!important;padding-right:calc(84px + var(--visitor-safe-right))!important;height:min(100dvh,var(--visitor-screen-height,100dvh))!important;padding-bottom:calc(8px + var(--visitor-safe-bottom))!important}
-body.visitor-experience.place-searching[data-search-view=home] #settings#settings,body.visitor-experience.place-searching.search-input-active[data-search-view=results] #settings#settings{padding-right:calc(16px + var(--visitor-safe-right))!important}
-body.visitor-experience .facility-details{left:calc(16px + var(--visitor-safe-left))!important;width:min(520px,calc(100% - 32px - var(--visitor-safe-left) - var(--visitor-safe-right)))!important;bottom:calc(36px + var(--visitor-safe-bottom))!important;max-height:calc(min(55dvh,var(--visitor-screen-height,100dvh)) - var(--visitor-safe-top) - var(--visitor-safe-bottom))!important}
-body.visitor-experience .maji-attribution{left:calc(16px + var(--visitor-safe-left));bottom:calc(10px + var(--visitor-safe-bottom))!important}
-body.visitor-experience #routeOptionsDock{bottom:calc(10px + var(--visitor-safe-bottom))!important;right:calc(84px + var(--visitor-safe-right))!important}
-body.visitor-experience.navigation-active .navigation-panel{left:calc(16px + var(--visitor-safe-left))!important;bottom:calc(36px + var(--visitor-safe-bottom))!important;width:min(520px,calc(100% - 32px - var(--visitor-safe-left) - var(--visitor-safe-right)))!important;max-height:calc(48dvh - var(--visitor-safe-bottom))!important}
-body.visitor-experience .return-position{right:calc(18px + var(--visitor-safe-right))!important}
-body.visitor-experience .navigation-floor-strip{top:calc(18px + var(--visitor-safe-top))!important;left:calc(16px + var(--visitor-safe-left))!important}
+body.visitor-experience .map-search-bar{top:calc(8px + var(--visitor-safe-top))!important;left:calc(8px + var(--visitor-safe-left))!important;width:min(520px,calc(100% - 16px - var(--visitor-safe-left) - var(--visitor-safe-right)))!important}
+body.visitor-experience #routePlanner{top:calc(8px + var(--visitor-safe-top))!important;left:calc(8px + var(--visitor-safe-left))!important;width:min(520px,calc(100% - 16px - var(--visitor-safe-left) - var(--visitor-safe-right)))!important}
+body.visitor-experience .map-navigation-rail{right:calc(8px + var(--visitor-safe-right))!important;top:var(--route-panel-bottom,calc(72px + var(--visitor-safe-top)))!important}
+body.visitor-experience.place-searching .map-navigation-rail{top:calc(72px + var(--visitor-safe-top))!important}
+body.visitor-experience main:not(.settings-hidden) #settings#settings{padding-top:calc(70px + var(--visitor-safe-top))!important;padding-left:calc(8px + var(--visitor-safe-left))!important;padding-right:calc(76px + var(--visitor-safe-right))!important;height:min(100dvh,var(--visitor-screen-height,100dvh))!important;padding-bottom:var(--visitor-safe-bottom)!important}
+body.visitor-experience.place-searching[data-search-view=home] #settings#settings,body.visitor-experience.place-searching.search-input-active[data-search-view=results] #settings#settings{padding-right:calc(8px + var(--visitor-safe-right))!important}
+body.visitor-experience .facility-details{left:calc(8px + var(--visitor-safe-left))!important;width:min(520px,calc(100% - 16px - var(--visitor-safe-left) - var(--visitor-safe-right)))!important;bottom:calc(28px + var(--visitor-safe-bottom))!important;max-height:calc(min(55dvh,var(--visitor-screen-height,100dvh)) - var(--visitor-safe-top) - var(--visitor-safe-bottom))!important}
+body.visitor-experience .maji-attribution{left:calc(8px + var(--visitor-safe-left));bottom:calc(2px + var(--visitor-safe-bottom))!important}
+body.visitor-experience #routeOptionsDock{bottom:calc(2px + var(--visitor-safe-bottom))!important;right:calc(76px + var(--visitor-safe-right))!important}
+body.visitor-experience.navigation-active .navigation-panel{left:calc(8px + var(--visitor-safe-left))!important;bottom:calc(28px + var(--visitor-safe-bottom))!important;width:min(520px,calc(100% - 16px - var(--visitor-safe-left) - var(--visitor-safe-right)))!important;max-height:calc(48dvh - var(--visitor-safe-bottom))!important}
+body.visitor-experience .return-position{right:calc(10px + var(--visitor-safe-right))!important}
+body.visitor-experience .navigation-floor-strip{top:calc(10px + var(--visitor-safe-top))!important;left:calc(8px + var(--visitor-safe-left))!important}
 body.visitor-experience.compact-floor-rail .map-navigation-rail .view-switch{position:absolute!important;top:0!important;right:64px!important}
 body.visitor-experience.compact-floor-rail #visitorMapHome{position:absolute;top:64px;right:64px}
 body.visitor-experience.compact-floor-rail .map-navigation-rail .floor-toolbar{margin-top:0!important}
-body.visitor-experience.compact-floor-rail #routePlanner{max-width:calc(100% - 32px - var(--visitor-safe-left) - var(--visitor-safe-right))}
-@media(max-width:420px){body.visitor-experience #routeOptionsDock{left:calc(108px + var(--visitor-safe-left))!important;right:calc(16px + var(--visitor-safe-right))!important;max-width:none!important}}
+body.visitor-experience.compact-floor-rail #routePlanner{max-width:calc(100% - 16px - var(--visitor-safe-left) - var(--visitor-safe-right))}
+@media(max-width:420px){body.visitor-experience #routeOptionsDock{left:calc(100px + var(--visitor-safe-left))!important;right:calc(8px + var(--visitor-safe-right))!important;max-width:none!important}}
 @media(orientation:landscape) and (max-height:500px){
- body.visitor-experience #routePlanner{width:min(430px,calc(100% - 172px - var(--visitor-safe-left) - var(--visitor-safe-right)))!important}
- body.visitor-experience .map-search-bar{width:min(430px,calc(100% - 172px - var(--visitor-safe-left) - var(--visitor-safe-right)))!important}
- body.visitor-experience .facility-details{width:min(430px,calc(100% - 172px - var(--visitor-safe-left) - var(--visitor-safe-right)))!important;max-height:calc(min(100dvh,var(--visitor-screen-height,100dvh)) - 90px - var(--visitor-safe-top) - var(--visitor-safe-bottom))!important}
- body.visitor-experience #routeOptionsDock{left:calc(112px + var(--visitor-safe-left))!important;right:auto!important;margin-left:0!important;max-width:calc(100% - 296px - var(--visitor-safe-left) - var(--visitor-safe-right))}
+ body.visitor-experience #routePlanner{width:min(430px,calc(100% - 156px - var(--visitor-safe-left) - var(--visitor-safe-right)))!important}
+ body.visitor-experience .map-search-bar{width:min(430px,calc(100% - 156px - var(--visitor-safe-left) - var(--visitor-safe-right)))!important}
+ body.visitor-experience .facility-details{width:min(430px,calc(100% - 156px - var(--visitor-safe-left) - var(--visitor-safe-right)))!important;max-height:calc(min(100dvh,var(--visitor-screen-height,100dvh)) - 90px - var(--visitor-safe-top) - var(--visitor-safe-bottom))!important}
+ body.visitor-experience #routeOptionsDock{left:calc(104px + var(--visitor-safe-left))!important;right:auto!important;margin-left:0!important;max-width:calc(100% - 280px - var(--visitor-safe-left) - var(--visitor-safe-right))}
 }
 body.visitor-experience .maji-attribution{display:block!important}
+/* Keep facility discovery compact, with controls in their own cells. */
+body.visitor-experience #nearbyEquipmentBar{display:none!important}
+body.visitor-experience .equipment-kind-field{display:flex;align-items:center;gap:8px;margin:3px 0 6px;flex:none;min-height:44px}
+body.visitor-experience .equipment-kind-field[hidden]{display:none!important}
+body.visitor-experience .equipment-kind-field select{flex:1;min-width:0;min-height:44px;font:inherit;border:1px solid #b8cbd4;border-radius:10px;background:white;color:#244c5a;padding:5px}
+body.visitor-experience .equipment-kind-field{display:flex!important}
+body.visitor-experience .equipment-kind-field[hidden]{display:none!important}
+body.visitor-experience .favorite-section{border:0;padding:0;margin:12px 0}
+body.visitor-experience:not(#original-type):not(#small-type):not(#tiny-type) :is(.favorite-section h3,.recent-heading){font-size:1rem!important;line-height:1.45!important;font-weight:700;margin:8px 0}
+body.visitor-experience #favoriteStatus[hidden]{display:none!important}
+body.visitor-experience .recent-places{gap:0}
+body.visitor-experience .recent-places button,body.visitor-experience .favorite-place-row button:first-child{font:inherit!important;font-size:1rem!important;font-weight:500!important;padding:12px 6px!important;min-height:54px!important;border-bottom:1px solid #d8e3e7;border-radius:0;text-align:left}
+body.visitor-experience .map-search-bar #openPlaceSearch.search-back,body.visitor-experience .route-planning-header #closeRoutePlanning{font-size:36px!important;line-height:1!important;min-width:44px!important;min-height:44px!important}
+body.visitor-experience #routePlanner{padding-left:4px!important;padding-right:40px!important}
+body.visitor-experience #facilityDetails#facilityDetails{left:0!important;right:auto!important;bottom:0!important;width:min(520px,100%)!important;max-width:none!important;border-radius:16px 16px 0 0!important;padding-bottom:calc(8px + var(--visitor-safe-bottom))!important;max-height:min(50dvh,calc(var(--visitor-screen-height,100dvh) - 100px))!important}
+body.visitor-experience #facilityDetails:not([hidden])~.maji-attribution,body.visitor-experience:has(#facilityDetails:not([hidden])) .maji-attribution{display:none!important}
+body.visitor-experience #facilityDetails .facility-detail-body{display:grid!important;grid-template-columns:88px minmax(0,1fr) 44px!important;grid-template-rows:minmax(88px,auto) auto auto!important;gap:6px 8px!important;padding:10px calc(8px + var(--visitor-safe-right)) 0 calc(8px + var(--visitor-safe-left))!important}
+body.visitor-experience #facilityDetails .destination-photo-preview:not([hidden]){grid-column:1!important;grid-row:1!important;position:static!important;float:none!important;width:88px!important;height:88px!important;margin:0!important;padding:0!important}
+body.visitor-experience #facilityDetails .destination-photo-preview img{width:88px!important;height:88px!important;object-fit:cover}
+body.visitor-experience #facilityDetails .facility-heading{grid-column:2;grid-row:1;padding:0!important;min-height:88px!important;align-self:center}
+body.visitor-experience #facilityDetails .facility-detail-body:not(:has(>.destination-photo-preview:not([hidden]))) .facility-heading{grid-column:1/3}
+body.visitor-experience #favoritePlaceButton{position:static!important;grid-column:3!important;grid-row:1!important;align-self:end;width:44px;height:44px;margin:0!important;padding:0!important}
+body.visitor-experience #closeFacilityDetails{top:8px!important;right:calc(8px + var(--visitor-safe-right))!important;width:44px;height:44px;margin:0!important}
+body.visitor-experience #facilityDetails .facility-detail-actions{grid-column:1/-1!important;grid-row:2!important;display:flex!important;gap:6px!important;flex-wrap:nowrap!important}
+body.visitor-experience #facilityDetails .facility-detail-actions>*{min-width:0!important;min-height:48px!important;padding:6px 7px!important;flex:1 1 auto}
+body.visitor-experience #facilityDetails #detailWebsite{flex:0 0 auto!important;white-space:nowrap!important;min-width:max-content!important}
+body.visitor-experience #facilityDetails #facilityHours{grid-column:1/-1;grid-row:3!important}
+body.visitor-experience .map-navigation-rail .view-switch{position:static!important;inset:auto!important}
+body.visitor-experience #visitorMapHome{position:static!important;inset:auto!important}
+body.visitor-experience .map-navigation-rail #allFloors#allFloors{overflow-y:auto!important;touch-action:pan-y!important;scrollbar-width:none}
+body.visitor-experience .map-navigation-rail #allFloors button{height:32px!important;min-height:32px!important;flex:0 0 32px!important;touch-action:pan-y!important}
+body.visitor-experience .map-navigation-rail .floor-toolbar{flex:none}
+body.visitor-experience.place-searching[data-search-view=results] #equipmentKindField,body.visitor-experience.place-searching[data-search-view=home] #equipmentKindField{display:none!important}
+body.visitor-experience #facilityDetails#facilityDetails{z-index:16!important}
+body.visitor-experience:not(#original-type):not(#small-type):not(#tiny-type) #closeRoutePlanning,body.visitor-experience:not(#original-type):not(#small-type):not(#tiny-type) #openPlaceSearch.search-back{font-size:36px!important;line-height:1!important}
