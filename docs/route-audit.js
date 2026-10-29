@@ -21,3 +21,13 @@ function auditRouteSelection(graph,starts,ends,path){
  return {valid,path:valid?path:optimal,start:valid?path[0]:best.start,end:valid?path.at(-1):best.end,rides:best.rides,cost:best.cost,corrected:!valid};
 }
 function verifyNavigationRoute(graph,from,target,path){const options=typeof additionalNavigation!=='undefined'?additionalNavigation.arrivalOptions||{}:{};return auditRouteSelection(graph,options[from]||[from],options[target.ref]||[navigationTargetReference(target)],path);}
+
+// Compare the full journey through one public waypoint; the same entrance is used
+// on arrival and departure, so a shop never becomes an invented shortcut.
+function verifyWaypointNavigationRoute(graph,from,target,waypoint){
+ const options=typeof additionalNavigation!=='undefined'?additionalNavigation.arrivalOptions||{}:{},starts=options[from]||[from],ends=options[target.ref]||[navigationTargetReference(target)],vias=options[waypoint.ref]||[navigationTargetReference(waypoint)];let best=null;
+ for(const via of vias){let leftPrimary=[],rightPrimary=[];for(const start of starts){const p=shortest(graph,start,via);if(p.length){leftPrimary=p;break;}}for(const end of ends){const p=shortest(graph,via,end);if(p.length){rightPrimary=p;break;}}
+ const left=auditRouteSelection(graph,starts,[via],leftPrimary),right=auditRouteSelection(graph,[via],ends,rightPrimary);if(!left.path.length||!right.path.length)continue;
+ const value={valid:left.valid&&right.valid,path:[...left.path,...right.path.slice(1)],start:left.start,end:right.end,via,viaIndex:left.path.length-1,rides:left.rides+right.rides,cost:left.cost+right.cost,corrected:left.corrected||right.corrected};if(!best||value.rides<best.rides||value.rides===best.rides&&value.cost<best.cost)best=value;
+ }return best||{valid:false,path:[],reason:'waypoint-unreachable'};
+}

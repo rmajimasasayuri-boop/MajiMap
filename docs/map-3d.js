@@ -48,7 +48,7 @@
        const step=navigationState.steps[navigationState.index],next=navigationState.steps.slice(navigationState.index+1).find(s=>s.kind==='transfer'),fs=step.kind==='transfer'?[referenceFloor(step.from),referenceFloor(step.to)]:[step.floor,...(next?[referenceFloor(next.to)]:[])];
        data={...data,maps:data.maps.filter(m=>fs.includes(m.floor)),lines:data.lines.filter(l=>fs.includes(l.floor)),transfers:step.kind==='transfer'?data.transfers.filter(t=>fs.includes(t.from.floor)&&fs.includes(t.to.floor)):[]};
       }
-      viewer.draw(data);if(navigationState.active&&navigationFollow)viewer.focusStep();
+      viewer.draw(data);viewer.preview(mapUI.previewPlace||null);if(navigationState.active&&navigationFollow)viewer.focusStep();
       el('map3DFocusFloors').replaceChildren(...data.maps.map(map=>{const b=document.createElement('button');b.textContent=map.floor+'階を拡大';b.onclick=()=>viewer?.focusFloor(map.floor);return b;}));
       el('map3DFloor').textContent=scope==='route'?'経路全体 · '+data.maps.map(m=>m.floor+'F').join('・'):mapUI.floor+'階';
       status.textContent='矢印の向きに進んでください。病棟名・施設名をクリックして設定できます。';
@@ -71,7 +71,7 @@
     else {cancelAnimationFrame(pending);if(viewer){viewer.dispose();viewer=null;}fitMap();}
   }
   toggle.onclick=()=>setMode(mode==='2d'?'3d':'2d');
-  for(const b of document.querySelectorAll('[data-3d-mode]'))b.onclick=()=>{interaction=b.dataset['3dMode'];for(const item of document.querySelectorAll('[data-3d-mode]'))item.setAttribute('aria-pressed',String(item===b));viewer?.setInteraction(interaction);el('map3DGestureHint').textContent=interaction==='move'?'1本指で移動 · 2本指で拡大・回転':'マウスで回転 · 指は1本で移動／2本で拡大・回転';};
+  for(const b of document.querySelectorAll('[data-3d-mode]'))b.onclick=()=>{interaction=b.dataset['3dMode'];for(const item of document.querySelectorAll('[data-3d-mode]'))item.setAttribute('aria-pressed',String(item===b));viewer?.setInteraction(interaction);el('map3DGestureHint').textContent=interaction==='move'?'1本指で移動 · 2本指で拡大縮小・移動':'マウスで回転 · 指は1本で移動／2本で拡大・回転';};
   for(const [id,x,y]of [['Left',-1,0],['Right',1,0],['Up',0,1],['Down',0,-1]])el('map3DPan'+id).onclick=()=>viewer?.pan(x,y);
   el('map3DRotateLeft').onclick=()=>viewer?.rotate(-1);
   el('map3DRotateRight').onclick=()=>viewer?.rotate(1);
@@ -94,20 +94,20 @@
     const renderer=new T.WebGLRenderer({antialias:true,alpha:false});
     renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
     renderer.setClearColor(0xeaf0f5,1);renderer.outputEncoding=T.sRGBEncoding;
-    renderer.domElement.tabIndex=0;renderer.domElement.setAttribute('aria-label','3Dマップ。1本指で移動、2本指で拡大縮小・回転。');
+    renderer.domElement.tabIndex=0;renderer.domElement.setAttribute('aria-label','3Dマップ。1本指で移動、2本指で拡大縮小・移動。');
     container.replaceChildren(renderer.domElement);
     const scene=new T.Scene(), camera=new T.PerspectiveCamera(42,1,.1,500);scene.add(new T.HemisphereLight(0xffffff,0x708799,1));const sunlight=new T.DirectionalLight(0xffffff,.75);sunlight.position.set(-8,22,12);scene.add(sunlight);
     const controls=new T.OrbitControls(camera,renderer.domElement);
-    controls.enableDamping=true;controls.maxPolarAngle=Math.PI*.48;
+    controls.zoomSpeed=.75;controls.dampingFactor=.09;controls.enableDamping=true;controls.maxPolarAngle=Math.PI*.48;
     controls.minDistance=3;controls.maxDistance=100;
     controls.screenSpacePanning=true;controls.enablePan=true;controls.enableRotate=true;
-    function setInteraction(value){controls.mouseButtons.LEFT=value==='rotate'?T.MOUSE.ROTATE:T.MOUSE.PAN;controls.mouseButtons.RIGHT=value==='rotate'?T.MOUSE.PAN:T.MOUSE.ROTATE;controls.touches.ONE=T.TOUCH.PAN;controls.touches.TWO=T.TOUCH.DOLLY_ROTATE;}
+    function setInteraction(value){controls.mouseButtons.LEFT=value==='rotate'?T.MOUSE.ROTATE:T.MOUSE.PAN;controls.mouseButtons.RIGHT=value==='rotate'?T.MOUSE.PAN:T.MOUSE.ROTATE;controls.touches.ONE=T.TOUCH.PAN;controls.touches.TWO=T.TOUCH.DOLLY_PAN;}
     setInteraction(interaction);
     const textures=new Map(),loader=new T.TextureLoader(), ray=new T.Raycaster();
     const activePointers=new Set();
     const colorValue=color=>new T.Color(color).convertSRGBToLinear();
     const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
-    let floorLevels={},floorDepths={},floorRegistration={},motion=[],hoverGroup=null,hoverPlace=null,hoverMode=null,progressMarker=null,elevatorCabin=null;
+    let floorLevels={},floorDepths={},floorRegistration={},motion=[],screenPins=[],hoverGroup=null,hoverPlace=null,hoverMode=null,progressMarker=null,elevatorCabin=null,stepEndMarker=null;
     const hoverCard=el('map3DHover');
     let group=new T.Group(),planes=[],frame,paused=false,disposed=false,previousKey='',homeView,down;
     scene.add(group);
@@ -115,7 +115,7 @@
     const at=(f,p,lift=.1)=>new T.Vector3((p[0]+(floorRegistration[f]?.[0]||0))*S,(floorLevels[f]||0)+lift,(p[1]+offset(f)+(floorRegistration[f]?.[1]||0))*S);
     function freeGroup() {
       group.traverse(o=>{o.geometry?.dispose();for(const m of Array.isArray(o.material)?o.material:o.material?[o.material]:[]){if(m.userData.ownsTexture)m.map?.dispose();m.dispose();}});
-      scene.remove(group);group=new T.Group();scene.add(group);planes=[];motion=[];hoverGroup=null;hoverPlace=null;hoverMode=null;hoverCard.hidden=true;progressMarker=null;elevatorCabin=null;
+      scene.remove(group);group=new T.Group();scene.add(group);planes=[];motion=[];screenPins=[];hoverGroup=null;hoverPlace=null;hoverMode=null;hoverCard.hidden=true;progressMarker=null;elevatorCabin=null;stepEndMarker=null;
     }
     function texture(src) {
       if(!textures.has(src)) {
@@ -147,7 +147,7 @@
     function pin(p,label,color,shift=0) {
       if(!p?.point||!planes.some(plane=>plane.userData.floor===p.floor))return;
       const pos=at(p.floor,p.point,.2);pos.x+=shift;
-      const ball=new T.Mesh(new T.SphereGeometry(.11,16,12),new T.MeshBasicMaterial({color:colorValue(color),depthTest:false,transparent:true}));ball.position.copy(pos);ball.renderOrder=10;group.add(ball);
+      const ball=new T.Mesh(new T.SphereGeometry(.18,20,16),new T.MeshBasicMaterial({color:colorValue(color),depthTest:false,transparent:true}));ball.position.copy(pos);ball.renderOrder=10;group.add(ball);screenPins.push(ball);
       // Pins retain their color without a floating name label.
     }
     function movingArrows(points) {
@@ -194,12 +194,12 @@
       const box=new T.Box3();
       for(const map of data.maps) {
         const [w,h]=map.size,active=map.floor===data.floor;
-        const mat=new T.MeshBasicMaterial({map:texture(map.image),side:T.DoubleSide,transparent:false,opacity:1});
+        const mat=new T.MeshBasicMaterial({map:texture(map.image),side:T.DoubleSide,transparent:false,opacity:1,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2});
         const plane=new T.Mesh(new T.PlaneGeometry(w*S,h*S),mat);
         plane.rotation.x=-Math.PI/2;plane.position.copy(at(map.floor,[w/2,h/2],0));
         plane.userData={floor:map.floor,width:w,height:h};planes.push(plane);group.add(plane);
         // Display-only floor plates: all route coordinates remain on the original surface.
-        const slab=new T.Mesh(new T.BoxGeometry(w*S,.14,h*S),new T.MeshPhongMaterial({color:colorValue(active?'#c0d8de':'#d4e0e6'),shininess:35}));slab.position.copy(at(map.floor,[w/2,h/2],-.072));group.add(slab);
+        const slab=new T.Mesh(new T.BoxGeometry(w*S,.20,h*S),new T.MeshPhongMaterial({color:colorValue(active?'#c0d8de':'#d4e0e6'),shininess:35}));slab.position.copy(at(map.floor,[w/2,h/2],-.16));group.add(slab);
         const lowerEdge=new T.LineSegments(new T.EdgesGeometry(slab.geometry),new T.LineBasicMaterial({color:colorValue(active?'#2e737d':'#8eaab8'),transparent:true,opacity:.65}));lowerEdge.position.copy(slab.position);group.add(lowerEdge);
         const edge=new T.LineSegments(new T.EdgesGeometry(plane.geometry),new T.LineBasicMaterial({color:active?0x176f68:0x9fb8c4}));edge.rotation.copy(plane.rotation);edge.position.copy(plane.position);group.add(edge);
         tag(map.floor+'F',at(map.floor,[-65,h/2],.3),active?'#176f68':'#607d8c',.9);
@@ -222,10 +222,11 @@
     let trackedPosition=null;
     function updateProgress(){
       const p=navigationState.active&&navigationState.position;
-      if(!p||!planes.some(plane=>plane.userData.floor===p.floor)){if(progressMarker)progressMarker.visible=false;if(elevatorCabin)elevatorCabin.visible=false;return;}
+      if(!p||!planes.some(plane=>plane.userData.floor===p.floor)){if(stepEndMarker)stepEndMarker.visible=false;if(progressMarker)progressMarker.visible=false;if(elevatorCabin)elevatorCabin.visible=false;return;}
       if(!progressMarker){progressMarker=new T.Group();
         const halo=new T.Mesh(new T.SphereGeometry(.19,20,16),new T.MeshBasicMaterial({color:colorValue('#ffffff'),depthTest:false}));
-        const dot=new T.Mesh(new T.SphereGeometry(.13,20,16),new T.MeshBasicMaterial({color:colorValue('#2580c5'),depthTest:false}));dot.position.y=.1;halo.renderOrder=19;dot.renderOrder=20;progressMarker.add(halo,dot);group.add(progressMarker);}
+        const dot=new T.Mesh(new T.SphereGeometry(.18,20,16),new T.MeshBasicMaterial({color:colorValue('#2580c5'),depthTest:false}));dot.position.y=.1;halo.renderOrder=19;dot.renderOrder=20;progressMarker.add(halo,dot);group.add(progressMarker);}
+      const walk=navigationState.steps[navigationState.index];if(walk?.kind==='walk'){const end=sampleInstruction(instructionSegments(walk),1);if(end){if(!stepEndMarker){stepEndMarker=new T.Mesh(new T.SphereGeometry(.2,18,14),new T.MeshBasicMaterial({color:colorValue('#bd6400'),depthTest:false}));stepEndMarker.renderOrder=18;group.add(stepEndMarker);}stepEndMarker.visible=true;stepEndMarker.position.copy(at(end.floor,end.point,.16));}}else if(stepEndMarker)stepEndMarker.visible=false;
       progressMarker.visible=true;if(p.transfer){progressMarker.position.fromArray(transferPosition(p.transfer,end=>at(end.floor,end.point,.12).toArray()));}else progressMarker.position.copy(at(p.floor,p.point,.12));
       if(p.transfer?.kind==='elevator'){if(!elevatorCabin){elevatorCabin=new T.Group();const shell=new T.Mesh(new T.BoxGeometry(.42,.36,.42),new T.MeshPhongMaterial({color:colorValue('#2580c5'),transparent:true,opacity:.7,shininess:80,depthTest:false}));shell.renderOrder=17;const outline=new T.LineSegments(new T.EdgesGeometry(shell.geometry),new T.LineBasicMaterial({color:0xffffff,depthTest:false}));outline.renderOrder=18;elevatorCabin.add(shell,outline);group.add(elevatorCabin);}elevatorCabin.visible=true;elevatorCabin.position.copy(progressMarker.position);}else if(elevatorCabin)elevatorCabin.visible=false;
       if(navigationFollow&&p.transfer&&trackedPosition){const delta=progressMarker.position.clone().sub(trackedPosition);camera.position.add(delta);controls.target.add(delta);controls.update();}trackedPosition=progressMarker.position.clone();
@@ -248,7 +249,7 @@
     function rotate(direction){camera.position.sub(controls.target).applyAxisAngle(new T.Vector3(0,1,0),direction*Math.PI/12).add(controls.target);controls.update();clearHover();}
     function zoom(factor){camera.position.sub(controls.target).multiplyScalar(factor).add(controls.target);controls.update();}
     function resize(){const w=container.clientWidth,h=container.clientHeight;if(!w||!h)return;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();}
-    function loop(time=0){if(disposed||paused)return;frame=requestAnimationFrame(loop);for(const m of motion){const sample=sampleRouteMotion(m.track,m.offset+(reducedMotion.matches?0:time*.00065));m.arrow.position.fromArray(sample.point);m.arrow.quaternion.setFromUnitVectors(new T.Vector3(0,0,1),new T.Vector3(...sample.direction));}controls.update();renderer.render(scene,camera);}
+    function loop(time=0){if(disposed||paused)return;frame=requestAnimationFrame(loop);for(const m of motion){const sample=sampleRouteMotion(m.track,m.offset+(reducedMotion.matches?0:time*.00065));m.arrow.position.fromArray(sample.point);m.arrow.quaternion.setFromUnitVectors(new T.Vector3(0,0,1),new T.Vector3(...sample.direction));}for(const pin of screenPins){const radius=pin.position.distanceTo(camera.position)*Math.tan(camera.fov*Math.PI/360)*24/Math.max(1,container.clientHeight);pin.scale.setScalar(radius/.18);}controls.update();renderer.render(scene,camera);}
     function pause(value){paused=value;cancelAnimationFrame(frame);if(!paused&&!disposed)loop();}
     renderer.domElement.addEventListener('pointerdown',e=>{if(navigationState.active)navigationFollow=false;activePointers.add(e.pointerId);down=activePointers.size===1?{x:e.clientX,y:e.clientY,id:e.pointerId,moved:false}:null;});
     renderer.domElement.addEventListener('pointermove',e=>{if(down){if(Math.hypot(e.clientX-down.x,e.clientY-down.y)>5){down.moved=true;hidePlacePreview();}clearHover();return;}if(activePointers.size)return;highlight(pointerHit(e)?.place,{x:e.clientX,y:e.clientY});});
@@ -265,6 +266,6 @@
     document.addEventListener('pointerup',releasePointer);document.addEventListener('pointercancel',releasePointer);
     resize();loop();
     function dispose(){disposed=true;window.removeEventListener('maji-navigation-position',updateProgress);document.removeEventListener('pointerup',releasePointer);document.removeEventListener('pointercancel',releasePointer);cancelAnimationFrame(frame);controls.dispose();freeGroup();for(const t of textures.values())t.dispose();renderer.dispose();renderer.forceContextLoss();renderer.domElement.remove();}
-    return {draw,home,zoom,resize,pause,dispose,pan,rotate,focusFloor,focusStep,setInteraction};
+    return {preview:d=>highlight(d),draw,home,zoom,resize,pause,dispose,pan,rotate,focusFloor,focusStep,setInteraction};
   }
 })();

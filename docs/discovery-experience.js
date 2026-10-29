@@ -1,4 +1,4 @@
-function resultCategoryMatches(d){if(mapUI.filter==='equipment'&&d.ref==='services::laundry')return true;if(mapUI.filter==='counter')return d.type==='reception'||['services::information','services::medicine','services::admission','services::lost'].includes(d.ref);if(mapUI.filter==='food')return ['services::restaurant','services::cafe'].includes(d.ref);if(mapUI.filter==='shopping')return ['services::seven','services::green','services::cosmetics','services::glasses','services::hair'].includes(d.ref);return mapUI.filter==='all'||d.type===mapUI.filter||mapUI.filter==='equipment'&&d.type==='toilet'||mapUI.filter==='service'&&['reception','entrance'].includes(d.type)||mapUI.filter==='ward'&&d.type==='rehab';}
+function resultCategoryMatches(d){if(mapUI.filter==='amenity')return ['services::restaurant','services::cafe','services::seven','services::green','services::cosmetics','services::glasses','services::hair'].includes(d.ref);if(mapUI.filter==='equipment'&&d.ref==='services::laundry')return true;if(mapUI.filter==='counter')return d.type==='reception'||['services::information','services::medicine','services::admission','services::lost'].includes(d.ref);if(mapUI.filter==='food')return ['services::restaurant','services::cafe'].includes(d.ref);if(mapUI.filter==='shopping')return ['services::seven','services::green','services::cosmetics','services::glasses','services::hair'].includes(d.ref);return mapUI.filter==='all'||d.type===mapUI.filter||mapUI.filter==='equipment'&&d.type==='toilet'||mapUI.filter==='service'&&['reception','entrance'].includes(d.type)||mapUI.filter==='ward'&&d.type==='rehab';}
 function routeProximityFor(matches){
  const scores=new Map();if(!mapUI.startConfirmed||mapUI.pickMode==='start'||!matches.length||!matches.every(d=>['toilet','equipment'].includes(d.type)))return scores;
  const categories=new Set(matches.map(d=>d.type==='toilet'?'toilet':d.category));if(categories.size!==1)return scores;
@@ -52,7 +52,7 @@ function initSearchChoices(){
  input.addEventListener('input',()=>{searchFocusLock=false;setPlaceSearchView(input.value.trim()?'results':'home');});updateSearchChoices();
 }
 function activateIndexedFloor(floor){if(!document.querySelector('main').classList.contains('settings-hidden')){preferredCandidateFloor=floor;jumpToCandidateFloor(floor);}else if(mapUI.floor!==floor)showFloor(floor);}
-function fitFloorRail(){if(reviewEmbedded)return;document.documentElement.style.setProperty('--floor-rail-height','300px');}
+function fitFloorRail(){if(reviewEmbedded)return;document.documentElement.style.setProperty('--floor-rail-height','320px');}
 function initFloorSlide(){
  const floors=ui('allFloors');let pointer=null,last=null;
  const move=e=>{for(const b of floors.querySelectorAll('[data-floor]')){const r=b.getBoundingClientRect();if(e.clientY>=r.top&&e.clientY<=r.bottom&&!b.disabled){const f=Number(b.dataset.floor);if(f!==last){last=f;activateIndexedFloor(f);}return;}}};

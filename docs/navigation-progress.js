@@ -35,12 +35,13 @@ function transferPosition(transfer,pointAt){
  return a.map((v,i)=>v+(b[i]-v)*t);
 }
 function drawNavigationPosition(){
- document.getElementById('navigationPosition')?.remove();
+ document.getElementById('navigationPosition')?.remove();document.getElementById('navigationStepEnd')?.remove();
  const p=navigationState.active&&navigationState.position;if(!p||p.floor!==mapUI.floor)return;
+ const current=navigationState.steps[navigationState.index];if(current?.kind==='walk'&&current.floor===mapUI.floor){const end=sampleInstruction(instructionSegments(current),1);if(end){const s=mapUI.base*mapUI.zoom,marker=svgNode('g',{id:'navigationStepEnd',role:'img','aria-label':'この手順の到達点','pointer-events':'none'});marker.append(svgNode('circle',{cx:end.point[0],cy:end.point[1],r:15/s,fill:'#fff5e1',stroke:'#a85600','stroke-width':4/s}));marker.append(svgNode('text',{x:end.point[0],y:end.point[1]-24/s,'text-anchor':'middle',fill:'#8c4800','font-size':18/s,'font-weight':'bold',stroke:'white','stroke-width':4/s,'paint-order':'stroke'},'ここまで'));ui('unifiedOverlay').append(marker);}}
  const scale=mapUI.base*mapUI.zoom,g=svgNode('g',{id:'navigationPosition',role:'img','aria-label':'案内位置（手順連動・自動測位なし）','pointer-events':'none'});
  g.append(svgNode('circle',{cx:0,cy:0,r:17/scale,fill:'#2580c5','fill-opacity':.16}));
- g.append(svgNode('circle',{cx:0,cy:0,r:8/scale,fill:'#2580c5',stroke:'white','stroke-width':3/scale}));
- if(p.transfer)g.append(svgNode('text',{x:14/scale,y:-12/scale,fill:'#176f68','font-size':12/scale,'font-weight':'bold',stroke:'white','stroke-width':3/scale,'paint-order':'stroke'},p.transfer.progress===1?'到着':(p.transfer.kind==='elevator'?'EV ':'ESC ')+(p.transfer.to.floor>p.transfer.from.floor?'↑':'↓')));
+ g.append(svgNode('circle',{cx:0,cy:0,r:12/scale,fill:'#2580c5',stroke:'white','stroke-width':3/scale}));
+ if(p.transfer)g.append(svgNode('text',{x:14/scale,y:-12/scale,fill:'#176f68','font-size':18/scale,'font-weight':'bold',stroke:'white','stroke-width':3/scale,'paint-order':'stroke'},p.transfer.progress===1?'到着':(p.transfer.kind==='elevator'?'EV ':'ESC ')+(p.transfer.to.floor>p.transfer.from.floor?'↑':'↓')));
  g.setAttribute('transform',`translate(${p.point.join(' ')})`);ui('unifiedOverlay').append(g);
 }
 function publishNavigationPosition(position){

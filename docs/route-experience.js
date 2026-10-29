@@ -22,7 +22,7 @@ function syncRoutePanels(){
  if(reviewEmbedded)return;
  document.body.classList.toggle('place-selected',Boolean(mapUI.goal));
  const planning=document.body.classList.contains('route-planning');ui('routeOptionsDock').hidden=!planning||navigationState.active||!mapUI.goal;
- ui('chooseCurrentMapPoint').hidden=Boolean(mapUI.startChosenOnMap);
+ ui('chooseCurrentMapPoint').hidden=true;
  ui('swapRoutePlaces').disabled=!mapUI.startConfirmed||!mapUI.goal;
  syncSearchControls();
 }
