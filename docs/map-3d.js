@@ -93,10 +93,10 @@
     const T=window.THREE, S=.01;
     const renderer=new T.WebGLRenderer({antialias:true,alpha:false});
     renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
-    renderer.setClearColor(0xf0f4f6,1);renderer.outputEncoding=T.sRGBEncoding;
+    renderer.setClearColor(0xeaf0f5,1);renderer.outputEncoding=T.sRGBEncoding;
     renderer.domElement.tabIndex=0;renderer.domElement.setAttribute('aria-label','3Dマップ。1本指で移動、2本指で拡大縮小・回転。');
     container.replaceChildren(renderer.domElement);
-    const scene=new T.Scene(), camera=new T.PerspectiveCamera(42,1,.1,500);
+    const scene=new T.Scene(), camera=new T.PerspectiveCamera(42,1,.1,500);scene.add(new T.HemisphereLight(0xffffff,0x708799,1));const sunlight=new T.DirectionalLight(0xffffff,.75);sunlight.position.set(-8,22,12);scene.add(sunlight);
     const controls=new T.OrbitControls(camera,renderer.domElement);
     controls.enableDamping=true;controls.maxPolarAngle=Math.PI*.48;
     controls.minDistance=3;controls.maxDistance=100;
@@ -107,7 +107,7 @@
     const activePointers=new Set();
     const colorValue=color=>new T.Color(color).convertSRGBToLinear();
     const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
-    let floorLevels={},floorDepths={},floorRegistration={},motion=[],hoverGroup=null,hoverPlace=null,hoverMode=null,progressMarker=null;
+    let floorLevels={},floorDepths={},floorRegistration={},motion=[],hoverGroup=null,hoverPlace=null,hoverMode=null,progressMarker=null,elevatorCabin=null;
     const hoverCard=el('map3DHover');
     let group=new T.Group(),planes=[],frame,paused=false,disposed=false,previousKey='',homeView,down;
     scene.add(group);
@@ -115,7 +115,7 @@
     const at=(f,p,lift=.1)=>new T.Vector3((p[0]+(floorRegistration[f]?.[0]||0))*S,(floorLevels[f]||0)+lift,(p[1]+offset(f)+(floorRegistration[f]?.[1]||0))*S);
     function freeGroup() {
       group.traverse(o=>{o.geometry?.dispose();for(const m of Array.isArray(o.material)?o.material:o.material?[o.material]:[]){if(m.userData.ownsTexture)m.map?.dispose();m.dispose();}});
-      scene.remove(group);group=new T.Group();scene.add(group);planes=[];motion=[];hoverGroup=null;hoverPlace=null;hoverMode=null;hoverCard.hidden=true;progressMarker=null;
+      scene.remove(group);group=new T.Group();scene.add(group);planes=[];motion=[];hoverGroup=null;hoverPlace=null;hoverMode=null;hoverCard.hidden=true;progressMarker=null;elevatorCabin=null;
     }
     function texture(src) {
       if(!textures.has(src)) {
@@ -198,12 +198,17 @@
         const plane=new T.Mesh(new T.PlaneGeometry(w*S,h*S),mat);
         plane.rotation.x=-Math.PI/2;plane.position.copy(at(map.floor,[w/2,h/2],0));
         plane.userData={floor:map.floor,width:w,height:h};planes.push(plane);group.add(plane);
+        // Display-only floor plates: all route coordinates remain on the original surface.
+        const slab=new T.Mesh(new T.BoxGeometry(w*S,.14,h*S),new T.MeshPhongMaterial({color:colorValue(active?'#c0d8de':'#d4e0e6'),shininess:35}));slab.position.copy(at(map.floor,[w/2,h/2],-.072));group.add(slab);
+        const lowerEdge=new T.LineSegments(new T.EdgesGeometry(slab.geometry),new T.LineBasicMaterial({color:colorValue(active?'#2e737d':'#8eaab8'),transparent:true,opacity:.65}));lowerEdge.position.copy(slab.position);group.add(lowerEdge);
         const edge=new T.LineSegments(new T.EdgesGeometry(plane.geometry),new T.LineBasicMaterial({color:active?0x176f68:0x9fb8c4}));edge.rotation.copy(plane.rotation);edge.position.copy(plane.position);group.add(edge);
         tag(map.floor+'F',at(map.floor,[-65,h/2],.3),active?'#176f68':'#607d8c',.9);
         box.expandByPoint(at(map.floor,[0,0],0));box.expandByPoint(at(map.floor,[w,h],0));
       }
       for(const l of data.lines){const points=l.points.map(p=>at(l.floor,p));line(points,0x1683d1);movingArrows(points.map(p=>p.clone().add(new T.Vector3(0,.035,0))));}
-      for(const t of data.transfers){const a=at(t.from.floor,t.from.point),b=at(t.to.floor,t.to.point);line([a,b],t.kind==='elevator'?0x07527c:0xd47717,true);movingArrows([a,b]);tag(t.kind==='elevator'?'エレベーター EV':'エスカレーター',a.clone().lerp(b,.5),t.kind==='elevator'?'#07527c':'#ad5a0d',2.3);}
+      for(const t of data.transfers){const a=at(t.from.floor,t.from.point),b=at(t.to.floor,t.to.point);
+       if(t.kind==='elevator'){const height=Math.abs(b.y-a.y),shaft=new T.Mesh(new T.BoxGeometry(.4,height,.4),new T.MeshPhongMaterial({color:colorValue('#67adc9'),transparent:true,opacity:.12,depthWrite:false,shininess:80}));shaft.position.copy(a).lerp(b,.5);group.add(shaft);const frame=new T.LineSegments(new T.EdgesGeometry(shaft.geometry),new T.LineBasicMaterial({color:colorValue('#5b97b0'),transparent:true,opacity:.48}));frame.position.copy(shaft.position);group.add(frame);}
+       line([a,b],t.kind==='elevator'?0x07527c:0xd47717,true);movingArrows([a,b]);tag(t.kind==='elevator'?'エレベーター EV':'エスカレーター',a.clone().lerp(b,.5),t.kind==='elevator'?'#07527c':'#ad5a0d',2.3);}
       if(mapUI.startConfirmed){const start=destinationList.find(d=>navigationTargetReference(d)===mapUI.from);if(start)outlinePlace(start,'#2580c5',group);}
       if(mapUI.goal)outlinePlace(mapUI.goal,'#d83a40',group);
       const same=data.start?.floor===data.goal?.floor&&data.start?.point&&data.goal?.point&&Math.hypot(data.start.point[0]-data.goal.point[0],data.start.point[1]-data.goal.point[1])<1;
@@ -217,11 +222,12 @@
     let trackedPosition=null;
     function updateProgress(){
       const p=navigationState.active&&navigationState.position;
-      if(!p||!planes.some(plane=>plane.userData.floor===p.floor)){if(progressMarker)progressMarker.visible=false;return;}
+      if(!p||!planes.some(plane=>plane.userData.floor===p.floor)){if(progressMarker)progressMarker.visible=false;if(elevatorCabin)elevatorCabin.visible=false;return;}
       if(!progressMarker){progressMarker=new T.Group();
         const halo=new T.Mesh(new T.SphereGeometry(.19,20,16),new T.MeshBasicMaterial({color:colorValue('#ffffff'),depthTest:false}));
         const dot=new T.Mesh(new T.SphereGeometry(.13,20,16),new T.MeshBasicMaterial({color:colorValue('#2580c5'),depthTest:false}));dot.position.y=.1;halo.renderOrder=19;dot.renderOrder=20;progressMarker.add(halo,dot);group.add(progressMarker);}
       progressMarker.visible=true;if(p.transfer){progressMarker.position.fromArray(transferPosition(p.transfer,end=>at(end.floor,end.point,.12).toArray()));}else progressMarker.position.copy(at(p.floor,p.point,.12));
+      if(p.transfer?.kind==='elevator'){if(!elevatorCabin){elevatorCabin=new T.Group();const shell=new T.Mesh(new T.BoxGeometry(.42,.36,.42),new T.MeshPhongMaterial({color:colorValue('#2580c5'),transparent:true,opacity:.7,shininess:80,depthTest:false}));shell.renderOrder=17;const outline=new T.LineSegments(new T.EdgesGeometry(shell.geometry),new T.LineBasicMaterial({color:0xffffff,depthTest:false}));outline.renderOrder=18;elevatorCabin.add(shell,outline);group.add(elevatorCabin);}elevatorCabin.visible=true;elevatorCabin.position.copy(progressMarker.position);}else if(elevatorCabin)elevatorCabin.visible=false;
       if(navigationFollow&&p.transfer&&trackedPosition){const delta=progressMarker.position.clone().sub(trackedPosition);camera.position.add(delta);controls.target.add(delta);controls.update();}trackedPosition=progressMarker.position.clone();
     }
     window.addEventListener('maji-navigation-position',updateProgress);
