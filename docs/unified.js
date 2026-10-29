@@ -150,7 +150,8 @@ function routePlan(){if(!mapUI.goal)return;if(typeof ensureIndoorStart==='functi
  for(let i=0;i<mapUI.path.length;i++){const id=mapUI.path[i],n=mapUI.graph.nodes[id];if(i){const before=mapUI.graph.nodes[mapUI.path[i-1]],edge=mapUI.graph.adj[mapUI.path[i-1]].find(e=>e.to===id);if(edge.kind==='elevator'||edge.kind==='escalator'){flush();appendStep(floorMaps[n.map].floor,(edge.kind==='elevator'?visitorPlaceLabel(n):'外来エスカレーター')+'で'+floorMaps[before.map].floor+'階から'+floorMaps[n.map].floor+'階へ',floorMaps[before.map].floor+'階の'+(edge.kind==='elevator'?visitorPlaceLabel(n):'外来エスカレーター')+'を使い、'+floorMaps[n.map].floor+'階で降りてください。',{kind:'transfer',from:mapUI.path[i-1],to:id});}else if(floorMaps[n.map].floor!==floorMaps[before.map].floor)flush();}block.push(id);if(mapUI.waypoint&&i===audit.viaIndex&&i<mapUI.path.length-1){flush();if(navigationState.steps.length)navigationState.steps.at(-1).description+=' 経由地：'+destinationDisplayName(mapUI.waypoint)+'に到着です。';block.push(id);}}flush();
  // Arrival guidance belongs to the final walking step, not a duplicate step.
  let arrivalNote='';
- if(target.type==='toilet')arrivalNote='トイレの共用廊下側に到着です。男女・多機能の表示を確認してお入りください。';
+ if(target.ref==='outpatient:3::3G')arrivalNote='3G南側の'+(end==='outpatient:3::3GSouthEast'?'東':'西')+'の出入口（三角矢印）に到着です。ここで案内を終了します。';
+ else if(target.type==='toilet')arrivalNote='トイレの共用廊下側に到着です。男女・多機能の表示を確認してお入りください。';
  else if(typeof confirmedNavigation!=='undefined'&&confirmedNavigation.anchors[target.ref])arrivalNote=target.name+'の記録した到着点で案内を終了します。';
  else if(typeof additionalNavigation!=='undefined'&&additionalNavigation.evidence[target.ref]?.arrivalKind==='entrance-arrow')arrivalNote=target.code+' '+target.name+'の入口矢印に到着です。ここで案内を終了します。';
  else if(typeof additionalNavigation!=='undefined'&&additionalNavigation.evidence[target.ref]?.arrivalKind==='reception-counter')arrivalNote=target.name+'の受付窓口に到着です。';
