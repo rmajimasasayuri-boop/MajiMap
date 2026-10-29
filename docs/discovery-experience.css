@@ -54,3 +54,6 @@ body.visitor-experience.navigation-active .navigation-panel{bottom:calc(24px + e
  body.visitor-experience.route-planning .route-options-dock{left:8px!important;right:auto!important}
 }
 @media(max-height:450px) and (max-width:700px){body.visitor-experience .facility-details{right:66px!important;width:auto!important}}
+
+.nearest-place-badge{display:inline-block;background:#08766b;color:#fff;font-size:13px;font-weight:800;padding:3px 10px;border-radius:20px;align-self:flex-start;margin-bottom:4px}.place-row.nearest-place{border:2px solid #08766b!important;background:#effaf6!important}.place-row-copy{display:flex;flex-direction:column;align-items:flex-start}.result-floor-heading{scroll-margin-top:0}
+body.visitor-experience .result-floor-heading{position:static!important}

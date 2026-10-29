@@ -2,7 +2,7 @@
 function syncSearchControls(){
  if(reviewEmbedded)return;const searching=!document.querySelector('main').classList.contains('settings-hidden'),button=ui('openPlaceSearch');
  button.textContent=searching?'‹':'⌕';button.setAttribute('aria-label',searching?'マップへ戻る':'検索候補を開く');button.classList.toggle('search-back',searching);
- ui('clearPlaceSearch').hidden=!ui('findPlace').value;if(typeof syncDiscoveryFloors==='function')syncDiscoveryFloors();
+ ui('clearPlaceSearch').hidden=!ui('findPlace').value;if(typeof syncDiscoveryFloors==='function')syncDiscoveryFloors();if(typeof scheduleCandidateIndex==='function')scheduleCandidateIndex();
 }
 function swapRoutePlaces(){
  if(!mapUI.goal||!mapUI.startConfirmed)return;
@@ -33,7 +33,7 @@ function initRouteExperience(){
  const dock=document.createElement('section');dock.id='routeOptionsDock';dock.className='route-options-dock';dock.setAttribute('aria-label','ナビ開始');dock.hidden=true;header.after(document.querySelector('.route-travel-tabs'));const start=document.createElement('button');start.id='routeDockNavigate';start.className='primary';start.textContent='ナビを開始';start.onclick=()=>{if(!ensureIndoorStart())return;routePlan();startNavigation();syncRoutePanels();};dock.append(start);ui('mapViewport').append(dock);
  ui('closeRoutePlanning').onclick=()=>{stopNavigation();document.body.classList.remove('route-planning');dock.hidden=true;planner.hidden=true;if(mapUI.goal)updateDestinationPhoto(mapUI.goal);ui('routeSummary').hidden=true;syncRoutePanels();};
  ui('detailRoute').onclick=enterRoutePlanning;
- ui('openPlaceSearch').onclick=()=>{const open=document.querySelector('main').classList.contains('settings-hidden');togglePlacePanel(open,open);syncSearchControls();};
+ ui('openPlaceSearch').onclick=()=>{const open=document.querySelector('main').classList.contains('settings-hidden');if(open&&mapUI.goal&&ui('findPlace').value===destinationDisplayName(mapUI.goal)){ui('findPlace').value='';mapUI.filter='all';document.querySelectorAll('[data-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.filter==='all')));renderResults();}togglePlacePanel(open,open);syncSearchControls();};
  ui('findPlace').addEventListener('input',syncSearchControls);ui('clearPlaceSearch').addEventListener('click',syncSearchControls);
  window.addEventListener('maji-map-update',syncRoutePanels);window.addEventListener('maji-navigation-position',syncRoutePanels);
  syncRoutePanels();
