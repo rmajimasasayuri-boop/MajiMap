@@ -1,0 +1,56 @@
+body.visitor-experience{overflow:hidden}
+body.visitor-experience .map-search-bar{left:auto!important;right:8px!important;top:8px!important;width:min(350px,calc(100% - 16px))!important}
+body.visitor-experience .map-navigation-rail{position:absolute;top:72px;right:8px;z-index:10;display:flex;flex-direction:column;align-items:center;gap:8px;margin:0;width:46px}
+body.visitor-experience .map-navigation-rail .view-switch{position:static!important;inset:auto!important;width:44px;height:44px;padding:2px!important;flex:none}
+body.visitor-experience .map-navigation-rail #toggleMapView{width:38px;height:38px;min-width:38px}
+body.visitor-experience .map-navigation-rail .floor-toolbar{position:static!important;inset:auto!important;display:flex!important;flex-direction:column!important;gap:3px!important;width:44px!important;max-width:none!important;padding:4px!important;margin:0;overflow:hidden;border-radius:16px}
+body.visitor-experience .map-navigation-rail #allFloors{display:flex!important;flex-direction:column-reverse!important;flex-wrap:nowrap!important;gap:2px!important;max-height:calc(100dvh - 300px);overflow:auto;width:100%;flex:none}
+body.visitor-experience .map-navigation-rail #allFloors button{flex:none;min-width:30px;min-height:24px;padding:3px 2px;line-height:16px;font-size:11px}
+body.visitor-experience .map-navigation-rail #allFloors button:disabled{opacity:.25;cursor:default}
+body.visitor-experience #allSearchFloors{width:100%;font-size:10px;padding:4px 0}
+body.visitor-experience #allSearchFloors[hidden]{display:none!important}
+body.visitor-experience #allSearchFloors[aria-pressed=true]{color:#fff;background:#176f68}
+body.visitor-experience .map-heading{display:none!important}
+body.visitor-experience .result-floor-filter{display:none!important}
+body.visitor-experience .facility-details{bottom:calc(24px + env(safe-area-inset-bottom,0px))!important}
+body.visitor-experience .route-options-dock{bottom:calc(24px + env(safe-area-inset-bottom,0px))!important}
+body.visitor-experience .campus-map-button{bottom:calc(0px + env(safe-area-inset-bottom,0px));padding:0 6px;line-height:18px;font-size:9px}
+body.visitor-experience .map-3d-controls{right:61px!important;top:74px!important;width:100px!important}
+body.visitor-experience.route-planning .map-navigation-rail{top:242px}
+body.visitor-experience.route-planning .map-navigation-rail #allFloors{max-height:calc(100dvh - 420px)}
+body.visitor-experience.route-planning .map-3d-controls{top:244px!important}
+body.visitor-experience.navigation-active .map-navigation-rail{top:12px}
+body.visitor-experience.navigation-active .map-navigation-rail .floor-toolbar{display:none!important}
+body.visitor-experience .candidate-equipment{display:flex;flex-wrap:wrap;gap:5px;margin:5px 0 8px;flex:none}
+body.visitor-experience .candidate-equipment .equipment-chip{border-radius:18px;padding:5px 7px;font-size:10px;gap:4px;min-height:30px}
+body.visitor-experience .candidate-equipment .facility-pict{width:18px;height:18px}
+body.visitor-experience .nearby-equipment-bar{display:none!important}
+body.visitor-experience.place-searching .map-navigation-rail{position:fixed;z-index:40;top:72px!important;right:8px}
+body.visitor-experience.place-searching .map-navigation-rail .view-switch{display:none!important}
+body.visitor-experience.place-searching .map-navigation-rail #allFloors{max-height:calc(100dvh - 145px)}
+body.visitor-experience main:not(.settings-hidden) #settings#settings{position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;max-height:none!important;overflow:hidden!important;box-sizing:border-box;padding:70px 62px 8px 8px!important;display:flex;flex-direction:column;border:0;border-radius:0}
+body.visitor-experience main:not(.settings-hidden) #settings .aside-top{display:none!important}
+body.visitor-experience #settings .destination-card{height:100%;min-height:0;overflow:hidden;display:flex;flex-direction:column;padding:4px!important}
+body.visitor-experience #settings .filters{padding:0!important;flex:none;margin:4px 0;gap:4px}
+body.visitor-experience #settings #placeResults{flex:1;min-height:0;max-height:none!important;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;padding-bottom:12px}
+body.visitor-experience #resultCount{font-size:11px;flex:none;margin:4px 0}
+body.visitor-experience.place-searching .map-search-bar{position:fixed;z-index:45!important}
+body.visitor-experience #detailWebsite[hidden]{display:none!important}
+body.visitor-experience #facilityHours{grid-column:1/-1;grid-row:3;display:flex;flex-wrap:wrap;align-items:center;gap:3px 7px;font-size:10px;line-height:1.4;border-top:1px solid #e6edef;padding-top:6px}
+body.visitor-experience #facilityHours[hidden]{display:none!important}
+body.visitor-experience #facilityHours small{width:100%;font-size:9px;color:#6b828c}
+.business-state{color:#137347}.business-state[data-state=closed]{color:#c3353b}.business-state[data-state=soon-open],.business-state[data-state=soon-close]{color:#a85b00}.business-state[data-state=unknown]{color:#657c87}
+@media(min-width:701px){
+ body.visitor-experience main:not(.settings-hidden) #settings#settings{left:auto!important;width:430px!important;padding:70px 62px 8px 12px!important;box-shadow:-4px 0 20px #183b4912}
+}
+body.visitor-experience.navigation-active .navigation-panel{bottom:calc(24px + env(safe-area-inset-bottom,0px))!important}
+@media(max-height:650px){
+ body.visitor-experience:not(.route-planning):not(.navigation-active) .map-navigation-rail #allFloors{gap:1px!important;max-height:none}
+ body.visitor-experience:not(.route-planning):not(.navigation-active) .map-navigation-rail #allFloors button{min-height:20px;padding:1px 2px;line-height:16px}
+}
+@media(max-height:650px){
+ body.visitor-experience:not(.navigation-active) .map-navigation-rail #allFloors{gap:1px!important;max-height:none!important}
+ body.visitor-experience:not(.navigation-active) .map-navigation-rail #allFloors button{min-height:20px;padding:1px 2px;line-height:16px}
+ body.visitor-experience.route-planning .route-options-dock{left:8px!important;right:auto!important}
+}
+@media(max-height:450px) and (max-width:700px){body.visitor-experience .facility-details{right:66px!important;width:auto!important}}

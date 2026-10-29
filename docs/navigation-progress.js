@@ -1,6 +1,7 @@
 // This marker previews a navigation instruction; it does not measure device location.
 let navigationProgressFrame=0,navigationProgressRun=0;
 function instructionSegments(step){
+ if(step.segments)return step.segments;
  if(step.kind==='transfer')return [{floor:step.floor,points:[displayPoint(step.to)]}];
  const out=[];
  for(let i=1;i<(step.nodes||[]).length;i++){

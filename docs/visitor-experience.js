@@ -22,7 +22,7 @@ function focusNavigationStep(){
  const points=transfer?[displayPoint(step.from)]:instructionSegments(step).flatMap(s=>s.points);if(!points.length)return;
  const v=ui('mapViewport'),panel=ui('navigationPanel'),bottom=panel.getBoundingClientRect().top-v.getBoundingClientRect().top;
  const area={width:v.clientWidth-40,height:Math.max(130,bottom-85)},fit=fitNavigationBounds(points,area),[w,h]=floorInfo(mapUI.floor).size;
- mapUI.zoom=Math.max(.7,Math.min(8,fit.scale/mapUI.base));const scale=mapUI.base*mapUI.zoom;
+ mapUI.zoom=Math.max(.7,Math.min(12,fit.scale/mapUI.base));const scale=mapUI.base*mapUI.zoom;
  mapUI.pan=[(w/2-fit.center[0])*scale,(h/2-fit.center[1])*scale+(65+area.height/2)-v.clientHeight/2];applyMapTransform();
 }
 function officialIconSVG(f,box){return '<svg class="facility-pict" viewBox="'+box.join(' ')+'" aria-hidden="true"><image href="assets/visitor-floor-'+f+'.svg" width="'+unifiedMapModel.floors[f].size[0]+'" height="'+unifiedMapModel.floors[f].size[1]+'"/></svg>';}
