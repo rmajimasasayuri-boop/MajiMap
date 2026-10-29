@@ -6,18 +6,18 @@ function routeProximityFor(matches){
  for(const d of matches){let best=Infinity;if(d.nearestEligible!==false&&!isGuideOnly(d))for(const start of starts){const end=navigationTargetReference(d),via3F=routeNeeds3F(graph,start,end),key=start+'|'+via3F;let tree=trees.get(key);if(!tree){tree=auditedRouteTree(graph,start,via3F);trees.set(key,tree);}best=Math.min(best,tree.labels.get(end)?.cost??Infinity);}scores.set(d.ref,best);}return scores;
 }
 let searchFocusLock=false;
-let placeSearchView='home';
+let placeSearchView='home',preferredCandidateFloor=null;
 function setPlaceSearchView(view){placeSearchView=view;document.body.dataset.searchView=view;fitFloorRail();}
-function beginPlaceSearch(){ui('findPlace').value='';mapUI.filter='all';mapUI.resultFloor=null;document.querySelectorAll('[data-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.filter==='all')));setPlaceSearchView('home');renderResults();updateSearchChoices();}
+function beginPlaceSearch(){preferredCandidateFloor=null;ui('findPlace').value='';mapUI.filter='all';mapUI.resultFloor=null;document.querySelectorAll('[data-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.filter==='all')));setPlaceSearchView('home');renderResults();updateSearchChoices();}
 
 let candidateIndexOpen=false,candidateIndexFrame=0,candidateIndexSignature='';
 function jumpToCandidateFloor(floor){
  const list=ui('placeResults'),heading=list.querySelector('.result-floor-heading[data-floor="'+floor+'"]'),row=heading||[...list.querySelectorAll('.place-row')].find(b=>b.dataset.floor===String(floor));
- if(!row)return;mapUI.resultFloor=floor;list.scrollTop+=row.getBoundingClientRect().top-list.getBoundingClientRect().top;syncDiscoveryFloors();
+ if(!row)return;list.style.paddingBottom=Math.max(12,list.clientHeight-40)+'px';mapUI.resultFloor=floor;list.scrollTop+=row.getBoundingClientRect().top-list.getBoundingClientRect().top;syncDiscoveryFloors();
 }
 function scheduleCandidateIndex(){
  if(reviewEmbedded)return;cancelAnimationFrame(candidateIndexFrame);candidateIndexFrame=requestAnimationFrame(()=>{const open=!document.querySelector('main').classList.contains('settings-hidden'),query=ui('findPlace').value.trim(),signature=query+'|'+mapUI.filter;if(searchFocusLock)return;
- if(open&&(!candidateIndexOpen||signature!==candidateIndexSignature)){if(!query&&ui('placeResults').querySelector('[data-floor="3"]'))jumpToCandidateFloor(3);else ui('placeResults').scrollTop=0;}
+ if(open&&(!candidateIndexOpen||signature!==candidateIndexSignature)){if(!query){const floor=preferredCandidateFloor||3;if(ui('placeResults').querySelector('[data-floor="'+floor+'"]'))jumpToCandidateFloor(floor);else if(ui('placeResults').querySelector('[data-floor="3"]'))jumpToCandidateFloor(3);else ui('placeResults').scrollTop=0;}else ui('placeResults').scrollTop=0;}
  candidateIndexOpen=open;candidateIndexSignature=signature;});
 }
 function syncDiscoveryFloors(){
@@ -48,7 +48,7 @@ function initSearchChoices(){
  input.addEventListener('focus',()=>{searchFocusLock=true;cancelAnimationFrame(candidateIndexFrame);cancelAnimationFrame(lockingFrame);lockingFrame=requestAnimationFrame(()=>{ui('placeResults').scrollTop=saved;window.scrollTo(0,0);lockingFrame=requestAnimationFrame(()=>{searchFocusLock=false;candidateIndexOpen=true;candidateIndexSignature=input.value.trim()+'|'+mapUI.filter;});});});
  input.addEventListener('input',()=>{searchFocusLock=false;setPlaceSearchView(input.value.trim()?'results':'home');});updateSearchChoices();
 }
-function activateIndexedFloor(floor){if(!document.querySelector('main').classList.contains('settings-hidden'))jumpToCandidateFloor(floor);else if(mapUI.floor!==floor)showFloor(floor);}
+function activateIndexedFloor(floor){if(!document.querySelector('main').classList.contains('settings-hidden')){preferredCandidateFloor=floor;jumpToCandidateFloor(floor);}else if(mapUI.floor!==floor)showFloor(floor);}
 function fitFloorRail(){if(reviewEmbedded)return;requestAnimationFrame(()=>{const floors=ui('allFloors'),top=floors.getBoundingClientRect().top,height=window.visualViewport?.height||window.innerHeight;document.documentElement.style.setProperty('--floor-rail-height',Math.max(80,Math.min(340,height-top-24))+'px');});}
 function initFloorSlide(){
  const floors=ui('allFloors');let pointer=null,last=null;
