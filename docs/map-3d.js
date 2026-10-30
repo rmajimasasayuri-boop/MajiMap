@@ -172,9 +172,8 @@
     }
     function outlinePlace(d,color,target) {
       if(!planes.some(p=>p.userData.floor===d.floor))return;
-      for(const [x,y,w,h]of placeHitBounds(d)) {
-        const points=[[x,y],[x+w,y],[x+w,y+h],[x,y+h]].map(p=>at(d.floor,p,.006));
-        const fill=new T.Mesh(new T.PlaneGeometry(w*S,h*S),new T.MeshBasicMaterial({color:colorValue(color),side:T.DoubleSide,transparent:true,opacity:.12,depthTest:true,depthWrite:false}));fill.rotation.x=-Math.PI/2;fill.position.copy(at(d.floor,[x+w/2,y+h/2],.004));fill.renderOrder=12;target.add(fill);
+      for(const polygon of placeHitPolygons(d)) {
+        const points=polygon.map(p=>at(d.floor,p,.006));
         for(let i=0;i<points.length;i++) {
           const a=points[i],b=points[(i+1)%points.length],delta=b.clone().sub(a);
           const edge=new T.Mesh(new T.CylinderGeometry(.009,.009,delta.length(),8),new T.MeshBasicMaterial({color:colorValue(color),depthTest:true,depthWrite:false}));edge.position.copy(a).addScaledVector(delta,.5);edge.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),delta.normalize());edge.renderOrder=13;target.add(edge);

@@ -1,5 +1,5 @@
 function routeNeeds3F(graph,start,goal){return [start,goal].some(r=>r.startsWith('hospital:')&&floorMaps[graph.nodes[r]?.map]?.floor>=7)&&![start,goal].some(r=>[5,6].includes(floorMaps[graph.nodes[r]?.map]?.floor));}
-function routeEdgeAllowed(graph,u,edge,via3F){return !(via3F&&['walk','view'].includes(edge.kind)&&[5,6].includes(floorMaps[graph.nodes[u]?.map]?.floor));}
+function routeEdgeAllowed(graph,u,edge,via3F){if(typeof entranceEdgeAllowed==='function'&&!entranceEdgeAllowed(u,edge.to||edge.v))return false;return !(via3F&&['walk','view'].includes(edge.kind)&&[5,6].includes(floorMaps[graph.nodes[u]?.map]?.floor));}
 const $=id=>document.getElementById(id);
 Object.assign(floorMaps,outpatientMaps);
 const buildings={hospital:{title:'病棟',defaultFloor:7},outpatient:{title:'外来・診療棟',defaultFloor:3}};

@@ -1,5 +1,6 @@
 // Search vocabulary changes labels only; route destinations and arrival points stay unchanged.
 const placeSearchAliases={
+ 'outpatient:5::5L':['透析','とうせき','人工透析','血液透析'],
  'outpatient:1::1A':['ほうしゃせんちりょう','放射線治療'],
  'outpatient:1::1E':['あいそとーぷ','ぺっと','PET検査'],
  'outpatient:2::2S':['レントゲン','れんとげん','X線','エックス線','x-ray','CT','シーティー','MRI','エムアールアイ','画像検査','放射線検査'],
@@ -8,8 +9,8 @@ const placeSearchAliases={
  'outpatient:2::2L':['ないしきょう','胃カメラ','大腸カメラ'],
  'outpatient:3::3L':['さいけつ','血液検査','けつえきけんさ','せいりけんさ'],
  'outpatient:3::3P':['にゅういんてつづき','入院受付','かんじゃしえんせんたー','術前サポート'],
- 'hospital:3::generalReception':['そうごううけつけ','そうごう','受付','総合','総合案内','初診受付','初めての受付','はじめてのうけつけ','初診','しょしん','しんさつうけつけ'],
- 'services::medicine':['お薬','くすり','薬受取','おくすり','薬の受け取り'],
+ 'hospital:3::generalReception':['会計','かいけい','そうごううけつけ','そうごう','受付','総合','総合案内','初診受付','初めての受付','はじめてのうけつけ','初診','しょしん','しんさつうけつけ'],
+ 'services::medicine':['薬局','やっきょく','お薬','くすり','薬受取','おくすり','薬の受け取り'],
  'services::information':['いんふぉめーしょん','案内所'],
  'services::admission':['にゅういんあんない'],
  'services::seven':['せぶん','セブン','7イレブン','こんびに','コンビニ','こんびにえんすすとあ','せぶんいれぶん','売店','ばいてん','おにぎり','お弁当','おべんとう','買い物','かいもの'],
