@@ -30,3 +30,6 @@
 
 公開マップ：https://rmajimasasayuri-boop.github.io/MajiMap/
 公式参考：https://www.med.kindai.ac.jp/floormap_facility.html
+
+## お気に入りの解除とアイコン
+★を押すと「お気に入りから削除しますか？」を表示し、キャンセル・削除を選びます。検索・×・★は戻る矢印と同じ36pxの記号、44pxの押下領域。未登録の★は灰色、登録済みは緑です。
