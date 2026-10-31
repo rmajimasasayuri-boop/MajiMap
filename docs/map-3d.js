@@ -164,6 +164,7 @@
       hoverGroup=null;hoverPlace=null;hoverMode=null;container.style.cursor='grab';schedulePhotoRestore();
     }
     function highlight(d,anchor) {
+      if(anchor&&mapUI.previewPlace)d=mapUI.previewPlace;
       if(d?.ref===hoverPlace?.ref&&hoverMode===mapUI.pickMode){if(d&&anchor)previewPlacePhoto(d,anchor);return;}
       clearHover();if(!d)return;if(anchor)previewPlacePhoto(d,anchor);hoverPlace=d;hoverMode=mapUI.pickMode;
       const color=mapUI.pickMode==='start'?'#2580c5':'#ff0300';hoverGroup=new T.Group();group.add(hoverGroup);
@@ -240,17 +241,17 @@
       }
       const ps=instructionSegments(step).flatMap(s=>s.points).map(p=>at(step.floor,p));if(!ps.length)return;
       const box=new T.Box3().setFromPoints(ps),size=box.getSize(new T.Vector3()),center=box.getCenter(new T.Vector3()),radius=Math.max(size.x/Math.max(camera.aspect,.4),size.z,3.5);
-      controls.target.copy(center);camera.position.copy(center).add(new T.Vector3(-radius*.12,radius*1.2,radius*.8));trackedPosition=null;controls.update();clearHover();
+      controls.target.copy(center);camera.position.copy(center).add(new T.Vector3(-radius*.12,radius*1.2,radius*.8));trackedPosition=null;controls.update();highlight(mapUI.previewPlace||mapUI.goal||null);
     }
-    function focusFloor(f){const plane=planes.find(p=>p.userData.floor===f);if(!plane)return;const {width,height}=plane.userData,center=at(f,[width/2,height/2],0),offset=new T.Vector3(...map3DHomeOffset([width*S,0,height*S],camera.aspect));controls.target.copy(center);camera.position.copy(center).add(offset);controls.update();clearHover();}
-    function pan(x,y){camera.updateMatrixWorld();const step=camera.position.distanceTo(controls.target)*.09,delta=new T.Vector3().setFromMatrixColumn(camera.matrixWorld,0).multiplyScalar(x*step).addScaledVector(new T.Vector3().setFromMatrixColumn(camera.matrixWorld,1),y*step);camera.position.add(delta);controls.target.add(delta);controls.update();clearHover();}
-    function rotate(direction){camera.position.sub(controls.target).applyAxisAngle(new T.Vector3(0,1,0),direction*Math.PI/12).add(controls.target);controls.update();clearHover();}
+    function focusFloor(f){const plane=planes.find(p=>p.userData.floor===f);if(!plane)return;const {width,height}=plane.userData,center=at(f,[width/2,height/2],0),offset=new T.Vector3(...map3DHomeOffset([width*S,0,height*S],camera.aspect));controls.target.copy(center);camera.position.copy(center).add(offset);controls.update();highlight(mapUI.previewPlace||mapUI.goal||null);}
+    function pan(x,y){camera.updateMatrixWorld();const step=camera.position.distanceTo(controls.target)*.09,delta=new T.Vector3().setFromMatrixColumn(camera.matrixWorld,0).multiplyScalar(x*step).addScaledVector(new T.Vector3().setFromMatrixColumn(camera.matrixWorld,1),y*step);camera.position.add(delta);controls.target.add(delta);controls.update();highlight(mapUI.previewPlace||mapUI.goal||null);}
+    function rotate(direction){camera.position.sub(controls.target).applyAxisAngle(new T.Vector3(0,1,0),direction*Math.PI/12).add(controls.target);controls.update();highlight(mapUI.previewPlace||mapUI.goal||null);}
     function zoom(factor){camera.position.sub(controls.target).multiplyScalar(factor).add(controls.target);controls.update();}
     function resize(){const w=container.clientWidth,h=container.clientHeight;if(!w||!h)return;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();}
     function loop(time=0){if(disposed||paused)return;frame=requestAnimationFrame(loop);for(const m of motion){const sample=sampleRouteMotion(m.track,m.offset+(reducedMotion.matches?0:time*.00065));m.arrow.position.fromArray(sample.point);m.arrow.quaternion.setFromUnitVectors(new T.Vector3(0,0,1),new T.Vector3(...sample.direction));}for(const pin of screenPins){const radius=pin.position.distanceTo(camera.position)*Math.tan(camera.fov*Math.PI/360)*24/Math.max(1,container.clientHeight);pin.scale.setScalar(radius/.18);}controls.update();renderer.render(scene,camera);}
     function pause(value){paused=value;cancelAnimationFrame(frame);if(!paused&&!disposed)loop();}
     renderer.domElement.addEventListener('pointerdown',e=>{if(navigationState.active)navigationFollow=false;activePointers.add(e.pointerId);down=activePointers.size===1?{x:e.clientX,y:e.clientY,id:e.pointerId,moved:false}:null;});
-    renderer.domElement.addEventListener('pointermove',e=>{if(down){if(Math.hypot(e.clientX-down.x,e.clientY-down.y)>5){down.moved=true;hidePlacePreview();}clearHover();return;}if(activePointers.size)return;highlight(pointerHit(e)?.place,{x:e.clientX,y:e.clientY});});
+    renderer.domElement.addEventListener('pointermove',e=>{if(down){if(Math.hypot(e.clientX-down.x,e.clientY-down.y)>5)down.moved=true;highlight(mapUI.previewPlace||mapUI.goal||null);return;}if(activePointers.size)return;const hit=pointerHit(e);highlight(hit?.place||mapUI.previewPlace||mapUI.goal||null,hit?.place?{x:e.clientX,y:e.clientY}:undefined);});
     renderer.domElement.addEventListener('pointerleave',()=>highlight(mapUI.previewPlace||mapUI.goal||null));
     renderer.domElement.addEventListener('pointerup',e=>{
       const pressed=down;down=null;activePointers.delete(e.pointerId);if(!pressed||pressed.id!==e.pointerId||pressed.moved||e.button!==0)return;
