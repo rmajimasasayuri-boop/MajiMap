@@ -1,9 +1,10 @@
 /* Neutral choices and saved-place rows share one visual language. */
 body.visitor-experience .search-choice-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
 body.visitor-experience .search-choice-buttons button,body.visitor-experience .recent-places button,body.visitor-experience .favorite-place-row button{background:#fff!important;color:#31515d!important;border-color:#c8d8df!important}
-body.visitor-experience .history-place-row{display:flex;align-items:stretch;border-bottom:1px solid #d8e3e7}
-body.visitor-experience .history-place-row>button:first-child{flex:1;text-align:left;min-width:0}
-body.visitor-experience .history-star{flex:0 0 44px;width:44px;border:0!important;font-size:22px!important}
+body.visitor-experience .history-place-row,body.visitor-experience .favorite-place-row{display:grid;grid-template-columns:minmax(0,1fr) 44px;align-items:stretch;min-width:0;flex:none;border-bottom:1px solid #d8e3e7}
+body.visitor-experience #recentPlaces{overflow:visible;flex:none}
+body.visitor-experience #recentPlaces .history-place-row>button:first-child,body.visitor-experience .favorite-place-row>button:first-child{width:auto!important;max-width:none!important;min-width:0;text-align:left;white-space:normal;overflow-wrap:anywhere}
+body.visitor-experience #recentPlaces .history-star,body.visitor-experience .favorite-place-row>button:last-child{width:44px!important;min-width:44px!important;max-width:44px!important;padding:0!important;border:0!important;text-align:center;flex:0 0 44px}
 body.visitor-experience #facilityDetails#facilityDetails{width:100%!important;max-width:100%!important;left:0!important;bottom:0!important;padding-bottom:var(--visitor-safe-bottom)!important}
 body.visitor-experience #facilityDetails .facility-detail-body{grid-template-columns:88px minmax(0,1fr) 44px!important;grid-template-rows:auto auto auto!important;padding:8px calc(8px + var(--visitor-safe-right)) 0 calc(8px + var(--visitor-safe-left))!important}
 body.visitor-experience #facilityDetails .destination-photo-preview:not([hidden]){height:auto!important;align-self:center}
@@ -12,11 +13,11 @@ body.visitor-experience #facilityDetails .facility-heading{min-height:0!importan
 body.visitor-experience #facilityDetails .facility-heading h2{margin:0!important;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 body.visitor-experience #facilityDetails #facilityDetailFloor{display:none!important}
 body.visitor-experience #facilityDetails .facility-detail-actions{margin:0!important;align-self:end}
-body.visitor-experience #facilityDetails .facility-detail-actions>*{min-height:44px!important;border-radius:9px 9px 0 0!important}
+body.visitor-experience #facilityDetails .facility-detail-actions>*{min-height:44px!important;border-radius:9px!important}
 body.visitor-experience #facilityDetails .facility-detail-actions>[hidden]{display:none!important}
 body.visitor-experience:has(#facilityDetails:not([hidden])) .maji-attribution,body.visitor-experience.route-planning .maji-attribution{display:none!important}
 body.visitor-experience #routeOptionsDock{left:0!important;right:0!important;bottom:0!important;margin:0!important;width:100%!important;max-width:none!important;padding:0 8px var(--visitor-safe-bottom)!important;justify-content:flex-end!important}
-body.visitor-experience #routeOptionsDock>button:not([hidden]){border-radius:20px 20px 0 0!important}
+body.visitor-experience #routeOptionsDock>button:not([hidden]){border-radius:20px!important}
 body.visitor-experience #routeOptionsDock>button[hidden]{display:none!important}
 body.visitor-experience.place-preview-open .map-navigation-rail .view-switch{position:absolute!important;right:64px!important;top:0!important}
 body.visitor-experience #visitorMapHome{width:46px!important;min-width:46px!important;height:32px!important;min-height:32px!important;max-height:32px!important;padding:0!important;border-radius:6px}
@@ -44,17 +45,14 @@ body.visitor-experience #routeAddWaypoint,body.visitor-experience #routeViaRow{d
 
 body.visitor-experience:not(#original-type):not(#small-type):not(#tiny-type) :is(#favoritePlaceButton,.history-star,#clearPlaceSearch,#closeFacilityDetails,#openPlaceSearch){font-size:24px!important;line-height:1!important;min-width:44px;min-height:44px}
 body.visitor-experience #favoritePlaceButton[aria-pressed=false],body.visitor-experience .history-star[data-saved=false]{color:#83969d!important}
-body.visitor-experience #favoritePlaceButton[aria-pressed=true],body.visitor-experience .history-star[data-saved=true],body.visitor-experience .favorite-place-row button:last-child{color:#b77c00!important}
+body.visitor-experience #favoritePlaceButton[aria-pressed=true],body.visitor-experience .history-star[data-saved=true],body.visitor-experience .favorite-place-row button:last-child{color:#ffff00!important}
 body.visitor-experience #facilityDetails .facility-detail-body{grid-template-rows:minmax(88px,auto) auto auto!important}
 /* Keep floor controls stationary; the search and route panels reserve their column. */
 body.visitor-experience.place-searching .map-navigation-rail,
 body.visitor-experience.route-planning.place-searching .map-navigation-rail{top:calc(8px + var(--visitor-safe-top))!important}
-body.visitor-experience .map-navigation-rail button,
-body.visitor-experience #routeOptionsDock>button:not([hidden]),
-body.visitor-experience #facilityDetails .facility-detail-actions>*{border-radius:14px!important}
 /* The official region remains the hit area; strengthen its outline without enlarging it. */
 .place-map-target:hover polygon,.place-map-target:focus polygon,
 .place-map-target[data-selected=goal] polygon,.place-map-target[data-selected=start] polygon{stroke-width:3;paint-order:stroke fill}
-body.visitor-experience #placeResults .place-row .code{min-width:36px!important;max-width:60px;white-space:normal;color:#004f80;border:1px solid #6995b2;border-radius:5px;padding:4px 3px;text-align:center}
+body.visitor-experience #placeResults .place-row .code{min-width:36px!important;max-width:60px;white-space:normal;color:#fff!important;border:1px solid transparent;border-radius:5px;padding:5px 4px;text-align:center;font-weight:700}
 body.visitor-experience #placeResults .place-row .code[hidden]{display:none!important}
 body.visitor-experience #placeResults .place-result-photo{width:68px!important;height:auto!important;aspect-ratio:auto!important;object-fit:contain!important;flex:none}

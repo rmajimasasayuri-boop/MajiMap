@@ -21,7 +21,7 @@ function placeOfficialIcons(d){
 }
 function refreshResultDetails(){
  const rows=[...ui('placeResults').querySelectorAll('.place-row')];for(const row of rows){const d=destinationList.find(d=>row.dataset.placeRef===d.ref);if(!d)continue;
- const code=row.querySelector('.code');if(code){code.hidden=!d.code;code.textContent=d.code||'';const ward=d.ref.split('::').pop();code.style.background=d.type==='ward'?(unifiedMapModel.palette[ward]||'#fff'):'#fff';}row.querySelector('.place-row-copy small')?.remove();const icons=placeOfficialIcons(d);if(icons.length){const box=document.createElement('span');box.className='official-result-icons';box.innerHTML=icons.join('');row.prepend(box);}
+ const code=row.querySelector('.code');if(code){code.hidden=!d.code;code.textContent=d.code||'';const ward=d.ref.split('::').pop(),colors={eastA:'#176286',eastB:'#886000',westA:'#357245',westB:'#b63846'};const signColor=/^[1-6][ABJK]$/.test(d.code||'')?'#75852a':/^[1-6][CE]$/.test(d.code||'')?'#a77c00':'#2469a5';code.style.background=d.type==='ward'?(colors[ward]||'#176286'):signColor;}row.querySelector('.place-row-copy small')?.remove();const icons=placeOfficialIcons(d);if(icons.length){const box=document.createElement('span');box.className='official-result-icons';box.innerHTML=icons.join('');row.prepend(box);}
  const state=entranceAvailability(d.ref);if(state.label){const badge=document.createElement('span');badge.className='entrance-status';badge.dataset.state=state.state;badge.textContent=state.label;row.querySelector('.place-row-copy').append(badge);}
  }
 }
@@ -54,7 +54,6 @@ function initVisitorUpdates(){
  const oldClose=closeVisitorPreview;closeVisitorPreview=function(){oldClose();mapUI.previewPlace=null;};
  const oldPhoto=renderPlacePhoto;renderPlacePhoto=function(d){oldPhoto(d);if(d?.type==='entrance'){const host=ui('facilityHours'),state=entranceAvailability(d.ref);host.hidden=false;host.textContent=state.label;host.className='facility-hours entrance-status';host.dataset.state=state.state;}updatePreviewActions();};
  const oldPlan=routePlan;routePlan=function(){if(mapUI.goal&&entranceAvailability(mapUI.goal.ref).closed){clearRouteSelection();ui('mapMessage').dataset.important='true';ui('mapMessage').textContent='この出入口は閉鎖中です。時間外出入口を選択してください。';return;}return oldPlan();};
- const nearest=document.createElement('button');nearest.id='nearestEntrance';nearest.textContent='最寄りの出入口';nearest.className='secondary';nearest.onclick=()=>{if(!ensureIndoorStart())return;mapUI.filter='entrance';ui('findPlace').value='';togglePlacePanel(true);setPlaceSearchView('browse');renderResults();};ui('searchChoices').querySelector('.search-choice-buttons').append(nearest);
  updateSearchChoices();updateVisitorFavorites();renderResults();syncVisitorRefinements();
  let last=regularEntranceRefs.map(r=>entranceAvailability(r).state).join();setInterval(()=>{const next=regularEntranceRefs.map(r=>entranceAvailability(r).state).join();if(next!==last){last=next;renderResults();if(mapUI.goal){stopNavigation();routePlan();}}},15000);
 }
