@@ -21,7 +21,7 @@ function placeOfficialIcons(d){
 }
 function refreshResultDetails(){
  const rows=[...ui('placeResults').querySelectorAll('.place-row')];for(const row of rows){const d=destinationList.find(d=>row.dataset.placeRef===d.ref);if(!d)continue;
- row.querySelector('.code')?.remove();row.querySelector('.place-row-copy small')?.remove();const icons=placeOfficialIcons(d);if(icons.length){const box=document.createElement('span');box.className='official-result-icons';box.innerHTML=icons.join('');row.prepend(box);}
+ const code=row.querySelector('.code');if(code){code.hidden=!d.code;code.textContent=d.code||'';const ward=d.ref.split('::').pop();code.style.background=d.type==='ward'?(unifiedMapModel.palette[ward]||'#fff'):'#fff';}row.querySelector('.place-row-copy small')?.remove();const icons=placeOfficialIcons(d);if(icons.length){const box=document.createElement('span');box.className='official-result-icons';box.innerHTML=icons.join('');row.prepend(box);}
  const state=entranceAvailability(d.ref);if(state.label){const badge=document.createElement('span');badge.className='entrance-status';badge.dataset.state=state.state;badge.textContent=state.label;row.querySelector('.place-row-copy').append(badge);}
  }
 }

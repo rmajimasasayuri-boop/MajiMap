@@ -55,3 +55,6 @@ body.visitor-experience #facilityDetails .facility-detail-actions>*{border-radiu
 /* The official region remains the hit area; strengthen its outline without enlarging it. */
 .place-map-target:hover polygon,.place-map-target:focus polygon,
 .place-map-target[data-selected=goal] polygon,.place-map-target[data-selected=start] polygon{stroke-width:3;paint-order:stroke fill}
+body.visitor-experience #placeResults .place-row .code{min-width:36px!important;max-width:60px;white-space:normal;color:#004f80;border:1px solid #6995b2;border-radius:5px;padding:4px 3px;text-align:center}
+body.visitor-experience #placeResults .place-row .code[hidden]{display:none!important}
+body.visitor-experience #placeResults .place-result-photo{width:68px!important;height:auto!important;aspect-ratio:auto!important;object-fit:contain!important;flex:none}
