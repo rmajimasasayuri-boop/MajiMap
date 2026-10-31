@@ -176,7 +176,7 @@
         const points=polygon.map(p=>at(d.floor,p,.006));
         for(let i=0;i<points.length;i++) {
           const a=points[i],b=points[(i+1)%points.length],delta=b.clone().sub(a);
-          const edge=new T.Mesh(new T.CylinderGeometry(.009,.009,delta.length(),8),new T.MeshBasicMaterial({color:colorValue(color),depthTest:true,depthWrite:false}));edge.position.copy(a).addScaledVector(delta,.5);edge.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),delta.normalize());edge.renderOrder=13;target.add(edge);
+          const edge=new T.Mesh(new T.CylinderGeometry(.014,.014,delta.length(),8),new T.MeshBasicMaterial({color:colorValue(color),depthTest:true,depthWrite:false}));edge.position.copy(a).addScaledVector(delta,.5);edge.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),delta.normalize());edge.renderOrder=13;target.add(edge);
         }
       }
     }

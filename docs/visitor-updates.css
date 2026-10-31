@@ -42,7 +42,16 @@ body.visitor-experience #routeSummary,body.visitor-experience #showRouteSteps{di
 /* User withdrew waypoint functionality on 2026-10-30. */
 body.visitor-experience #routeAddWaypoint,body.visitor-experience #routeViaRow{display:none!important}
 
-body.visitor-experience:not(#original-type):not(#small-type):not(#tiny-type) :is(#favoritePlaceButton,.history-star,#clearPlaceSearch,#closeFacilityDetails,#openPlaceSearch){font-size:36px!important;line-height:1!important;min-width:44px;min-height:44px}
+body.visitor-experience:not(#original-type):not(#small-type):not(#tiny-type) :is(#favoritePlaceButton,.history-star,#clearPlaceSearch,#closeFacilityDetails,#openPlaceSearch){font-size:24px!important;line-height:1!important;min-width:44px;min-height:44px}
 body.visitor-experience #favoritePlaceButton[aria-pressed=false],body.visitor-experience .history-star[data-saved=false]{color:#83969d!important}
-body.visitor-experience #favoritePlaceButton[aria-pressed=true],body.visitor-experience .history-star[data-saved=true]{color:#176f68!important}
+body.visitor-experience #favoritePlaceButton[aria-pressed=true],body.visitor-experience .history-star[data-saved=true],body.visitor-experience .favorite-place-row button:last-child{color:#b77c00!important}
 body.visitor-experience #facilityDetails .facility-detail-body{grid-template-rows:minmax(88px,auto) auto auto!important}
+/* Keep floor controls stationary; the search and route panels reserve their column. */
+body.visitor-experience.place-searching .map-navigation-rail,
+body.visitor-experience.route-planning.place-searching .map-navigation-rail{top:calc(8px + var(--visitor-safe-top))!important}
+body.visitor-experience .map-navigation-rail button,
+body.visitor-experience #routeOptionsDock>button:not([hidden]),
+body.visitor-experience #facilityDetails .facility-detail-actions>*{border-radius:14px!important}
+/* The official region remains the hit area; strengthen its outline without enlarging it. */
+.place-map-target:hover polygon,.place-map-target:focus polygon,
+.place-map-target[data-selected=goal] polygon,.place-map-target[data-selected=start] polygon{stroke-width:3;paint-order:stroke fill}
