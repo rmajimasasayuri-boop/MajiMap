@@ -61,12 +61,19 @@ body.visitor-experience #placeResults .place-result-photo{width:68px!important;h
 body.visitor-experience :is(#favoritePlaceButton,.history-star,.favorite-place-row>button:last-child){display:grid!important;place-items:center;padding:0!important;width:44px!important;min-width:44px!important;height:44px!important;min-height:44px!important}
 body.visitor-experience .favorite-star-icon{width:24px!important;height:24px!important;display:block;overflow:visible;fill:currentColor;stroke:#997000;stroke-width:1.2;stroke-linejoin:round}
 body.visitor-experience #favoritePlaceButton[aria-pressed=false] svg,body.visitor-experience .history-star[data-saved=false] svg{stroke:#647880}
-/* Match the official map: clear red outlines, original area colors, red code badge. */
+/* Hit areas follow the grounds; only text signs receive a selection outline. */
 .place-map-target{--place-outline:#ff0300}
-body[data-pick-mode=start] .place-map-target{--place-outline:#2580c5}
-.place-map-target[data-selected=start]{--place-outline:#2580c5}
+body[data-pick-mode=start] .place-map-target,.place-map-target[data-selected=start]{--place-outline:#2580c5}
 .place-map-target[data-selected=goal]{--place-outline:#ff0300}
-.place-map-target:is(:hover,:focus,[data-preview=true],[data-selected=goal],[data-selected=start]) polygon{fill:transparent;stroke:var(--place-outline);stroke-width:2.5;vector-effect:non-scaling-stroke;paint-order:stroke fill}
-.place-map-target:is(:hover,:focus,[data-preview=true],[data-selected=goal],[data-selected=start]) .place-code-region{fill:var(--place-outline);stroke-width:2}
-.place-map-target .place-code-label{display:none;pointer-events:none;fill:white;font:700 18px sans-serif;text-anchor:middle;dominant-baseline:central}
-.place-map-target:is(:hover,:focus,[data-preview=true],[data-selected=goal],[data-selected=start]) .place-code-label{display:block}
+.place-map-target .place-label-outline{stroke:none;fill:none}
+.place-map-target:is(:hover,:focus,[data-preview=true],[data-selected=goal],[data-selected=start]) .place-label-outline{fill:none!important;stroke:var(--place-outline)!important;stroke-width:2.5!important;vector-effect:non-scaling-stroke}
+body.visitor-experience #recentPlaces .history-place-row>button,body.visitor-experience .favorite-place-row>button{border:0!important;box-shadow:none!important}
+body.visitor-experience .favorite-star-icon{stroke:currentColor!important}
+body.visitor-experience #favoritePlaceButton[aria-pressed=false] svg,body.visitor-experience .history-star[data-saved=false] svg{stroke:currentColor!important}
+
+body.visitor-experience .route-planning-header .route-travel-tabs button{height:32px!important;min-height:32px!important;max-height:32px!important;box-sizing:border-box;padding:3px 8px!important;width:auto;white-space:nowrap;line-height:1.2!important}
+
+body.visitor-experience #routePlanner#routePlanner{padding:4px 36px 4px 4px!important}
+body.visitor-experience #routePlanner .route-planning-header{min-height:32px!important;height:32px!important;margin-bottom:2px!important}
+body.visitor-experience #routePlanner #closeRoutePlanning{min-height:32px!important;height:32px!important;width:32px!important;min-width:32px!important;padding:0!important;line-height:1!important}
+body.visitor-experience #routePlanner .swap-route-places{top:72px!important}

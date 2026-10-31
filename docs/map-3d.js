@@ -172,7 +172,7 @@
     }
     function outlinePlace(d,color,target) {
       if(!planes.some(p=>p.userData.floor===d.floor))return;
-      for(const polygon of placeHitPolygons(d)) {
+      for(const polygon of placeLabelPolygons(d)) {
         const points=polygon.map(p=>at(d.floor,p,.006));
         for(let i=0;i<points.length;i++) {
           const a=points[i],b=points[(i+1)%points.length],delta=b.clone().sub(a);
