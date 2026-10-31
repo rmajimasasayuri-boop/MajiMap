@@ -19,7 +19,7 @@ body.visitor-experience:has(#facilityDetails:not([hidden])) .maji-attribution,bo
 body.visitor-experience #routeOptionsDock{left:0!important;right:0!important;bottom:0!important;margin:0!important;width:100%!important;max-width:none!important;padding:0 8px var(--visitor-safe-bottom)!important;justify-content:flex-end!important}
 body.visitor-experience #routeOptionsDock>button:not([hidden]){border-radius:20px!important}
 body.visitor-experience #routeOptionsDock>button[hidden]{display:none!important}
-body.visitor-experience.place-preview-open .map-navigation-rail .view-switch{position:absolute!important;right:64px!important;top:0!important}
+body.visitor-experience .map-navigation-rail .view-switch{position:static!important;inset:auto!important;}
 body.visitor-experience #visitorMapHome{width:46px!important;min-width:46px!important;height:32px!important;min-height:32px!important;max-height:32px!important;padding:0!important;border-radius:6px}
 body.visitor-experience #placeResults .place-row{gap:6px!important;padding:7px 2px!important;min-height:68px!important}
 body.visitor-experience #placeResults .place-row-copy{min-width:0;flex:1}
@@ -45,7 +45,7 @@ body.visitor-experience #routeAddWaypoint,body.visitor-experience #routeViaRow{d
 
 body.visitor-experience:not(#original-type):not(#small-type):not(#tiny-type) :is(#favoritePlaceButton,.history-star,#clearPlaceSearch,#closeFacilityDetails,#openPlaceSearch){font-size:24px!important;line-height:1!important;min-width:44px;min-height:44px}
 body.visitor-experience #favoritePlaceButton[aria-pressed=false],body.visitor-experience .history-star[data-saved=false]{color:#83969d!important}
-body.visitor-experience #favoritePlaceButton[aria-pressed=true],body.visitor-experience .history-star[data-saved=true],body.visitor-experience .favorite-place-row button:last-child{color:#ffff00!important}
+body.visitor-experience #favoritePlaceButton[aria-pressed=true],body.visitor-experience .history-star[data-saved=true],body.visitor-experience .favorite-place-row button:last-child{color:#f4c20d!important}
 body.visitor-experience #facilityDetails .facility-detail-body{grid-template-rows:minmax(88px,auto) auto auto!important}
 /* Keep floor controls stationary; the search and route panels reserve their column. */
 body.visitor-experience.place-searching .map-navigation-rail,
@@ -56,3 +56,17 @@ body.visitor-experience.route-planning.place-searching .map-navigation-rail{top:
 body.visitor-experience #placeResults .place-row .code{min-width:36px!important;max-width:60px;white-space:normal;color:#fff!important;border:1px solid transparent;border-radius:5px;padding:5px 4px;text-align:center;font-weight:700}
 body.visitor-experience #placeResults .place-row .code[hidden]{display:none!important}
 body.visitor-experience #placeResults .place-result-photo{width:68px!important;height:auto!important;aspect-ratio:auto!important;object-fit:contain!important;flex:none}
+
+/* One consistent star shape and hit target in cards, favorites and history. */
+body.visitor-experience :is(#favoritePlaceButton,.history-star,.favorite-place-row>button:last-child){display:grid!important;place-items:center;padding:0!important;width:44px!important;min-width:44px!important;height:44px!important;min-height:44px!important}
+body.visitor-experience .favorite-star-icon{width:24px!important;height:24px!important;display:block;overflow:visible;fill:currentColor;stroke:#997000;stroke-width:1.2;stroke-linejoin:round}
+body.visitor-experience #favoritePlaceButton[aria-pressed=false] svg,body.visitor-experience .history-star[data-saved=false] svg{stroke:#647880}
+/* Match the official map: clear red outlines, original area colors, red code badge. */
+.place-map-target{--place-outline:#ff0300}
+body[data-pick-mode=start] .place-map-target{--place-outline:#2580c5}
+.place-map-target[data-selected=start]{--place-outline:#2580c5}
+.place-map-target[data-selected=goal]{--place-outline:#ff0300}
+.place-map-target:is(:hover,:focus,[data-preview=true],[data-selected=goal],[data-selected=start]) polygon{fill:transparent;stroke:var(--place-outline);stroke-width:2.5;vector-effect:non-scaling-stroke;paint-order:stroke fill}
+.place-map-target:is(:hover,:focus,[data-preview=true],[data-selected=goal],[data-selected=start]) .place-code-region{fill:var(--place-outline);stroke-width:2}
+.place-map-target .place-code-label{display:none;pointer-events:none;fill:white;font:700 18px sans-serif;text-anchor:middle;dominant-baseline:central}
+.place-map-target:is(:hover,:focus,[data-preview=true],[data-selected=goal],[data-selected=start]) .place-code-label{display:block}

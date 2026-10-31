@@ -112,8 +112,8 @@ function renderOverlay(){const svg=ui('unifiedOverlay');svg.replaceChildren();if
 
  if(!arrowEditor.active&&!corridorEditor.active)for(const d of destinationList.filter(d=>d.floor===mapUI.floor)){
  const regions=placeHitBounds(d);if(!regions.length)continue;
- const hit=svgNode('g',{role:'button',tabindex:0,'aria-label':destinationDisplayName(d)+'を'+(mapUI.pickMode==='start'?'出発地':'目的地')+'に設定',class:'place-map-target','data-selected':mapUI.goal?.ref===d.ref?'goal':mapUI.startConfirmed&&navigationTargetReference(d)===mapUI.from?'start':'','data-place-ref':d.ref});
- for(const points of placeHitPolygons(d))hit.append(svgNode('polygon',{points:points.map(p=>p.join(',')).join(' '),fill:'transparent','pointer-events':'all'}));
+ const hit=svgNode('g',{role:'button',tabindex:0,'aria-label':destinationDisplayName(d)+'を'+(mapUI.pickMode==='start'?'出発地':'目的地')+'に設定',class:'place-map-target','data-selected':mapUI.goal?.ref===d.ref?'goal':mapUI.startConfirmed&&navigationTargetReference(d)===mapUI.from?'start':'','data-place-ref':d.ref,'data-preview':String(mapUI.previewPlace?.ref===d.ref)});
+ for(const points of placeHitPolygons(d)){const xs=points.map(p=>p[0]),ys=points.map(p=>p[1]),x=Math.min(...xs),y=Math.min(...ys),w=Math.max(...xs)-x,h=Math.max(...ys)-y;const badge=d.type==='clinic'&&Math.abs(w-48)<2&&Math.abs(h-48)<2;hit.append(svgNode('polygon',{points:points.map(p=>p.join(',')).join(' '),fill:'transparent',class:badge?'place-code-region':'','pointer-events':'all'}));if(badge){const label=svgNode('text',{x:x+w/2,y:y+h/2,class:'place-code-label'});label.textContent=d.code;hit.append(label);}}
  hit.onclick=e=>{if(e.detail===0)previewPlacePhoto(d,hit.getBoundingClientRect(),true);};hit.onpointerenter=e=>previewPlacePhoto(d,{x:e.clientX,y:e.clientY});hit.onpointerleave=()=>schedulePhotoRestore();hit.onfocus=()=>previewPlacePhoto(d,hit.getBoundingClientRect());hit.onblur=()=>schedulePhotoRestore();hit.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();previewPlacePhoto(d,hit.getBoundingClientRect(),true);}};svg.append(hit);
  }
 
