@@ -7,7 +7,8 @@ function routeProximityFor(matches){
 let searchFocusLock=false;
 let placeSearchView='home',preferredCandidateFloor=null;
 function setPlaceSearchView(view){placeSearchView=view;document.body.dataset.searchView=view;fitFloorRail();}
-function beginPlaceSearch(){mapUI.selectingStartOnMap=false;preferredCandidateFloor=null;ui('findPlace').value='';mapUI.filter='all';mapUI.resultFloor=null;document.querySelectorAll('[data-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.filter==='all')));setPlaceSearchView('home');renderResults();updateSearchChoices();}
+function resetCandidateScroll(){const list=ui('placeResults');list.style.paddingBottom='';list.scrollTop=0;mapUI.resultFloor=null;for(const id of ['searchChoices','recentPlaces'])if(ui(id))ui(id).scrollTop=0;}
+function beginPlaceSearch(){resetCandidateScroll();mapUI.selectingStartOnMap=false;preferredCandidateFloor=null;ui('findPlace').value='';mapUI.filter='all';mapUI.resultFloor=null;document.querySelectorAll('[data-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.filter==='all')));setPlaceSearchView('home');renderResults();updateSearchChoices();}
 
 let candidateIndexOpen=false,candidateIndexFrame=0,candidateIndexSignature='';
 function jumpToCandidateFloor(floor){
@@ -16,7 +17,7 @@ function jumpToCandidateFloor(floor){
 }
 function scheduleCandidateIndex(){
  if(reviewEmbedded)return;cancelAnimationFrame(candidateIndexFrame);candidateIndexFrame=requestAnimationFrame(()=>{const open=!document.querySelector('main').classList.contains('settings-hidden'),query=ui('findPlace').value.trim(),signature=query+'|'+mapUI.filter;if(searchFocusLock)return;
- if(open&&(!candidateIndexOpen||signature!==candidateIndexSignature)){if(!query){const floor=preferredCandidateFloor||3;if(ui('placeResults').querySelector('[data-floor="'+floor+'"]'))jumpToCandidateFloor(floor);else if(ui('placeResults').querySelector('[data-floor="3"]'))jumpToCandidateFloor(3);else ui('placeResults').scrollTop=0;}else ui('placeResults').scrollTop=0;}
+ if(open&&(!candidateIndexOpen||signature!==candidateIndexSignature))resetCandidateScroll();
  candidateIndexOpen=open;candidateIndexSignature=signature;});
 }
 function syncDiscoveryFloors(){
@@ -40,10 +41,10 @@ function initSearchChoices(){
  const box=document.createElement('section');box.id='searchChoices';box.className='search-choices';box.setAttribute('aria-label','場所の選び方');box.innerHTML='<div class="search-choice-buttons"><button id="searchCurrentPlace">◎ 現在地</button><button id="searchMapPoint">地図上で選択</button><button id="searchCandidateList">候補から選択</button></div><div class="recent-heading">履歴</div><div id="recentPlaces" class="recent-places"></div><small id="recentEmpty">まだ履歴はありません</small>';ui('settings').querySelector('.destination-card').prepend(box);
  ui('searchCurrentPlace').onclick=chooseSearchCurrentPlace;
  ui('searchMapPoint').onclick=()=>{if(mapUI.pickMode==='start')mapUI.selectingStartOnMap=true;ui('findPlace').blur();togglePlacePanel(false);ui('facilityDetails').hidden=true;ui('mapMessage').dataset.important='true';ui('mapMessage').textContent=(mapUI.addingWaypoint?'経由地':mapUI.pickMode==='start'?'出発地':'目的地')+'にする施設や通路を地図上で選んでください。';};
- ui('searchCandidateList').onclick=()=>{setPlaceSearchView('browse');ui('findPlace').blur();ui('findPlace').value='';mapUI.filter='all';document.querySelectorAll('[data-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.filter==='all')));renderResults();requestAnimationFrame(()=>jumpToCandidateFloor(3));};
+ ui('searchCandidateList').onclick=()=>{setPlaceSearchView('browse');ui('findPlace').blur();ui('findPlace').value='';mapUI.filter='all';document.querySelectorAll('[data-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.filter==='all')));renderResults();resetCandidateScroll();};
  const select=selectPlace,start=selectStartPlace;selectPlace=function(d,...args){rememberPlace(d);return select(d,...args);};selectStartPlace=function(d,...args){if(!isGuideOnly(d))rememberPlace(d);return start(d,...args);};
  const input=ui('findPlace');let saved=0,lockingFrame=0;
- input.addEventListener('pointerdown',()=>{saved=ui('placeResults').scrollTop;},{capture:true});
+ input.addEventListener('pointerdown',()=>{saved=document.querySelector('main').classList.contains('settings-hidden')?0:ui('placeResults').scrollTop;},{capture:true});
  input.addEventListener('focus',()=>{document.body.classList.add('search-input-active');searchFocusLock=true;cancelAnimationFrame(candidateIndexFrame);cancelAnimationFrame(lockingFrame);lockingFrame=requestAnimationFrame(()=>{ui('placeResults').scrollTop=saved;window.scrollTo(0,0);lockingFrame=requestAnimationFrame(()=>{searchFocusLock=false;candidateIndexOpen=true;candidateIndexSignature=input.value.trim()+'|'+mapUI.filter;});});});
  input.addEventListener('blur',()=>document.body.classList.remove('search-input-active'));
  input.setAttribute('enterkeyhint','search');input.setAttribute('autocomplete','off');
