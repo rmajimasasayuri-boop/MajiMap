@@ -77,3 +77,10 @@ body.visitor-experience #routePlanner#routePlanner{padding:4px 36px 4px 4px!impo
 body.visitor-experience #routePlanner .route-planning-header{min-height:32px!important;height:32px!important;margin-bottom:2px!important}
 body.visitor-experience #routePlanner #closeRoutePlanning{min-height:32px!important;height:32px!important;width:32px!important;min-width:32px!important;padding:0!important;line-height:1!important}
 body.visitor-experience #routePlanner .swap-route-places{top:72px!important}
+
+/* Compact navigation sheet, flush with the bottom edge. */
+body.visitor-experience.navigation-active #navigationPanel#navigationPanel{left:0!important;right:0!important;bottom:0!important;width:100%!important;max-width:none!important;margin:0!important;padding:6px calc(8px + var(--visitor-safe-right)) calc(6px + var(--visitor-safe-bottom)) calc(8px + var(--visitor-safe-left))!important;border-radius:14px 14px 0 0!important}
+body.visitor-experience.navigation-active #navigationPanel>div:first-child{min-height:20px!important;margin:0!important}
+body.visitor-experience.navigation-active #navigationPanel h3{margin:2px 0 4px!important}
+body.visitor-experience.navigation-active #navigationPanel .navigation-buttons{margin-top:4px!important}
+body.visitor-experience #navigationDetail[hidden]{display:none!important}
