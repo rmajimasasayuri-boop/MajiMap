@@ -84,3 +84,10 @@ body.visitor-experience.navigation-active #navigationPanel>div:first-child{min-h
 body.visitor-experience.navigation-active #navigationPanel h3{margin:2px 0 4px!important}
 body.visitor-experience.navigation-active #navigationPanel .navigation-buttons{margin-top:4px!important}
 body.visitor-experience #navigationDetail[hidden]{display:none!important}
+
+/* Exactly one red target: current preview, hover, or selected destination. */
+.place-map-target:is(:hover,:focus,[data-preview=true],[data-selected=goal],[data-selected=start]) .place-label-outline{stroke:none!important;fill:none!important}
+.place-map-target[data-highlight=goal]:not(#inactive) .place-label-outline{stroke:#ff0300!important;fill:none!important;stroke-width:2.5!important;vector-effect:non-scaling-stroke}
+.place-map-target[data-highlight=start]:not(#inactive) .place-label-outline{stroke:#2580c5!important;fill:none!important;stroke-width:2.5!important;vector-effect:non-scaling-stroke}
+
+.place-map-target:not(#inactive) .place-label-outline{stroke:none!important;fill:none!important}

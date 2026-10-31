@@ -35,9 +35,7 @@ function sampleRouteMotion(track,distance) {
   const t=(at-s.start)/s.length;
   return {point:s.a.map((v,j)=>v+(s.b[j]-v)*t),direction:s.b.map((v,j)=>(v-s.a[j])/s.length)};
 }
-function findMap3DPlace(places,floor,point,boundsAt) {
-  return places.find(d=>d.floor===floor&&(typeof placeHitPolygons!=='function'||placeHitPolygons(d).some(ps=>insideArea(point,ps))&&!wardCourtyardPolygons(d).some(ps=>insideArea(point,ps)))&&boundsAt(d).some(([x,y,w,h])=>point[0]>=x&&point[0]<=x+w&&point[1]>=y&&point[1]<=y+h))||null;
-}
+function findMap3DPlace(places,floor,point,boundsAt) {return placeAtMapPoint(places,floor,point);}
 
 // Display spacing is based on drawing extents, not real storey heights.
 // All floor geometry, pins, transfer lines and hit testing share this layout.

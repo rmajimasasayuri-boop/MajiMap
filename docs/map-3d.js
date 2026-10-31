@@ -209,7 +209,6 @@
        if(t.kind==='elevator'){const height=Math.abs(b.y-a.y),shaft=new T.Mesh(new T.BoxGeometry(.4,height,.4),new T.MeshPhongMaterial({color:colorValue('#67adc9'),transparent:true,opacity:.12,depthWrite:false,shininess:80}));shaft.position.copy(a).lerp(b,.5);group.add(shaft);const frame=new T.LineSegments(new T.EdgesGeometry(shaft.geometry),new T.LineBasicMaterial({color:colorValue('#5b97b0'),transparent:true,opacity:.48}));frame.position.copy(shaft.position);group.add(frame);}
        line([a,b],t.kind==='elevator'?0x07527c:0xd47717,true);movingArrows([a,b]);tag(t.kind==='elevator'?'エレベーター EV':'エスカレーター',a.clone().lerp(b,.5),t.kind==='elevator'?'#07527c':'#ad5a0d',2.3);}
       if(mapUI.startConfirmed){const start=destinationList.find(d=>navigationTargetReference(d)===mapUI.from);if(start)outlinePlace(start,'#2580c5',group);}
-      if(mapUI.goal)outlinePlace(mapUI.goal,'#ff0300',group);
       const same=data.start?.floor===data.goal?.floor&&data.start?.point&&data.goal?.point&&Math.hypot(data.start.point[0]-data.goal.point[0],data.start.point[1]-data.goal.point[1])<1;
       if(!navigationState.active)pin(data.start,'出発地','#2580c5',same?-.13:0);pin(data.goal,'目的地','#ff0300',same?.13:0);
       const center=box.getCenter(new T.Vector3()),size=box.getSize(new T.Vector3());
@@ -252,7 +251,7 @@
     function pause(value){paused=value;cancelAnimationFrame(frame);if(!paused&&!disposed)loop();}
     renderer.domElement.addEventListener('pointerdown',e=>{if(navigationState.active)navigationFollow=false;activePointers.add(e.pointerId);down=activePointers.size===1?{x:e.clientX,y:e.clientY,id:e.pointerId,moved:false}:null;});
     renderer.domElement.addEventListener('pointermove',e=>{if(down){if(Math.hypot(e.clientX-down.x,e.clientY-down.y)>5){down.moved=true;hidePlacePreview();}clearHover();return;}if(activePointers.size)return;highlight(pointerHit(e)?.place,{x:e.clientX,y:e.clientY});});
-    renderer.domElement.addEventListener('pointerleave',()=>clearHover());
+    renderer.domElement.addEventListener('pointerleave',()=>highlight(mapUI.previewPlace||mapUI.goal||null));
     renderer.domElement.addEventListener('pointerup',e=>{
       const pressed=down;down=null;activePointers.delete(e.pointerId);if(!pressed||pressed.id!==e.pointerId||pressed.moved||e.button!==0)return;
       const hit=pointerHit(e);if(!hit)return;
@@ -265,6 +264,6 @@
     document.addEventListener('pointerup',releasePointer);document.addEventListener('pointercancel',releasePointer);
     resize();loop();
     function dispose(){disposed=true;window.removeEventListener('maji-navigation-position',updateProgress);document.removeEventListener('pointerup',releasePointer);document.removeEventListener('pointercancel',releasePointer);cancelAnimationFrame(frame);controls.dispose();freeGroup();for(const t of textures.values())t.dispose();renderer.dispose();renderer.forceContextLoss();renderer.domElement.remove();}
-    return {preview:d=>highlight(d),draw,home,zoom,resize,pause,dispose,pan,rotate,focusFloor,focusStep,setInteraction};
+    return {preview:d=>highlight(d||mapUI.goal||null),draw,home,zoom,resize,pause,dispose,pan,rotate,focusFloor,focusStep,setInteraction};
   }
 })();
