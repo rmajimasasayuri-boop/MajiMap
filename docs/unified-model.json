@@ -55,10 +55,10 @@
       "nonStopElevators": []
     },
     "3": {
-      "image": "assets/visitor-floor-3-two-paths.svg",
+      "image": "assets/visitor-floor-3-campus-reconciled.svg",
       "size": [
-        2000,
-        1320
+        2500,
+        1600
       ],
       "officialBase": true,
       "facilityDisplay": "公式フロアマップをそのまま表示。通行可否は経路で案内。",
@@ -224,9 +224,138 @@
         ]
       },
       "outdoorExtension": {
-        "arrival": "7号館入口",
-        "connections": "all hospital exits; user confirmed 2026-11-02",
-        "geometry": "schematic"
+        "size": [
+          2500,
+          1600
+        ],
+        "paths": [
+          [
+            [
+              80,
+              910
+            ],
+            [
+              1785,
+              910
+            ]
+          ],
+          [
+            [
+              80,
+              1010
+            ],
+            [
+              1785,
+              1010
+            ]
+          ],
+          [
+            [
+              324.8,
+              856.5
+            ],
+            [
+              324.8,
+              910
+            ]
+          ],
+          [
+            [
+              700.8,
+              856.1
+            ],
+            [
+              700.8,
+              910
+            ]
+          ],
+          [
+            [
+              1316.5,
+              857.2
+            ],
+            [
+              1316.5,
+              910
+            ]
+          ],
+          [
+            [
+              850,
+              910
+            ],
+            [
+              850,
+              1010
+            ]
+          ],
+          [
+            [
+              1738.6,
+              846.1
+            ],
+            [
+              1738.6,
+              1010
+            ]
+          ],
+          [
+            [
+              785,
+              1010
+            ],
+            [
+              785,
+              1110
+            ]
+          ]
+        ],
+        "width": 50,
+        "color": "#e1e1e1",
+        "seven": {
+          "point": [
+            785,
+            1110
+          ],
+          "bounds": [
+            610,
+            1110,
+            350,
+            380
+          ],
+          "labelBounds": [
+            635,
+            1270,
+            300,
+            40
+          ]
+        },
+        "parking": [
+          1670,
+          1110,
+          790,
+          420
+        ],
+        "rotary": {
+          "outer": [
+            1030,
+            1100,
+            570,
+            210
+          ],
+          "island": [
+            1080,
+            1150,
+            470,
+            110
+          ]
+        },
+        "sources": [
+          "https://map.yahoo.co.jp/search?q=近畿大学病院&lat=34.49909&lon=135.51683&zoom=18&maptype=basic",
+          "https://www.google.com/maps/@34.49909,135.51683,18z/data=!3m1!1e3",
+          "https://www.kindai.ac.jp/medicine/about/map/"
+        ],
+        "status": "複数地図・航空写真・完成後公式写真の外形照合。屋外距離・入口詳細・段差は現地未測量。左端出入口は病院側通路だけに接続。"
       }
     },
     "4": {

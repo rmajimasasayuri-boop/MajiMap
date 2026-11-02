@@ -110,3 +110,6 @@ body.visitor-experience .map-navigation-rail #allFloors#allFloors{touch-action:n
 body.visitor-experience #campusMapButton{display:block!important;position:static!important;min-height:32px;width:44px;padding:3px!important;font-size:12px}
 #campusMapDialog{width:min(1100px,98vw);height:94dvh;max-height:94dvh;padding:8px}
 #campusMapDialog iframe{display:block;border:0;width:100%;height:calc(100% - 50px)}
+
+body.visitor-experience #facilityDetails[data-preview-action="start"] #detailRoute{display:none!important}
+body.visitor-experience #facilityDetails[data-preview-action="start"] #detailNavigate{background:#2580c5}
