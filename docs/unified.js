@@ -168,6 +168,7 @@ function routePlan(){if(!mapUI.goal)return;if(typeof ensureIndoorStart==='functi
  if(['ward','rehab'].includes(target.type))arrivalNote=target.type==='rehab'?'青線に沿ってリハビリテーション室の入口まで進んでください。入口で案内を終了します。':'青線に沿って病棟入口まで進んでください。入口で案内を終了します。';
  if(target.detail?.actualFloor&&navigationState.steps.length){navigationState.steps.at(-1).title='7号館入口まで（目的の施設は'+target.detail.actualFloor+'階）';}
  if(target.detail?.actualFloor)arrivalNote='7号館入口に到着です。目的の施設は'+target.detail.actualFloor+'階です。館内の経路は未確認のため、館内表示で確認してください。';
+ if(target.ref==='outpatient:3::rotary'){arrivalNote='ロータリー北側の歩道に到着です。車道へは入らないでください。';if(navigationState.steps.length)navigationState.steps.at(-1).title='ロータリー北側の歩道まで';}
  if(target.ref==='outpatient:3::rotaryBusStop')arrivalNote='バス停付近の仮位置です。実際の乗り場を確認してください。';
  if(arrivalNote&&navigationState.steps.length){navigationState.steps.at(-1).description=(navigationState.steps.at(-1).description||'')+' '+arrivalNote;const li=list.lastElementChild;let p=li.querySelector('p');if(!p){p=document.createElement('p');li.append(p);}p.textContent=navigationState.steps.at(-1).description;}
 
