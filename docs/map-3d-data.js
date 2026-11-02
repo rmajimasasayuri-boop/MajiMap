@@ -58,3 +58,12 @@ function map3DHomeOffset(size,aspect) {
   const radius=Math.max(size[0]/Math.min(aspect,1.6),size[2],size[1]*1.5,10);
   return [0,radius*.94,radius*.86];
 }
+
+// Display ports distinguish the two opposing lanes; they do not change the walking graph.
+function map3DEscalatorPort(end,up){const side=escalatorBoardingSide(end.floor,up);return {...end,point:[end.point[0]+(up?-26:26),end.point[1]+(side==='北側'?-30:side==='南側'?30:0)]};}
+function map3DEscalatorTrack(from,to,pointAt){const up=from.floor<to.floor;return [pointAt(from),pointAt(map3DEscalatorPort(from,up)),pointAt(map3DEscalatorPort(to,up)),pointAt(to)];}
+function map3DTransferPosition(transfer,pointAt){
+ const t=Math.max(0,Math.min(1,transfer.progress));
+ if(transfer.kind!=='escalator'){const a=pointAt(transfer.from),b=pointAt(transfer.to);return a.map((v,i)=>v+(b[i]-v)*t);}
+ const ps=map3DEscalatorTrack(transfer.from,transfer.to,pointAt);if(t===1)return ps.at(-1);const track=createRouteMotionTrack(ps);return sampleRouteMotion(track,track.length*t)?.point||ps[0];
+}

@@ -55,9 +55,9 @@
       "nonStopElevators": []
     },
     "3": {
-      "image": "assets/visitor-floor-3-clear-entrances.svg",
+      "image": "assets/visitor-floor-3-outdoor-details.svg",
       "size": [
-        1900,
+        2400,
         1600
       ],
       "officialBase": true,
@@ -225,18 +225,18 @@
       },
       "outdoorExtension": {
         "size": [
-          1900,
+          2400,
           1600
         ],
         "paths": [
           [
             [
               5,
-              920
+              907
             ],
             [
               1835,
-              920
+              907
             ]
           ],
           [
@@ -256,7 +256,7 @@
             ],
             [
               324.8,
-              920
+              907
             ]
           ],
           [
@@ -276,13 +276,13 @@
             ],
             [
               1316.5,
-              920
+              907
             ]
           ],
           [
             [
               1340,
-              920
+              907
             ],
             [
               1340,
@@ -318,23 +318,23 @@
             1103
           ],
           "bounds": [
-            540,
+            525,
             1103,
-            225,
-            238
+            250,
+            250
           ],
           "labelBounds": [
-            550,
+            535,
             1202,
-            205,
+            230,
             40
           ]
         },
         "parking": [
-          1530,
-          1260,
-          300,
-          275
+          1450,
+          1250,
+          850,
+          300
         ],
         "rotary": {
           "outline": [
@@ -364,16 +364,20 @@
             ]
           ],
           "island": [
-            990,
-            1180,
-            345,
-            125
-          ]
+            960,
+            1190,
+            300,
+            90
+          ],
+          "outerPath": "M950 1140H2320V1220H1350V1280Q1350 1330 1300 1330H950Q900 1330 900 1280V1190Q900 1140 950 1140Z",
+          "islandRadius": 12
         },
         "sources": [
           "https://map.yahoo.co.jp/search?q=近畿大学病院&lat=34.49909&lon=135.51683&zoom=18&maptype=basic",
           "https://www.google.com/maps/@34.49909,135.51683,18z/data=!3m1!1e3",
-          "https://www.kindai.ac.jp/medicine/about/map/"
+          "https://www.kindai.ac.jp/medicine/about/map/",
+          "https://www.med.kindai.ac.jp/parking_price.html",
+          "https://www.med.kindai.ac.jp/img/parking_price/pic01.jpg"
         ],
         "status": "利用者の2026年11月2日提示図を優先して配置・接続を修正。左端出入口は上側通路のみ、下側通路へは外来棟東側・総合受付側・時間外側の3か所を経由。入口詳細・段差・実距離は現地未測量。",
         "layoutReference": "利用者提示 IMG_4841.JPG（元画像は非公開）",
@@ -384,7 +388,7 @@
         "verticalWidth": 44,
         "estimatedMetersPerPixel": 0.1,
         "estimates": {
-          "crossWalkSeparationMeters": 17,
+          "crossWalkSeparationMeters": 18.3,
           "upperWalkWidthMeters": 4.4,
           "lowerWalkWidthMeters": 3.2,
           "method": "Yahoo距離計測の約17mの横通路間隔、Yahoo縮尺・Google航空写真・公式完成後写真を比較。幅は地図上の概算であり測量値ではありません。",
@@ -399,8 +403,14 @@
               580
             ]
           ],
-          "officialEntranceDrawing": "元図の892pxより上は変更しない。縦の追加連絡部分は既存44pxを保持。"
-        }
+          "officialEntranceDrawing": "元図の892pxより上は変更しない。縦の追加連絡部分は既存44pxを保持。",
+          "rotary": "Yahoo通常地図の角丸長方形の島・西側の折返し・東側の接続、公式駐車場図とGoogle航空写真を照合。概算外形。",
+          "parking": "公式駐車場図とYahoo・Googleの外形比を用い、7号館に対して長辺約3倍強の長方形に修正。"
+        },
+        "parkingLabel": [
+          1875,
+          1415
+        ]
       }
     },
     "4": {

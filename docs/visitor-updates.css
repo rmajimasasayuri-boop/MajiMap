@@ -118,3 +118,16 @@ body.visitor-experience #facilityDetails[data-preview-action="start"] #detailNav
 body.visitor-experience #facilityDetails #favoritePlaceButton{position:absolute!important;right:calc(8px + var(--visitor-safe-right))!important;top:60px!important;bottom:auto!important;width:44px!important;height:44px!important;min-width:44px!important;padding:0!important;margin:0!important}
 body.visitor-experience #facilityDetails #closeFacilityDetails{right:calc(8px + var(--visitor-safe-right))!important;top:8px!important;width:44px!important;height:44px!important}
 body.visitor-experience #facilityDetails .facility-sheet-handle{display:none!important}
+
+/* Compact the sheet without changing the photo's 136 × 100 display box. */
+body.visitor-experience #facilityDetails#facilityDetails{padding-bottom:calc(2px + var(--visitor-safe-bottom))!important}
+body.visitor-experience #facilityDetails .facility-detail-body{grid-template-rows:100px auto!important;gap:2px 8px!important;padding-top:4px!important}
+body.visitor-experience #facilityDetails .facility-detail-actions>*{min-height:44px!important;padding:4px 7px!important}
+body.visitor-experience #facilityDetails #closeFacilityDetails{top:4px!important}
+body.visitor-experience #facilityDetails #favoritePlaceButton{top:56px!important}
+body.visitor-experience #campusMapButton{display:none!important}
+
+body.visitor-experience #facilityDetails .facility-detail-body{row-gap:0!important;padding-top:2px!important}
+body.visitor-experience #facilityDetails #viewDestinationPhoto{padding:0!important;width:136px!important;height:100px!important;border:0!important}
+body.visitor-experience #facilityDetails #closeFacilityDetails{top:2px!important}
+body.visitor-experience #facilityDetails #favoritePlaceButton{top:54px!important}
