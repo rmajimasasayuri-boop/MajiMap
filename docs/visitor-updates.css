@@ -131,3 +131,7 @@ body.visitor-experience #facilityDetails .facility-detail-body{row-gap:0!importa
 body.visitor-experience #facilityDetails #viewDestinationPhoto{padding:0!important;width:136px!important;height:100px!important;border:0!important}
 body.visitor-experience #facilityDetails #closeFacilityDetails{top:2px!important}
 body.visitor-experience #facilityDetails #favoritePlaceButton{top:54px!important}
+
+/* Keep the 150px card and 136×100 photo; show complete names on two lines when possible. */
+.facility-name-track.two-line{white-space:normal;max-height:calc(2.8em + 1px)}
+.facility-name-track.two-line>span{display:block;white-space:normal;overflow-wrap:anywhere;line-height:1.4}

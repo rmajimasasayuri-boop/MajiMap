@@ -44,6 +44,7 @@ const toiletHitBounds={
  'outpatient:6::publicToilet-south':[[548,866,44,85]]
 };
 function placeHitBounds(d){
+ if(mobilityData.serviceOverrides?.[d.ref]||d.ref==='outpatient:3::parkingPaymentOutdoor'||d.ref==='outpatient:3::rotaryBusStop')return [d.labelBounds];
  if(typeof wardHitShapes!=='undefined'&&wardHitShapes[d.ref])return wardHitShapes[d.ref].map(ps=>{const xs=ps.map(p=>p[0]),ys=ps.map(p=>p[1]);return [Math.min(...xs),Math.min(...ys),Math.max(...xs)-Math.min(...xs),Math.max(...ys)-Math.min(...ys)];});
  if(typeof officialPlaceBounds==='function'&&officialPlaceBounds(d))return officialPlaceBounds(d);
  if(d.labelBounds)return [d.labelBounds];
@@ -73,6 +74,7 @@ destinationList.push({ref:'hospital:3::generalReception',name:'総合受付',cod
 for(const f of [5,6,7,8,9,10])for(const [id,d] of Object.entries(unifiedMapModel.floors[f].wardEntrances)){destinationList.push({ref:ref('hospital:'+f,id),name:d.label,code:d.code,floor:f,type:id==='rehab'?'rehab':'ward',point:d.point,routeAnchor:d.routeAnchor,departments:d.departments,labelBounds:d.labelBounds});}
 for(const [id,d]of Object.entries(serviceDestinations))destinationList.push({ref:'services::'+id,name:d.name,code:'施設',floor:d.floor,type:'service',detail:d,point:destinationArrivalPoint('services::'+id,null)});
 if(typeof confirmedNavigation!=='undefined')destinationList.push(...confirmedNavigation.newDestinations);if(typeof mobilityData!=='undefined')destinationList.push(...mobilityData.destinations);
+for(const [r,patch] of Object.entries(mobilityData.serviceOverrides||{})){const d=destinationList.find(d=>d.ref===r);if(d){const detail={...d.detail,...patch.detail};Object.assign(d,patch,{detail});}}
 function navigationTargetReference(d){if(mobilityData.nodes[d.ref])return d.ref;if(['toilet','equipment'].includes(d.type))return d.ref;if(d.routeReference)return d.routeReference;if(typeof additionalNavigation!=='undefined'&&additionalNavigation.anchors[d.ref])return additionalNavigation.anchors[d.ref];return typeof confirmedNavigation!=='undefined'&&confirmedNavigation.anchors[d.ref]||(d.type==='clinic'?ref(splitRef(d.ref).map,d.detail.routeAnchor):entryReference(d.ref));}
 function isGuideOnly(d){if(d.type==='equipment')return !d.routeReady;if(mobilityData.nodes[d.ref])return false;if(typeof additionalNavigation!=='undefined'&&additionalNavigation.excluded[d.ref])return true;return d.type==='service'&&!mobilityData.nodes[d.ref]&&!(typeof additionalNavigation!=='undefined'&&additionalNavigation.anchors[d.ref])&&!(typeof confirmedNavigation!=='undefined'&&confirmedNavigation.anchors[d.ref]);}
 function destinationDisplayName(d){if(d.floor===5&&d.type==='ward'&&!d.departments?.length)return d.name.replace(/\s*入口$/,'');if(d.ref==='hospital:7::rehab')return 'リハビリテーション室';if(d.ref==='services::restaurant')return 'レストラン・外来食堂（ffields）';return d.type==='ward'&&d.departments?.length?d.departments.join('・')+'　病棟':d.name;}
@@ -164,6 +166,9 @@ function routePlan(){if(!mapUI.goal)return;if(typeof ensureIndoorStart==='functi
  else if(target.type==='clinic')arrivalNote=target.code==='4A'?'4階EVから共用通路を北へ進み、左折。記録した通路終点（受付手前）で案内を終了します。':target.code+' '+target.name+'の受付までの通路はアノテーション未確認です。公式マップの案内番号と院内の表示を確認してください。';
  if(target.type==='equipment')arrivalNote=target.usage==='emergency-only'?'救急外来専用の精算機に到着です。救急外来受診時にご利用ください。':target.name+'前の共用通路に到着です。院内の設備表示を確認してください。';
  if(['ward','rehab'].includes(target.type))arrivalNote=target.type==='rehab'?'青線に沿ってリハビリテーション室の入口まで進んでください。入口で案内を終了します。':'青線に沿って病棟入口まで進んでください。入口で案内を終了します。';
+ if(target.detail?.actualFloor&&navigationState.steps.length){navigationState.steps.at(-1).title='7号館入口まで（目的の施設は'+target.detail.actualFloor+'階）';}
+ if(target.detail?.actualFloor)arrivalNote='7号館入口に到着です。目的の施設は'+target.detail.actualFloor+'階です。館内の経路は未確認のため、館内表示で確認してください。';
+ if(target.ref==='outpatient:3::rotaryBusStop')arrivalNote='バス停付近の仮位置です。実際の乗り場を確認してください。';
  if(arrivalNote&&navigationState.steps.length){navigationState.steps.at(-1).description=(navigationState.steps.at(-1).description||'')+' '+arrivalNote;const li=list.lastElementChild;let p=li.querySelector('p');if(!p){p=document.createElement('p');li.append(p);}p.textContent=navigationState.steps.at(-1).description;}
 
  panel.append(list);ui('beginNavigation').disabled=false;ui('routeSummary').hidden=false;ui('routeSummaryText').textContent=ui('currentName').textContent+(mapUI.waypoint?' → '+destinationDisplayName(mapUI.waypoint)+'（経由）':'')+' → '+destinationDisplayName(target);ui('routeJourney').replaceChildren();for(const step of list.querySelectorAll('li > button')){const b=document.createElement('button');b.textContent=step.textContent;b.onclick=step.onclick;ui('routeJourney').append(b);}ui('showRouteSteps').onclick=()=>ui('routeStepsDialog').showModal();const note=document.createElement('p');note.className='route-note';note.textContent='乗り換えが少ない経路の中で最短になることを、登録済みの通路と出入口で毎回照合しています。お見舞いは病棟入口までの案内です。';panel.append(note);renderOverlay();updateMapMessage();}

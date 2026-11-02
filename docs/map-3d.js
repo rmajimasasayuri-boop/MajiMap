@@ -159,16 +159,6 @@
         arrow.geometry.rotateX(Math.PI/2);const edge=new T.LineSegments(new T.EdgesGeometry(arrow.geometry),new T.LineBasicMaterial({color:colorValue('#1683d1'),transparent:true,depthTest:false}));edge.renderOrder=10;arrow.add(edge);arrow.renderOrder=9;group.add(arrow);motion.push({arrow,track,offset:i*track.length/count});
       }
     }
-    function escalatorModel(a,b,selected){
-      const delta=b.clone().sub(a),length=delta.length();if(length<.01)return;
-      const center=a.clone().lerp(b,.5),side=new T.Vector3(delta.z,0,-delta.x);if(side.length()<.01)side.set(1,0,0);side.normalize();
-      const material=new T.MeshPhongMaterial({color:colorValue(selected?'#526f7b':'#9aa9ae'),transparent:true,opacity:selected?.94:.5,shininess:70});
-      const deck=new T.Mesh(new T.BoxGeometry(.36,.12,length),material);deck.position.copy(center);deck.position.y-=.08;deck.quaternion.setFromUnitVectors(new T.Vector3(0,0,1),delta.clone().normalize());group.add(deck);
-      const count=Math.min(64,Math.max(12,Math.ceil(length/.28)));
-      for(let i=0;i<=count;i++){const tread=new T.Mesh(new T.BoxGeometry(.35,.045,.13),new T.MeshPhongMaterial({color:colorValue(selected?'#d6e3e8':'#b6c0c4'),transparent:true,opacity:selected?1:.45}));tread.position.copy(a).lerp(b,i/count);tread.position.y+=.08;tread.rotation.y=Math.atan2(delta.x,delta.z);group.add(tread);}
-      for(const direction of [-1,1]){const start=a.clone().addScaledVector(side,.23).add(new T.Vector3(0,.2,0)),end=b.clone().addScaledVector(side,.23).add(new T.Vector3(0,.2,0)),rail=new T.Mesh(new T.CylinderGeometry(.035,.035,length,8),new T.MeshPhongMaterial({color:colorValue(selected?'#07527c':'#9caaad'),transparent:true,opacity:selected?1:.45}));rail.position.copy(start).lerp(end,.5);rail.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),end.sub(start).normalize());group.add(rail);}
-      for(const end of [a,b]){const landing=new T.Mesh(new T.BoxGeometry(.44,.05,.45),new T.MeshPhongMaterial({color:colorValue('#b4c4cb'),transparent:true,opacity:selected?1:.45}));landing.position.copy(end);group.add(landing);}
-    }
     function clearHover() {
       if(hoverGroup){hoverGroup.traverse(o=>{o.geometry?.dispose();o.material?.dispose();});group.remove(hoverGroup);}
       hoverGroup=null;hoverPlace=null;hoverMode=null;container.style.cursor='grab';schedulePhotoRestore();
@@ -218,9 +208,7 @@
       for(const l of data.lines){const points=l.points.map(p=>at(l.floor,p));line(points,0x1683d1);movingArrows(points.map(p=>p.clone().add(new T.Vector3(0,.035,0))));}
       for(const t of data.transfers){const a=at(t.from.floor,t.from.point),b=at(t.to.floor,t.to.point);
        if(t.kind==='elevator'){const height=Math.abs(b.y-a.y),shaft=new T.Mesh(new T.BoxGeometry(.4,height,.4),new T.MeshPhongMaterial({color:colorValue('#67adc9'),transparent:true,opacity:.12,depthWrite:false,shininess:80}));shaft.position.copy(a).lerp(b,.5);group.add(shaft);const frame=new T.LineSegments(new T.EdgesGeometry(shaft.geometry),new T.LineBasicMaterial({color:colorValue('#5b97b0'),transparent:true,opacity:.48}));frame.position.copy(shaft.position);group.add(frame);line([a,b],0x07527c,true);movingArrows([a,b]);tag('エレベーター EV',a.clone().lerp(b,.5),'#07527c',2.3);}
-       else{const lower=t.from.floor<t.to.floor?t.from:t.to,upper=t.from.floor<t.to.floor?t.to:t.from,upRoute=t.from.floor<t.to.floor;
-        for(const up of [true,false]){const from=up?lower:upper,to=up?upper:lower,selected=up===upRoute,ps=map3DEscalatorTrack(from,to,e=>at(e.floor,e.point,.13).toArray()).map(p=>new T.Vector3(...p));escalatorModel(ps[1],ps[2],selected);line(ps,selected?0x1683d1:0x9aadb5,true);if(selected)movingArrows(ps);const side=escalatorBoardingSide(from.floor,up);tag((up?'上り':'下り')+' '+from.floor+'階'+(side?side+'のり口':''),ps[1].clone().lerp(ps[2],.25),selected?'#07527c':'#82979f',2.5);}
-       }}
+       else{line([a,b],0xd47717,true);movingArrows([a,b]);tag('エスカレーター',a.clone().lerp(b,.5),'#ad5a0d',2.3);}}
       if(mapUI.startConfirmed){const start=destinationList.find(d=>navigationTargetReference(d)===mapUI.from);if(start)outlinePlace(start,'#2580c5',group);}
       const same=data.start?.floor===data.goal?.floor&&data.start?.point&&data.goal?.point&&Math.hypot(data.start.point[0]-data.goal.point[0],data.start.point[1]-data.goal.point[1])<1;
       if(!navigationState.active)pin(data.start,'出発地','#2580c5',same?-.13:0);pin(data.goal,'目的地','#ff0300',same?.13:0);
