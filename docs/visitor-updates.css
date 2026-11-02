@@ -100,8 +100,8 @@ body.visitor-experience #facilityDetailName{display:block!important;min-width:0;
 .facility-arrival-code{display:block;font-size:13px;color:#31515d;margin-bottom:6px;font-weight:700}
 .facility-name-track{display:block;overflow:hidden;white-space:nowrap}
 .facility-name-track>span{display:inline-block;white-space:nowrap}
-.facility-name-track.marquee>span{animation:facility-name-scroll 10s ease-in-out infinite}
-@keyframes facility-name-scroll{0%,15%{transform:translateX(0)}75%,90%{transform:translateX(var(--name-overflow))}100%{transform:translateX(0)}}
+.facility-name-track.marquee>.facility-marquee-run{display:inline-flex;gap:32px;animation:facility-name-scroll var(--name-duration,6s) linear infinite}
+@keyframes facility-name-scroll{from{transform:translateX(0)}to{transform:translateX(var(--name-cycle))}}
 @media(prefers-reduced-motion:reduce){.facility-name-track.marquee{overflow-x:auto}.facility-name-track.marquee>span{animation:none}}
 body.visitor-experience .map-navigation-rail #allFloors#allFloors{touch-action:none!important;overscroll-behavior:none!important;overflow:hidden!important}
 #mapMessage{transition:opacity .8s ease}

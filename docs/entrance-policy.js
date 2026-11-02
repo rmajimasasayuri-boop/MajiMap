@@ -5,5 +5,9 @@ function entranceAvailability(reference,date=new Date()){
  const parts=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Tokyo',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(date),v=Object.fromEntries(parts.map(p=>[p.type,p.value])),minute=Number(v.hour)*60+Number(v.minute);
  return minute<480||minute>=1080?{closed:true,state:'closed',label:'閉鎖中 · 8:00に開放'}:minute>=1070?{closed:false,state:'soon-close',label:'まもなく閉鎖 · 18:00まで'}:{closed:false,state:'open',label:'利用可能 · 8:00–18:00'};
 }
-function entranceEdgeAllowed(u,v,date=new Date()){return !entranceAvailability(u,date).closed&&!entranceAvailability(v,date).closed;}
+function entranceEdgeAllowed(u,v,date=new Date()){
+ // Split corridor graphs can have aliases at the exact same physical doorway.
+ const physicalDoor=r=>{const n=(typeof mobilityData!=='undefined'&&mobilityData.nodes[r])||(typeof confirmedNavigation!=='undefined'&&confirmedNavigation.nodes[r]);if(n?.floor!==3)return r;return regularEntranceRefs.find(id=>{const p=mobilityData.points[id];return p&&Math.hypot(p[0]-n.point[0],p[1]-n.point[1])<.1;})||r;};
+ return !entranceAvailability(physicalDoor(u),date).closed&&!entranceAvailability(physicalDoor(v),date).closed;
+}
 function placeNearestKind(d){return d.type==='entrance'?'entrance':d.type==='toilet'?'toilet':d.type==='equipment'?d.category:null;}
