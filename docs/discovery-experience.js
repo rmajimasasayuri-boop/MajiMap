@@ -13,7 +13,7 @@ function beginPlaceSearch(){resetCandidateScroll();mapUI.selectingStartOnMap=fal
 
 let candidateIndexOpen=false,candidateIndexFrame=0,candidateIndexSignature='';
 function jumpToCandidateFloor(floor){
- cancelAnimationFrame(candidateResetFrame);
+ cancelAnimationFrame(candidateResetFrame);cancelAnimationFrame(candidateIndexFrame);candidateIndexOpen=true;candidateIndexSignature=ui('findPlace').value.trim()+'|'+mapUI.filter;
  const list=ui('placeResults'),heading=list.querySelector('.result-floor-heading[data-floor="'+floor+'"]'),row=heading||[...list.querySelectorAll('.place-row')].find(b=>b.dataset.floor===String(floor));
  if(!row)return;list.style.paddingBottom=Math.max(12,list.clientHeight-40)+'px';mapUI.resultFloor=floor;list.scrollTop+=row.getBoundingClientRect().top-list.getBoundingClientRect().top;syncDiscoveryFloors();
 }

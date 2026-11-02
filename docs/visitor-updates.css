@@ -91,3 +91,22 @@ body.visitor-experience #navigationDetail[hidden]{display:none!important}
 .place-map-target[data-highlight=start]:not(#inactive) .place-label-outline{stroke:#2580c5!important;fill:none!important;stroke-width:2.5!important;vector-effect:non-scaling-stroke}
 
 .place-map-target:not(#inactive) .place-label-outline{stroke:none!important;fill:none!important}
+
+/* Keep the sheet row height, enlarge photos, and scroll overflowing names. */
+body.visitor-experience #facilityDetails .facility-detail-body{grid-template-columns:120px minmax(0,1fr) 36px!important;grid-template-rows:88px auto auto!important}
+body.visitor-experience #facilityDetails .destination-photo-preview:not([hidden]),body.visitor-experience #facilityDetails .destination-photo-preview img{width:120px!important;height:88px!important;object-fit:contain!important}
+body.visitor-experience #facilityDetails .facility-heading{min-width:0;min-height:0!important;overflow:hidden}
+body.visitor-experience #facilityDetailName{display:block!important;min-width:0;min-height:0!important;margin:0!important;padding:0!important;overflow:hidden;line-height:1.4!important}
+.facility-arrival-code{display:block;font-size:13px;color:#31515d;margin-bottom:6px;font-weight:700}
+.facility-name-track{display:block;overflow:hidden;white-space:nowrap}
+.facility-name-track>span{display:inline-block;white-space:nowrap}
+.facility-name-track.marquee>span{animation:facility-name-scroll 10s ease-in-out infinite}
+@keyframes facility-name-scroll{0%,15%{transform:translateX(0)}75%,90%{transform:translateX(var(--name-overflow))}100%{transform:translateX(0)}}
+@media(prefers-reduced-motion:reduce){.facility-name-track.marquee{overflow-x:auto}.facility-name-track.marquee>span{animation:none}}
+body.visitor-experience .map-navigation-rail #allFloors#allFloors{touch-action:none!important;overscroll-behavior:none!important;overflow:hidden!important}
+#mapMessage{transition:opacity .8s ease}
+
+
+body.visitor-experience #campusMapButton{display:block!important;position:static!important;min-height:32px;width:44px;padding:3px!important;font-size:12px}
+#campusMapDialog{width:min(1100px,98vw);height:94dvh;max-height:94dvh;padding:8px}
+#campusMapDialog iframe{display:block;border:0;width:100%;height:calc(100% - 50px)}

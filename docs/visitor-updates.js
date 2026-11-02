@@ -31,6 +31,9 @@ function renderFavoriteStar(button){button.innerHTML='<svg class="favorite-star-
 function placeListText(d){const name=destinationDisplayName(d);return /^(?:[1-9]|10)(?:[A-Z]|[東西][AB])$/.test(d.code||'')&&!name.startsWith(d.code)?d.code+' '+name:name;}
 function appendHistoryStars(){for(const b of [...ui('recentPlaces').querySelectorAll('button')]){if(b.classList.contains('history-star'))continue;const ref=b.dataset.ref,d=destinationList.find(d=>d.ref===ref);if(!d)continue;b.textContent=placeListText(d);if(b.closest('.history-place-row'))continue;const row=document.createElement('div');row.className='history-place-row';b.before(row);row.append(b);const star=document.createElement('button');star.className='history-star';const saved=readPlaceFavorites().includes(ref);renderFavoriteStar(star);star.dataset.saved=String(saved);star.setAttribute('aria-label',destinationDisplayName(d)+(saved?'のお気に入りを解除':'をお気に入りに登録'));star.onclick=()=>{toggleVisitorFavorite(d);updateSearchChoices();};row.append(star);}}
 function previewManualDestination(point){const p=manualPointAt(point,mapUI.floor,mapUI.base*mapUI.zoom);if(!p){ui('mapMessage').dataset.important='true';ui('mapMessage').textContent='通路に接続できる場所を選んでください。';return;}const d={ref:'hospital:'+p.floor+'::__manualGoal',routeReference:'hospital:'+p.floor+'::__manualGoal',name:'地図で指定した場所',floor:p.floor,point:p.point,type:'manual',manualSelection:p,code:''};showVisitorPreview(d);}
+function updateCardHeading(d){
+ if(!d)return;const title=ui('facilityDetailName');title.replaceChildren();const code=document.createElement('small');code.className='facility-arrival-code';code.textContent=/^(?:[1-9]|10)(?:[A-Z]|[東西][AB])$/.test(d.code||'')?d.code:d.floor+'階';const track=document.createElement('span');track.className='facility-name-track';const name=document.createElement('span');name.textContent=destinationDisplayName(d);track.append(name);title.append(code,track);requestAnimationFrame(()=>{const overflow=Math.max(0,name.scrollWidth-track.clientWidth);track.style.setProperty('--name-overflow',-overflow+'px');track.classList.toggle('marquee',overflow>1);});
+}
 function initVisitorUpdates(){
  if(reviewEmbedded)return;
  const baseOverlay=renderOverlay;renderOverlay=function(){baseOverlay();syncPlaceHighlights();const d=mapUI.previewPlace;if(d?.manualSelection&&d.floor===mapUI.floor){const marker=svgNode('circle',{cx:d.point[0],cy:d.point[1],r:12,fill:'#d83a40',stroke:'white','stroke-width':3,'pointer-events':'none'});ui('unifiedOverlay').append(marker);}};
@@ -56,9 +59,12 @@ function initVisitorUpdates(){
  const oldSync=syncVisitorRefinements;syncVisitorRefinements=function(){mapUI.waypoint=null;mapUI.manualVia=null;mapUI.addingWaypoint=false;oldSync();ui('routeAddWaypoint').hidden=true;ui('routeViaRow').hidden=true;};
 
  const oldClose=closeVisitorPreview;closeVisitorPreview=function(){oldClose();mapUI.previewPlace=null;};
- const oldPhoto=renderPlacePhoto;renderPlacePhoto=function(d){oldPhoto(d);if(d?.type==='entrance'){const host=ui('facilityHours'),state=entranceAvailability(d.ref);host.hidden=false;host.textContent=state.label;host.className='facility-hours entrance-status';host.dataset.state=state.state;}updatePreviewActions();};
+ const information=destinationList.find(d=>d.ref==='services::information');if(information)information.name='インフォメーション・情報コーナー';
+ const oldPhoto=renderPlacePhoto;renderPlacePhoto=function(d){oldPhoto(d);updateCardHeading(d);if(d?.type==='entrance'){const host=ui('facilityHours'),state=entranceAvailability(d.ref);host.hidden=false;host.textContent=state.label;host.className='facility-hours entrance-status';host.dataset.state=state.state;}updatePreviewActions();};
  const oldPlan=routePlan;routePlan=function(){if(mapUI.goal&&entranceAvailability(mapUI.goal.ref).closed){clearRouteSelection();ui('mapMessage').dataset.important='true';ui('mapMessage').textContent='この出入口は閉鎖中です。時間外出入口を選択してください。';return;}return oldPlan();};
- updateSearchChoices();updateVisitorFavorites();renderResults();syncVisitorRefinements();
+ updateSearchChoices();updateVisitorFavorites();renderResults();syncVisitorRefinements();updateCardHeading(destinationPhotoState.place);
+ const campusButton=ui('campusMapButton');campusButton.textContent='屋外';campusButton.setAttribute('aria-label','7号館・駐車場・屋外通路の地図');document.querySelector('.map-navigation-rail').append(campusButton);ui('campusMapDialog').innerHTML='<div class="dialog-heading"><h2>屋外・7号館・駐車場</h2><button id="closeCampusExpanded">閉じる</button></div><iframe title="屋外・7号館・駐車場の地図" src="campus.html"></iframe>';ui('closeCampusExpanded').onclick=()=>ui('campusMapDialog').close();
+
  let last=regularEntranceRefs.map(r=>entranceAvailability(r).state).join();setInterval(()=>{const next=regularEntranceRefs.map(r=>entranceAvailability(r).state).join();if(next!==last){last=next;renderResults();if(mapUI.goal){stopNavigation();routePlan();}}},15000);
 }
 initVisitorUpdates();

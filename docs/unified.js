@@ -11,7 +11,7 @@ const officialCodes={
 '1A':[442,732],'1E':[109,674],
 '2A':[458,595],'2B':[308,595],'2E':[109,675],'2F':[308,871],'2G':[458,871],'2J':[357,313],'2K':[622,327],'2L':[1186,327],'2P':[985,624],'2R':[1070,875],'2S':[1640,571],
 '3A':[501,415],'3B':[304,415],'3C':[106,371],'3E':[106,618],'3G':[380,704],'3L':[1183,170],'3P':[981,464],
-'4A':[376,470],'4E':[121,770],'4F':[301,854],'4G':[450,854],'4L':[1031,216],
+'4A':[376,470],'4E':[121,770],'4F':[301,854],'4G':[450,854],'4L':[1031,216],'4P':[1015,460],
 '5A':[451,552],'5B':[298,552],'5C':[80,606],'5E':[121,826],'5G':[448,856],'5L':[995,314],
 '6A':[451,573],'6B':[302,573],'6G':[399,849]};
 // Click regions follow printed signs, independently of route arrival points.
@@ -19,7 +19,7 @@ const clinicSigns={
 '1A':[368,660,149,38],'1E':[20,581,189,61],
 '2A':[424,500,73,39],'2B':[237,479,153,81],'2E':[49,581,121,60],'2F':[245,778,125,60],'2G':[407,798,104,40],'2J':[232,219,250,61],'2K':[517,231,210,61],'2L':[1102,254,168,39],'2P':[914,551,124,39],'2R':[1016,781,111,61],'2S':[1564,471,152,62],
 '3A':[398,348,129,38],'3B':[240,320,129,62],'3C':[32,405,147,39],'3E':[12,548,186,39],'3G':[252,609,251,62],'3L':[1244,197,189,62],'3P':[883,393,191,39],
-'4A':[312,587,128,62],'4E':[72,698,97,46],'4F':[250,783,103,39],'4G':[408,783,82,39],'4L':[1066,195,88,39],
+'4A':[312,587,128,62],'4E':[72,698,97,46],'4F':[250,783,103,39],'4G':[408,783,82,39],'4L':[1066,195,88,39],'4P':[949,494,130,62],
 '5A':[395,583,104,39],'5B':[249,583,100,39],'5C':[11,636,144,64],'5E':[40,859,160,44],'5G':[339,759,145,66],'5L':[901,244,190,39],
 '6A':[387,471,120,66],'6B':[242,471,121,66],'6G':[309,780,191,40]};
 const serviceSigns={seven:[658,570,100,140],green:[1785,900,74,79],information:[640,704,100,67],medicine:[1270,570,117,54],admission:[1414,778,111,39],laundry:[1635,748,89,37],lost:[1537,816,161,43]};
@@ -73,8 +73,8 @@ destinationList.push({ref:'hospital:3::generalReception',name:'総合受付',cod
 for(const f of [5,6,7,8,9,10])for(const [id,d] of Object.entries(unifiedMapModel.floors[f].wardEntrances)){destinationList.push({ref:ref('hospital:'+f,id),name:d.label,code:d.code,floor:f,type:id==='rehab'?'rehab':'ward',point:d.point,routeAnchor:d.routeAnchor,departments:d.departments,labelBounds:d.labelBounds});}
 for(const [id,d]of Object.entries(serviceDestinations))destinationList.push({ref:'services::'+id,name:d.name,code:'施設',floor:d.floor,type:'service',detail:d,point:destinationArrivalPoint('services::'+id,null)});
 if(typeof confirmedNavigation!=='undefined')destinationList.push(...confirmedNavigation.newDestinations);if(typeof mobilityData!=='undefined')destinationList.push(...mobilityData.destinations);
-function navigationTargetReference(d){if(['toilet','equipment'].includes(d.type))return d.ref;if(d.routeReference)return d.routeReference;if(typeof additionalNavigation!=='undefined'&&additionalNavigation.anchors[d.ref])return additionalNavigation.anchors[d.ref];return typeof confirmedNavigation!=='undefined'&&confirmedNavigation.anchors[d.ref]||(d.type==='clinic'?ref(splitRef(d.ref).map,d.detail.routeAnchor):entryReference(d.ref));}
-function isGuideOnly(d){if(d.type==='equipment')return !d.routeReady;if(typeof additionalNavigation!=='undefined'&&additionalNavigation.excluded[d.ref])return true;return d.type==='service'&&!(typeof additionalNavigation!=='undefined'&&additionalNavigation.anchors[d.ref])&&!(typeof confirmedNavigation!=='undefined'&&confirmedNavigation.anchors[d.ref]);}
+function navigationTargetReference(d){if(mobilityData.nodes[d.ref])return d.ref;if(['toilet','equipment'].includes(d.type))return d.ref;if(d.routeReference)return d.routeReference;if(typeof additionalNavigation!=='undefined'&&additionalNavigation.anchors[d.ref])return additionalNavigation.anchors[d.ref];return typeof confirmedNavigation!=='undefined'&&confirmedNavigation.anchors[d.ref]||(d.type==='clinic'?ref(splitRef(d.ref).map,d.detail.routeAnchor):entryReference(d.ref));}
+function isGuideOnly(d){if(d.type==='equipment')return !d.routeReady;if(mobilityData.nodes[d.ref])return false;if(typeof additionalNavigation!=='undefined'&&additionalNavigation.excluded[d.ref])return true;return d.type==='service'&&!mobilityData.nodes[d.ref]&&!(typeof additionalNavigation!=='undefined'&&additionalNavigation.anchors[d.ref])&&!(typeof confirmedNavigation!=='undefined'&&confirmedNavigation.anchors[d.ref]);}
 function destinationDisplayName(d){if(d.floor===5&&d.type==='ward'&&!d.departments?.length)return d.name.replace(/\s*入口$/,'');if(d.ref==='hospital:7::rehab')return 'リハビリテーション室';if(d.ref==='services::restaurant')return 'レストラン・外来食堂（ffields）';return d.type==='ward'&&d.departments?.length?d.departments.join('・')+'　病棟':d.name;}
 function normalizeQuery(s){return typeof normalizePlaceSearch==='function'?normalizePlaceSearch(s):String(s).normalize('NFKC').toLowerCase().replace(/[\s・、（）()]/g,'').replace(/耳鼻科/g,'耳鼻咽喉').replace(/眼医者/g,'眼科');}
 function matchesPlace(d,q){return typeof placeSearchScore==='function'?placeSearchScore(d,q)>=0:normalizeQuery(d.name+destinationDisplayName(d)+d.code+(d.departments||[]).join('')+(d.detail?.aliases||'')).includes(normalizeQuery(q));}

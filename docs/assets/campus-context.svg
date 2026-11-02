@@ -1,8 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 650" role="img" aria-label="病院、7号館、ロータリー、立体駐車場の概略配置図">
-<rect width="1000" height="650" rx="18" fill="#f4f7f4"/>
-<g fill="none" stroke="#dde5df" stroke-width="58"><path d="M30 570H940V70"/><path d="M780 550V350H665"/></g>
-<g stroke="#80a1b0" stroke-width="2"><rect x="270" y="70" width="330" height="160" rx="10" fill="#e5edf2"/><rect x="95" y="240" width="340" height="145" rx="10" fill="#dcebd9"/><rect x="535" y="375" width="155" height="155" rx="10" fill="#e7e2d8"/><rect x="770" y="180" width="165" height="170" rx="10" fill="#e1e6ef"/><rect x="650" y="70" width="90" height="170" rx="10" fill="#e8edf0"/></g>
-<ellipse cx="475" cy="465" rx="118" ry="58" fill="#dce4e7" stroke="#9dafb6" stroke-width="26"/><ellipse cx="475" cy="465" rx="58" ry="22" fill="#d5e5cf"/>
-<g fill="none" stroke="#dcaa4b" stroke-width="11" stroke-dasharray="10 8"><path d="M820 350V560H610V530"/><path d="M535 410H430V385"/><path d="M430 400V230H520"/></g>
-<g font-family="sans-serif" fill="#234550" text-anchor="middle"><text x="435" y="144" font-size="24" font-weight="bold">2号館（診療棟・病棟）</text><text x="265" y="310" font-size="24" font-weight="bold">1号館（外来棟）</text><text x="612" y="425" font-size="22" font-weight="bold">7号館</text><text x="612" y="455" font-size="17">管理棟</text><text x="612" y="485" font-size="14">2階 食堂</text><text x="612" y="507" font-size="14">3階 カフェ・店舗</text><text x="854" y="250" font-size="23" font-weight="bold">立体駐車場</text><text x="695" y="150" font-size="18">3号館</text><text x="475" y="470" font-size="17">ロータリー</text><text x="500" y="40" font-size="18">構内の概略配置（縮尺・方位は省略）</text></g>
-<g font-family="sans-serif" font-size="15" fill="#6c633e"><text x="48" y="610">黄破線：連絡動線の確認対象。入口・通行区分を確認するまで屋内ナビには接続しません。</text><text x="48" y="634">参考：Yahoo!マップ、近畿大学公式キャンパスマップ・交通アクセス（2026年10月28日確認）</text></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 850" role="img" aria-label="近畿大学病院の7号館、駐車場、構内通路の配置図">
+<style>text{font-family:sans-serif;fill:#294b55;text-anchor:middle} .site{stroke:#7c9ba5;stroke-width:2;fill:#e4edf1} .name{font-size:22px;font-weight:700}.sub{font-size:17px} .path{fill:none;stroke:#dfb55a;stroke-width:14;stroke-linejoin:round} .preview{fill:none;stroke:#ae791d;stroke-width:3;stroke-dasharray:8 7}</style>
+<rect width="1200" height="850" fill="#f5f7f5"/>
+<path d="M120 0C90 280 155 475 235 575S450 750 500 850" stroke="#cce8c8" stroke-width="76" fill="none"/>
+<g transform="rotate(-22 600 425)">
+<path d="M155 655H1140M1140 100V790" stroke="#dbe2e5" stroke-width="45" fill="none"/>
+<path d="M210 615H1090M760 620V700H880M450 620V700" class="path"/>
+<path d="M210 615H1090M760 620V700H880M450 620V700" class="preview"/>
+<g class="site"><rect x="330" y="100" width="430" height="110" rx="8"/><rect x="400" y="255" width="355" height="310" rx="8"/><rect x="170" y="335" width="195" height="115" rx="8"/><rect x="175" y="480" width="195" height="130" rx="8"/><rect x="775" y="260" width="55" height="305" rx="6"/><rect x="850" y="260" width="245" height="305" rx="8"/><rect x="560" y="675" width="150" height="130" rx="8" fill="#e7e2d2"/></g>
+<rect x="880" y="95" width="205" height="130" rx="8" fill="#dce7f0" stroke="#7c9ba5" stroke-width="2"/>
+<rect x="890" y="685" width="195" height="100" rx="8" fill="#e5e9dc" stroke="#7c9ba5" stroke-width="2"/>
+<ellipse cx="805" cy="695" rx="55" ry="25" fill="#dbe4e6" stroke="#bbcbd1" stroke-width="16"/>
+<g class="name"><text x="545" y="160">5号館（研究棟）</text><text x="577" y="390">2号館</text><text x="577" y="422">診療棟・病棟</text><text x="267" y="385">6号館</text><text x="267" y="417" class="sub">臨床研究棟</text><text x="270" y="530">1号館</text><text x="270" y="563" class="sub">外来棟</text><text x="803" y="410" transform="rotate(90 803 410)">3号館</text><text x="970" y="405">4号館（教育棟）</text><text x="635" y="722">7号館</text><text x="635" y="751" class="sub">管理棟</text><text x="980" y="152">立体駐車場</text><text x="980" y="180" class="sub">患者さま用</text><text x="986" y="726">平面駐車場</text><text x="986" y="755" class="sub">患者さま用</text></g>
+</g><text x="1100" y="50" class="sub">↑ 北</text>
+</svg>
