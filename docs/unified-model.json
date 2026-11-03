@@ -35,10 +35,10 @@
       "nonStopElevators": []
     },
     "2": {
-      "image": "assets/visitor-floor-2.svg",
+      "image": "assets/visitor-floor-2-building7.svg",
       "size": [
         1994,
-        1200
+        1600
       ],
       "officialBase": true,
       "facilityDisplay": "公式フロアマップをそのまま表示。通行可否は経路で案内。",
@@ -55,7 +55,7 @@
       "nonStopElevators": []
     },
     "3": {
-      "image": "assets/visitor-floor-3-outdoor-edit.svg",
+      "image": "assets/visitor-floor-3-campus-editor.svg",
       "size": [
         2400,
         1600
@@ -438,7 +438,185 @@
             ],
             "estimated": true
           }
-        }
+        },
+        "sevenEV": {
+          "point3": [
+            495,
+            1230
+          ],
+          "point2": [
+            495,
+            1383
+          ],
+          "stub": [
+            475,
+            1200,
+            50,
+            60
+          ],
+          "serves": [
+            2,
+            3
+          ]
+        },
+        "editableWalks": [
+          {
+            "points": [
+              [
+                5,
+                907
+              ],
+              [
+                1835,
+                907
+              ]
+            ],
+            "width": 44
+          },
+          {
+            "points": [
+              [
+                464,
+                1090
+              ],
+              [
+                1760,
+                1090
+              ]
+            ],
+            "width": 32
+          },
+          {
+            "points": [
+              [
+                324.8,
+                856.5
+              ],
+              [
+                324.8,
+                907
+              ]
+            ],
+            "width": 24
+          },
+          {
+            "points": [
+              [
+                700.8,
+                856.1
+              ],
+              [
+                700.8,
+                1090
+              ]
+            ],
+            "width": 24
+          },
+          {
+            "points": [
+              [
+                1316.5,
+                857.2
+              ],
+              [
+                1316.5,
+                907
+              ]
+            ],
+            "width": 24
+          },
+          {
+            "points": [
+              [
+                1340,
+                907
+              ],
+              [
+                1340,
+                1090
+              ]
+            ],
+            "width": 24
+          },
+          {
+            "points": [
+              [
+                1738.6,
+                846.1
+              ],
+              [
+                1738.6,
+                1090
+              ]
+            ],
+            "width": 24
+          },
+          {
+            "points": [
+              [
+                650,
+                1090
+              ],
+              [
+                650,
+                1122
+              ]
+            ],
+            "width": 24
+          },
+          {
+            "points": [
+              [
+                700.8,
+                907
+              ],
+              [
+                700.8,
+                1090
+              ]
+            ],
+            "width": 44
+          },
+          {
+            "points": [
+              [
+                1340,
+                907
+              ],
+              [
+                1340,
+                1090
+              ]
+            ],
+            "width": 44
+          },
+          {
+            "points": [
+              [
+                1738.6,
+                907
+              ],
+              [
+                1738.6,
+                1090
+              ]
+            ],
+            "width": 44
+          },
+          {
+            "points": [
+              [
+                495,
+                1090
+              ],
+              [
+                495,
+                1230
+              ]
+            ],
+            "width": 24
+          }
+        ]
       }
     },
     "4": {
@@ -500,7 +678,7 @@
       "nonStopElevators": []
     },
     "7": {
-      "image": "assets/unified-floor-7.svg",
+      "image": "assets/unified-floor-7-rehab.svg",
       "size": [
         1758,
         1060
@@ -652,7 +830,7 @@
         },
         "rehab": {
           "label": "リハビリテーション室入口",
-          "code": "",
+          "code": "7P",
           "departments": [
             "リハビリテーション室"
           ],
@@ -663,9 +841,9 @@
           "routeAnchor": "gateRehab",
           "labelBounds": [
             980,
-            830,
+            785,
             250,
-            49
+            94
           ]
         }
       },

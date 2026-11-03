@@ -23,7 +23,7 @@ function scheduleCandidateIndex(){
  candidateIndexOpen=open;candidateIndexSignature=signature;});
 }
 function syncDiscoveryFloors(){
- if(reviewEmbedded)return;const searching=!document.querySelector('main').classList.contains('settings-hidden'),query=ui('findPlace').value,available=new Set(destinationList.filter(d=>resultCategoryMatches(d)&&matchesPlace(d,query)&&(!['toilet','equipment'].includes(d.type)||query.trim()||mapUI.filter===d.type||mapUI.filter==='equipment'&&d.type==='toilet')).map(d=>d.floor));
+ if(reviewEmbedded)return;const searching=!document.querySelector('main').classList.contains('settings-hidden'),query=ui('findPlace').value,available=new Set(destinationList.filter(d=>resultCategoryMatches(d)&&matchesPlace(d,query)&&(!['toilet','equipment'].includes(d.type)||mapUI.filter==='all'||query.trim()||mapUI.filter===d.type||mapUI.filter==='equipment'&&d.type==='toilet')).map(d=>d.floor));
  for(const b of ui('allFloors').querySelectorAll('button')){const f=Number(b.dataset.floor);b.disabled=searching&&!available.has(f);b.setAttribute('aria-pressed',String(searching?mapUI.resultFloor===f:mapUI.floor===f));b.setAttribute('aria-label',searching?f+'階の候補へ移動':f+'階の地図を表示');}
 }
 const searchHistoryKey='maji-place-history-v1';
