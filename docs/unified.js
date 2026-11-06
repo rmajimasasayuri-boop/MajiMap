@@ -25,6 +25,7 @@ const clinicSigns={
 const serviceSigns={seven:[658,570,100,140],green:[1785,900,74,79],information:[640,704,100,67],medicine:[1270,570,117,54],admission:[1414,778,111,39],laundry:[1635,748,89,37],lost:[1537,816,161,43]};
 // Pictogram hit regions are independent of the corridor-side navigation arrival.
 const toiletHitBounds={
+ 'outpatient:2::publicToilet-counseling':[[223,310,44,44],[277,287,44,44],[277,338,44,44]],
  'outpatient:2::publicToilet-gastro':[[1048,565,44,44],[1048,628,44,44],[1048,688,44,44]],
  'outpatient:1::publicToilet-central':[[547,512,44,88]],
  'outpatient:2::publicToilet-central':[[548,470,44,131]],
@@ -33,6 +34,8 @@ const toiletHitBounds={
  'outpatient:3::publicToilet-west':[[142,487,104,86]],
  'outpatient:3::publicToilet-south':[[544,667,44,88]],
  'outpatient:3::publicToilet-medicine':[[1223,636,44,110],[1169,548,44,44]],
+ 'outpatient:4::publicToilet-anesthesia':[[930,253,44,44],[930,296,44,44],[930,341,44,44]],
+ 'outpatient:4::publicToilet-west':[[200,640,44,44],[200,684,44,44],[200,728,44,44]],
  'outpatient:4::publicToilet-central':[[540,508,44,88]],
  'outpatient:4::publicToilet-south':[[540,819,44,88]],
  'outpatient:5::publicToilet-wardSouthOpposite':[[1231,754,44,44]],

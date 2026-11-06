@@ -370,7 +370,8 @@
             90
           ],
           "outerPath": "M950 1140H2320V1220H1350V1280Q1350 1330 1300 1330H950Q900 1330 900 1280V1190Q900 1140 950 1140Z",
-          "islandRadius": 12
+          "islandRadius": 12,
+          "laneWidth": 50
         },
         "sources": [
           "https://map.yahoo.co.jp/search?q=近畿大学病院&lat=34.49909&lon=135.51683&zoom=18&maptype=basic",
