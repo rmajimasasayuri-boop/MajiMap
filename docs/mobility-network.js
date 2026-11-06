@@ -11,7 +11,7 @@ function attachPublicMobility(graph){
  for(const [u,v,cost]of mobilityData.edges)graph.edges.push({u,v,cost,kind:'walk',access:'patient',path:null,evidence:'official-map-public-mobility'});
  for(const [u,v,cost,kind]of mobilityData.vertical){if(kind==='escalator'&&travelMode==='elevator')continue;graph.edges.push({u,v,cost:cost+(kind==='elevator'&&travelMode==='escalator'?1800:0),kind,access:'patient',path:null});}
  // User confirmed 2026-11-06: the corridor north of patient support is public.
- const supportNorth='outpatient:3::supportNorth';graph.nodes[supportNorth]={map:'outpatient:3',floor:3,point:[911.2,317],label:'患者支援センター北側通路',ratio:floorMaps['outpatient:3'].ratio};
+ const supportNorth='outpatient:3::supportNorth';graph.nodes[supportNorth]={map:'outpatient:3',floor:3,point:[911.2,317],displayPoint:[911.2,317],label:'患者支援センター北側通路',ratio:floorMaps['outpatient:3'].ratio};
  for(const ref of ['hospital:3::confirmed15','hospital:3::confirmed16']){const n=graph.nodes[ref];if(n)graph.edges.push({u:supportNorth,v:ref,cost:Math.abs(n.point[0]-911.2)+Math.abs(n.point[1]-317),kind:'walk',access:'patient',path:null,evidence:'user-confirmed-2026-11-06-support-north'});}
  // User-plotted 3P-only interior approach, 2026-11-06. Never a public shortcut.
  const supportRef='outpatient:3::3P',only=[supportRef],inside=p=>p&&p[0]>=910&&p[0]<=920&&p[1]>=331&&p[1]<=737;

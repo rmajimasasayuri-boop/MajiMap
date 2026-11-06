@@ -177,7 +177,7 @@
         const points=polygon.map(p=>at(d.floor,p,.006));
         for(let i=0;i<points.length;i++) {
           const a=points[i],b=points[(i+1)%points.length],delta=b.clone().sub(a);
-          const edge=new T.Mesh(new T.CylinderGeometry(.024,.024,delta.length(),8),new T.MeshBasicMaterial({color:colorValue(color),depthTest:true,depthWrite:false}));edge.position.copy(a).addScaledVector(delta,.5);edge.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),delta.normalize());edge.renderOrder=13;target.add(edge);
+          const edge=new T.Mesh(new T.CylinderGeometry(.012,.012,delta.length(),8),new T.MeshBasicMaterial({color:colorValue(color),depthTest:true,depthWrite:false}));edge.position.copy(a).addScaledVector(delta,.5);edge.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),delta.normalize());edge.renderOrder=13;target.add(edge);
         }
       }
     }
@@ -194,7 +194,7 @@
       const box=new T.Box3();
       for(const map of data.maps) {
         const [w,h]=map.size,active=map.floor===data.floor;
-        const mat=new T.MeshBasicMaterial({map:texture(map.image),side:T.DoubleSide,transparent:false,opacity:1,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2});
+        const mat=new T.MeshBasicMaterial({map:texture(map.image+'?v=20261106l'),side:T.DoubleSide,transparent:false,opacity:1,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2});
         const plane=new T.Mesh(new T.PlaneGeometry(w*S,h*S),mat);
         plane.rotation.x=-Math.PI/2;plane.position.copy(at(map.floor,[w/2,h/2],0));
         plane.userData={floor:map.floor,width:w,height:h};planes.push(plane);group.add(plane);
