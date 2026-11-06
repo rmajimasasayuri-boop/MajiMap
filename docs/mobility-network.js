@@ -6,6 +6,9 @@ function attachPublicMobility(graph){
  for(const [id,n]of Object.entries(mobilityData.nodes))graph.nodes[id]={...n,ratio:floorMaps[n.map].ratio};
  for(const [u,v,cost]of mobilityData.edges)graph.edges.push({u,v,cost,kind:'walk',access:'patient',path:null,evidence:'official-map-public-mobility'});
  for(const [u,v,cost,kind]of mobilityData.vertical){if(kind==='escalator'&&travelMode==='elevator')continue;graph.edges.push({u,v,cost:cost+(kind==='elevator'&&travelMode==='escalator'?1800:0),kind,access:'patient',path:null});}
+ // User confirmed 2026-11-06: the corridor north of patient support is public.
+ const supportNorth='outpatient:3::supportNorth';graph.nodes[supportNorth]={map:'outpatient:3',floor:3,point:[911.2,317],label:'患者支援センター北側通路',ratio:floorMaps['outpatient:3'].ratio};
+ for(const ref of ['hospital:3::confirmed15','hospital:3::confirmed16','hospital:3::confirmed35']){const n=graph.nodes[ref];if(n)graph.edges.push({u:supportNorth,v:ref,cost:Math.abs(n.point[0]-911.2)+Math.abs(n.point[1]-317),kind:'walk',access:'patient',path:null,evidence:'user-confirmed-2026-11-06-support-north'});}
  // Distance-first: identical floor-change units for both modes and all lift banks.
  // Remove historical boarding penalties / escalator discounts from the auto comparison.
  for(const e of graph.edges)if(['elevator','escalator'].includes(e.kind)){const delta=Math.abs(floorMaps[graph.nodes[e.u].map].floor-floorMaps[graph.nodes[e.v].map].floor);e.cost=500*delta+(travelMode==='escalator'&&e.kind==='elevator'?1800:0);}

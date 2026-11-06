@@ -2,6 +2,7 @@
 function searchHome(focus=false){closeVisitorPreview();ui('findPlace').value='';mapUI.filter='all';mapUI.resultFloor=null;togglePlacePanel(true,false);beginPlaceSearch();ui('findPlace').blur();if(focus)ui('findPlace').focus({preventScroll:true});}
 function cancelDestination(){mapUI.goal=null;const url=new URL(location.href);url.searchParams.delete('goal');history.replaceState(null,'',url);mapUI.waypoint=null;mapUI.manualGoal=null;mapUI.manualVia=null;mapUI.addingWaypoint=false;clearRouteSelection();closeVisitorPreview();document.body.classList.remove('route-planning','place-selected');ui('routePlanner').hidden=true;ui('routeOptionsDock').hidden=true;ui('findPlace').value='';ui('facilityDetails').hidden=true;searchHome(false);updateRoutePlanner();}
 const toiletIconTiles={
+ 'outpatient:2::publicToilet-south':[[1647,773],[1698,773],[1668,719]],
  'outpatient:2::publicToilet-gastro':[[1048,565],[1048,628],[1048,688]],
  'outpatient:1::publicToilet-central':[[547,512],[547,556]],
  'outpatient:2::publicToilet-central':[[548,470],[548,514],[548,558]],
@@ -18,13 +19,13 @@ const toiletIconTiles={
  'outpatient:6::publicToilet-south':[[548,866],[548,910]]};
 function placeOfficialIcons(d){
  if(d.type==='equipment'){const id={payment:'33',parking:'34',vending:'36',aed:'23',phone:'26',baby:'03',scale:'29'}[d.category];return id?['<img class="facility-pict" alt="" referrerpolicy="no-referrer" src="https://www.med.kindai.ac.jp/img/common/map/icon-'+id+'.png">']:[];}
- if(d.type==='toilet')return (toiletIconTiles[d.ref]?.map(p=>[...p,44,44])||toiletHitBounds[d.ref]||[]).map(box=>officialIconSVG(d.floor,box));return [];
+ if(d.type==='toilet')return (toiletIconTiles[d.ref]?.map(p=>[...p,44,44])||toiletHitBounds[d.ref]||[]).map(([x,y,w,h])=>officialIconSVG(d.floor,[x+1,y+1,w-2,h-2]));return [];
 }
 const candidateSignColors={green:'#b0c548',yellow:'#e8b52f',blue:'#3989c6'};
 function orderWardCandidates(places){const ordered=[...places],floors=new Set(places.filter(d=>d.type==='ward').map(d=>d.floor)),rank={westA:0,westB:1,eastA:2,eastB:3};for(const floor of floors){const indices=ordered.flatMap((d,i)=>d.type==='ward'&&d.floor===floor?[i]:[]),wards=indices.map(i=>ordered[i]).sort((a,b)=>(rank[a.ref.split('::').pop()]??99)-(rank[b.ref.split('::').pop()]??99));indices.forEach((index,i)=>ordered[index]=wards[i]);}return ordered;}
 function refreshResultDetails(){
  const rows=[...ui('placeResults').querySelectorAll('.place-row')];for(const row of rows){const d=destinationList.find(d=>row.dataset.placeRef===d.ref);if(!d)continue;
- const code=row.querySelector('.code');if(code){code.hidden=!(d.type==='clinic'||d.type==='ward'||d.type==='rehab');code.textContent=d.code||'';const ward=d.ref.split('::').pop(),colors={eastA:candidateSignColors.blue,eastB:candidateSignColors.yellow,westA:candidateSignColors.green,westB:'#eb808b'};const signColor=/^[1-6][ABJK]$/.test(d.code||'')?candidateSignColors.green:/^[1-6][CE]$/.test(d.code||'')?candidateSignColors.yellow:candidateSignColors.blue;code.style.background=d.type==='rehab'?candidateSignColors.green:d.type==='ward'?(colors[ward]||candidateSignColors.blue):signColor;}row.querySelector('.place-row-copy small')?.remove();const icons=placeOfficialIcons(d);if(icons.length){const box=document.createElement('span');box.className='official-result-icons';box.innerHTML=icons.join('');row.prepend(box);}
+ const code=row.querySelector('.code');if(code){code.hidden=!(d.type==='clinic'||d.type==='ward'||d.type==='rehab');code.textContent=d.code||'';const ward=d.ref.split('::').pop(),colors={eastA:candidateSignColors.blue,eastB:candidateSignColors.yellow,westA:candidateSignColors.green,westB:'#eb808b'};const signColor=/^[1-6][ABJK]$/.test(d.code||'')?candidateSignColors.green:/^[1-6][CE]$/.test(d.code||'')?candidateSignColors.yellow:candidateSignColors.blue;const color=d.type==='rehab'?candidateSignColors.green:d.type==='ward'?(colors[ward]||candidateSignColors.blue):signColor;code.dataset.kind=d.type;code.style.setProperty('--sign-color',color);code.style.background=d.type==='ward'?'#fff':color;}row.querySelector('.place-row-copy small')?.remove();const icons=placeOfficialIcons(d);if(icons.length){const box=document.createElement('span');box.className='official-result-icons';box.innerHTML=icons.join('');row.prepend(box);}
  const state=entranceAvailability(d.ref);if(state.label){const badge=document.createElement('span');badge.className='entrance-status';badge.dataset.state=state.state;badge.textContent=state.label;row.querySelector('.place-row-copy').append(badge);}
  }
 }

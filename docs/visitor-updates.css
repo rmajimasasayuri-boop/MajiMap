@@ -149,3 +149,17 @@ body.visitor-experience #placeResults .code,body.visitor-experience #placeResult
 body.visitor-experience #placeResults .code[hidden]{display:none!important}
 body.visitor-experience .official-result-icons{max-width:108px}
 #outdoorPositionPanel [hidden]{display:none!important}
+
+/* Square sign tiles follow the supplied hospital sign photographs. */
+body.visitor-experience #placeResults .place-row .code,body.visitor-experience #placeResults .official-result-icons .facility-pict{width:40px!important;height:40px!important;min-width:40px!important;max-width:40px!important;padding:0!important;border-radius:5px;overflow:hidden;flex:0 0 40px;font-size:13px!important;white-space:nowrap}
+body.visitor-experience #placeResults .place-row .code[data-kind="ward"]{background:#fff!important;color:var(--sign-color)!important;border:1px solid #d6e0e5}
+body.visitor-experience #placeResults .official-result-icons{max-width:126px}
+#outdoorPositionPanel label{display:block}#outdoorPositionPanel input[type=range]{width:100%}
+
+/* Keep the outdoor drawing visible while recording a parking approach. */
+body.outdoor-route-recording{height:100dvh!important;overflow:hidden!important}
+body.outdoor-route-recording>main{position:relative!important;display:block!important;height:100dvh!important;overflow:hidden!important}
+body.outdoor-route-recording .map-area{position:absolute!important;inset:0!important;height:100%!important;padding:0!important;overflow:hidden!important}
+body.outdoor-route-recording .map-viewport{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;min-height:0!important}
+body.outdoor-route-recording #annPanel{position:absolute;z-index:60;left:8px;top:8px;width:min(340px,calc(100% - 82px));max-height:48dvh;overflow:auto;box-sizing:border-box;margin:0;padding:10px}
+body.outdoor-route-recording #annPanel .ann-explainer,body.outdoor-route-recording #annPanel .ann-legend,body.outdoor-route-recording #mapSearchBar{display:none!important}

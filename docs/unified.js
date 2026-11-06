@@ -28,7 +28,7 @@ const toiletHitBounds={
  'outpatient:2::publicToilet-gastro':[[1048,565,44,44],[1048,628,44,44],[1048,688,44,44]],
  'outpatient:1::publicToilet-central':[[547,512,44,88]],
  'outpatient:2::publicToilet-central':[[548,470,44,131]],
- 'outpatient:2::publicToilet-south':[],
+ 'outpatient:2::publicToilet-south':[[1647,773,44,44],[1698,773,44,44],[1668,719,44,44]],
  'outpatient:3::publicToilet-central':[[544,356,44,88]],
  'outpatient:3::publicToilet-west':[[142,487,104,86]],
  'outpatient:3::publicToilet-south':[[544,667,44,88]],
@@ -48,6 +48,7 @@ function placeHitBounds(d){
  if(mobilityData.serviceOverrides?.[d.ref]||d.ref==='outpatient:3::parkingPaymentOutdoor'||d.ref==='outpatient:3::rotaryBusStop')return [d.labelBounds];
  if(typeof wardHitShapes!=='undefined'&&wardHitShapes[d.ref])return wardHitShapes[d.ref].map(ps=>{const xs=ps.map(p=>p[0]),ys=ps.map(p=>p[1]);return [Math.min(...xs),Math.min(...ys),Math.max(...xs)-Math.min(...xs),Math.max(...ys)-Math.min(...ys)];});
  if(typeof officialPlaceBounds==='function'&&officialPlaceBounds(d))return officialPlaceBounds(d);
+ if(d.type==='entrance'&&d.hitBounds)return [d.hitBounds];
  if(d.labelBounds)return [d.labelBounds];
  if(d.code==='2S')return [[1564,471,152,62],[1608,543,64,56],[1455,738,128,242]];
  if(d.type==='clinic'){const p=d.code==='4A'?[376,552]:officialCodes[d.code];return [[p[0]-32,p[1]-28,64,d.code==='4A'?64:56],clinicSigns[d.code]].filter(Boolean);}

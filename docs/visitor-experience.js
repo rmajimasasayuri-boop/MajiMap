@@ -25,7 +25,7 @@ function focusNavigationStep(){
  mapUI.zoom=Math.max(.7,Math.min(12,fit.scale/mapUI.base));const scale=mapUI.base*mapUI.zoom;
  mapUI.pan=[(w/2-fit.center[0])*scale,(h/2-fit.center[1])*scale+(65+area.height/2)-v.clientHeight/2];applyMapTransform();
 }
-function officialIconSVG(f,box){return '<svg class="facility-pict" viewBox="'+box.join(' ')+'" aria-hidden="true"><image href="assets/visitor-floor-'+f+'.svg" width="'+unifiedMapModel.floors[f].size[0]+'" height="'+unifiedMapModel.floors[f].size[1]+'"/></svg>';}
+function officialIconSVG(f,box){const size={1:[1758,1200],2:[1994,1200],3:[1758,892],4:[1758,1060],5:[1758,1060],6:[1758,1060]}[f]||unifiedMapModel.floors[f].size;return '<svg class="facility-pict" viewBox="'+box.join(' ')+'" aria-hidden="true"><image href="assets/visitor-floor-'+f+'.svg" width="'+size[0]+'" height="'+size[1]+'"/></svg>';}
 function initVisitorExperience(){
  if(reviewEmbedded)return;
  document.body.classList.add('visitor-experience');
