@@ -163,3 +163,13 @@ body.outdoor-route-recording .map-area{position:absolute!important;inset:0!impor
 body.outdoor-route-recording .map-viewport{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;min-height:0!important}
 body.outdoor-route-recording #annPanel{position:absolute;z-index:60;left:8px;top:8px;width:min(340px,calc(100% - 82px));max-height:48dvh;overflow:auto;box-sizing:border-box;margin:0;padding:10px}
 body.outdoor-route-recording #annPanel .ann-explainer,body.outdoor-route-recording #annPanel .ann-legend,body.outdoor-route-recording #mapSearchBar{display:none!important}
+
+/* Condense only the requested lettering; tile and character heights stay unchanged. */
+body.visitor-experience #placeResults .code .code-condensed{display:inline-block;flex:none;width:max-content;white-space:nowrap;transform:scaleX(.70);transform-origin:center}
+body.visitor-experience #placeResults .code .code-ten{display:inline-block;flex:none;width:.60em;overflow:visible}
+body.visitor-experience #placeResults .code .code-ten>span{display:block;width:max-content;transform:scaleX(.50);transform-origin:left center}
+body.visitor-experience #placeResults .code .code-remainder{display:inline-block;flex:none}
+body.visitor-experience #placeResults .place-row .code[data-kind="unit"]{background:var(--sign-color)!important;color:#fff!important;border-color:transparent}
+body.visitor-experience #placeResults .code .code-condensed,body.visitor-experience #placeResults .code .code-ten,body.visitor-experience #placeResults .code .code-ten>span,body.visitor-experience #placeResults .code .code-remainder{font-size:inherit!important;font-weight:inherit;line-height:inherit!important}
+
+body.visitor-experience #placeResults .code:has(.code-ten){gap:0!important}
