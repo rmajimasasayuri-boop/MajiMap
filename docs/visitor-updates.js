@@ -19,7 +19,10 @@ const toiletIconTiles={
  'outpatient:6::publicToilet-south':[[548,866],[548,910]]};
 function placeOfficialIcons(d){
  if(d.type==='equipment'){const id={payment:'33',parking:'34',vending:'36',aed:'23',phone:'26',baby:'03',scale:'29'}[d.category];return id?['<img class="facility-pict" alt="" referrerpolicy="no-referrer" src="https://www.med.kindai.ac.jp/img/common/map/icon-'+id+'.png">']:[];}
- if(d.type==='toilet')return (toiletIconTiles[d.ref]?.map(p=>[...p,44,44])||toiletHitBounds[d.ref]||[]).map(([x,y,w,h])=>officialIconSVG(d.floor,[x+1,y+1,w-2,h-2]));return [];
+ if(d.type==='toilet'){
+ const types={'outpatient:2::publicToilet-gastro':['01','02','05'],'outpatient:2::publicToilet-south':['01','02','05'],'outpatient:6::publicToilet-central':['24','02','01'],'outpatient:6::publicToilet-south':['24','05']}[d.ref]||['01','02'];
+ return types.map(id=>'<img class="facility-pict" alt="" src="assets/legend-toilet-'+id+'.png">');
+ }return [];
 }
 const candidateSignColors={green:'#b0c548',yellow:'#e8b52f',blue:'#3989c6'};
 function orderWardCandidates(places){const ordered=[...places],floors=new Set(places.filter(d=>d.type==='ward').map(d=>d.floor)),rank={westA:0,westB:1,eastA:2,eastB:3};for(const floor of floors){const indices=ordered.flatMap((d,i)=>d.type==='ward'&&d.floor===floor?[i]:[]),wards=indices.map(i=>ordered[i]).sort((a,b)=>(rank[a.ref.split('::').pop()]??99)-(rank[b.ref.split('::').pop()]??99));indices.forEach((index,i)=>ordered[index]=wards[i]);}return ordered;}

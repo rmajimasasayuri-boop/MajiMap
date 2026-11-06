@@ -173,3 +173,11 @@ body.visitor-experience #placeResults .place-row .code[data-kind="unit"]{backgro
 body.visitor-experience #placeResults .code .code-condensed,body.visitor-experience #placeResults .code .code-ten,body.visitor-experience #placeResults .code .code-ten>span,body.visitor-experience #placeResults .code .code-remainder{font-size:inherit!important;font-weight:inherit;line-height:inherit!important}
 
 body.visitor-experience #placeResults .code:has(.code-ten){gap:0!important}
+
+/* Shared layout for opening and business hours. */
+body.visitor-experience #facilityHours{gap:4px 10px}
+#facilityHours .facility-hours-regular{width:100%;font-size:inherit;line-height:1.5}
+#facilityHours .facility-hours-regular summary{cursor:pointer;color:#466574;width:max-content}
+#facilityHours .facility-hours-regular>span{display:block;padding-top:4px}
+#facilityHours .facility-hours-regular[open]{max-height:22dvh;overflow:auto}
+#unifiedOverlay{overflow:hidden}

@@ -55,9 +55,9 @@
       "nonStopElevators": []
     },
     "3": {
-      "image": "assets/visitor-floor-3-campus-editor-v2.svg",
+      "image": "assets/visitor-floor-3-outdoor-approved.svg",
       "size": [
-        2400,
+        1758,
         1600
       ],
       "officialBase": true,
@@ -459,6 +459,37 @@
             3
           ]
         },
+        "appliedDraft": {
+          "positions": {
+            "parkingPayment": [
+              1664.8,
+              1304.4
+            ],
+            "seven": [
+              647.4,
+              1240.5
+            ],
+            "rotary": [
+              1117.6,
+              1207.4
+            ],
+            "parkingBuilding": [
+              2058.2,
+              1368.3
+            ],
+            "sevenEV": [
+              494.4,
+              1151.7
+            ],
+            "busStop": [
+              1415.7,
+              1112.4
+            ]
+          },
+          "rotaryWidthPercent": 130,
+          "updatedAt": "2026-11-06T03:26:59.796Z"
+        },
+        "displayRight": 1758,
         "editableWalks": [
           {
             "points": [
@@ -616,7 +647,8 @@
             ],
             "width": 24
           }
-        ]
+        ],
+        "editorBaseImage": "assets/visitor-floor-3-campus-editor-v2.svg"
       }
     },
     "4": {
