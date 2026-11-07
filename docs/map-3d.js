@@ -194,7 +194,7 @@
       const box=new T.Box3();
       for(const map of data.maps) {
         const [w,h]=map.size,active=map.floor===data.floor;
-        const mat=new T.MeshBasicMaterial({map:texture(map.image+'?v=20261106l'),side:T.DoubleSide,transparent:false,opacity:1,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2});
+        const mat=new T.MeshBasicMaterial({map:texture(map.image+'?v=20261107b'),side:T.DoubleSide,transparent:false,opacity:1,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2});
         const plane=new T.Mesh(new T.PlaneGeometry(w*S,h*S),mat);
         plane.rotation.x=-Math.PI/2;plane.position.copy(at(map.floor,[w/2,h/2],0));
         plane.userData={floor:map.floor,width:w,height:h};planes.push(plane);group.add(plane);
