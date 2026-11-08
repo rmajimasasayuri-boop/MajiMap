@@ -27,9 +27,6 @@ body.visitor-experience #placeResults .place-row-copy strong{display:-webkit-box
 body.visitor-experience .official-result-icons{display:flex;align-items:center;gap:3px;flex-wrap:wrap;max-width:108px;flex:none}
 body.visitor-experience .official-result-icons .facility-pict{width:32px;height:32px;flex:none}
 body.visitor-experience .official-result-icons .facility-pict:only-child{width:44px;height:44px}
-body.visitor-experience .entrance-status{color:#137347;font-size:.85rem!important}
-body.visitor-experience .entrance-status[data-state=closed]{color:#c3353b}
-body.visitor-experience .entrance-status[data-state=soon-close]{color:#a85b00}
 body.visitor-experience #routeViaRow{position:relative;border:0;border-radius:0;padding:0 0 0 8px}
 body.visitor-experience #routeViaRow .route-via-copy{display:flex;flex-direction:row;align-items:center;gap:10px}
 body.visitor-experience #routeViaRow .route-via-copy small{width:14px;flex:0 0 14px;text-align:center}

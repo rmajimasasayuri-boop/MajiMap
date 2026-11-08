@@ -39,7 +39,11 @@ body.visitor-experience #detailWebsite[hidden]{display:none!important}
 body.visitor-experience #facilityHours{grid-column:1/-1;grid-row:3;display:flex;flex-wrap:wrap;align-items:center;gap:3px 7px;font-size:10px;line-height:1.4;border-top:1px solid #e6edef;padding-top:6px}
 body.visitor-experience #facilityHours[hidden]{display:none!important}
 body.visitor-experience #facilityHours small{width:100%;font-size:9px;color:#6b828c}
-.business-state{color:#137347}.business-state[data-state=closed]{color:#c3353b}.business-state[data-state=soon-open],.business-state[data-state=soon-close]{color:#a85b00}.business-state[data-state=unknown]{color:#657c87}
+#facilityHours .facility-hours-today,#facilityHours .facility-hours-regular>span{color:#466574}
+#facilityHours .business-state[data-state=open]{color:#137347}
+#facilityHours :is(.business-state,.facility-hours-today)[data-state=closed]{color:#c3353b}
+#facilityHours .business-state:is([data-state=soon-open],[data-state=soon-close]){color:#a85b00}
+#facilityHours .business-state[data-state=unknown]{color:#657c87}
 @media(min-width:701px){
  body.visitor-experience main:not(.settings-hidden) #settings#settings{left:auto!important;width:430px!important;padding:70px 62px 8px 12px!important;box-shadow:-4px 0 20px #183b4912}
 }

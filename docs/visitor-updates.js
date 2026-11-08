@@ -73,7 +73,7 @@ function initVisitorUpdates(){
 
  const oldClose=closeVisitorPreview;closeVisitorPreview=function(){oldClose();mapUI.previewPlace=null;};
  const information=destinationList.find(d=>d.ref==='services::information');if(information)information.name='インフォメーション・情報コーナー';
- const oldPhoto=renderPlacePhoto;renderPlacePhoto=function(d){oldPhoto(d);updateCardHeading(d);if(d?.type==='entrance'){const host=ui('facilityHours'),state=entranceAvailability(d.ref);host.hidden=false;host.textContent=state.label;host.className='facility-hours entrance-status';host.dataset.state=state.state;}updatePreviewActions();};
+ const oldPhoto=renderPlacePhoto;renderPlacePhoto=function(d){oldPhoto(d);updateCardHeading(d);updateFacilityHours(d);updatePreviewActions();};
  const oldPlan=routePlan;routePlan=function(){if(mapUI.goal&&entranceAvailability(mapUI.goal.ref).closed){clearRouteSelection();ui('mapMessage').dataset.important='true';ui('mapMessage').textContent='この出入口は閉鎖中です。時間外出入口を選択してください。';return;}return oldPlan();};
  updateSearchChoices();updateVisitorFavorites();renderResults();syncVisitorRefinements();updateCardHeading(destinationPhotoState.place);if(mapUI.goal&&!document.body.classList.contains('place-searching'))ui('findPlace').value=placeListText(mapUI.goal);
  ui('campusMapButton')?.remove();

@@ -36,15 +36,15 @@ function facilityLinksFor(d){if(d?.type==='entrance')return [{name:'出入口・
 function facilityHoursModel(d,date=new Date()){
  if(d?.type==='entrance'){
   const status=entranceAvailability(d.ref,date),regular=regularEntranceRefs.includes(d.ref),open=d.ref==='hospital:3::receptionEntrance'?'7:50':'8:00',t=japanClock(date),holiday=japanHolidayDates[t.year]?.includes(t.key),closedDay=t.weekday===0||holiday;
-  return {state:status.state,label:regular?{open:'利用可能',closed:'閉鎖中','soon-close':'まもなく閉鎖',unknown:'要確認'}[status.state]:'利用可能',today:regular?(!japanHolidayDates[t.year]?'要確認':closedDay?'閉門':open+'–'+(t.weekday===6?'13:00':'18:00')):'24時間',regular:regular?'平日 '+open+'–18:00 ／ 土曜 '+open+'–13:00（日曜・祝日閉門）':'毎日24時間',note:'病院公式の1月時間表・2026年10月1日変更を反映。日本時間。臨時変更は公式案内をご確認ください。'};
+  return {state:status.state,label:regular?{open:'利用可能',closed:'閉鎖中','soon-close':'まもなく閉鎖',unknown:'要確認'}[status.state]:'利用可能',today:regular?(!japanHolidayDates[t.year]?'要確認':closedDay?'閉門':open+'–'+(t.weekday===6?'13:00':'18:00')):'24時間',closedToday:regular&&status.state==='closed'&&closedDay,regular:regular?'平日 '+open+'–18:00 ／ 土曜 '+open+'–13:00（日曜・祝日閉門）':'毎日24時間',note:'病院公式の1月時間表・2026年10月1日変更を反映。日本時間。臨時変更は公式案内をご確認ください。'};
  }
  const info=facilityInformation[d?.ref],status=facilityBusinessState(info,date);if(!status)return null;
- return {...status,today:status.today||(status.state==='unknown'?'要確認':'休業'),regular:info.hours,extra:info.extra,note:'日本時間・通常の時間による目安。臨時変更は公式案内でご確認ください。'};
+ return {...status,today:status.today||(status.state==='unknown'?'要確認':'休業'),closedToday:status.state==='closed'&&!status.today,regular:info.hours,extra:info.extra,note:'日本時間・通常の時間による目安。臨時変更は公式案内でご確認ください。'};
 }
 function updateFacilityHours(d){
  const host=document.getElementById('facilityHours');if(!host)return;const model=facilityHoursModel(d);host.hidden=!model;if(!model)return;const expanded=host.dataset.reference===d.ref&&Boolean(host.querySelector('details')?.open);host.dataset.reference=d.ref;host.replaceChildren();
  const badge=document.createElement('strong');badge.className='business-state';badge.dataset.state=model.state;badge.textContent=model.label;
- const today=document.createElement('span');today.className='facility-hours-today';today.textContent='本日 '+model.today;
+ const today=document.createElement('span');today.className='facility-hours-today';today.textContent='本日 '+model.today;if(model.closedToday)today.dataset.state='closed';
  const regular=document.createElement('details');regular.className='facility-hours-regular';const toggle=document.createElement('summary');toggle.textContent='通常の時間';const hours=document.createElement('span');hours.textContent=model.regular;regular.append(toggle,hours);regular.open=expanded;toggle.onpointerdown=e=>e.stopPropagation();toggle.onclick=e=>{e.preventDefault();e.stopPropagation();regular.open=!regular.open;};
  if(model.extra){const extra=document.createElement('small');extra.textContent=model.extra;regular.append(extra);}
  host.append(badge,today,regular);host.title=model.note;
