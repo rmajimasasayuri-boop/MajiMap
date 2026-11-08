@@ -19,7 +19,13 @@ function beginWaypointSelection(){
 }
 function navigateVisitorPreview(){
  const d=destinationPhotoState.place;if(!d)return;if(previewOffersWaypoint(d)){addVisitorWaypoint();return;}
- closeVisitorPreview();choosePlace(d,true);rememberPlace(d);enterRoutePlanning();if(ensureIndoorStart()&&navigationState.steps.length){navigationFollow=true;startNavigation();syncRoutePanels();}
+ startingNavigationFromPreview=true;
+ try{
+  closeVisitorPreview();choosePlace(d,true);rememberPlace(d);enterRoutePlanning();
+  if(ensureIndoorStart()&&navigationState.steps.length){navigationFollow=true;startNavigation();}
+ }finally{
+  startingNavigationFromPreview=false;syncRoutePanels();
+ }
 }
 function syncVisitorRefinements(){
  updatePreviewActions();const add=ui('routeAddWaypoint');if(add){add.hidden=Boolean(mapUI.waypoint);add.textContent=mapUI.addingWaypoint?'経由地選択中':'経由地を追加';add.setAttribute('aria-pressed',String(Boolean(mapUI.addingWaypoint)));}

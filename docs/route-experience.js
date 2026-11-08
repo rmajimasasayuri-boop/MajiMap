@@ -18,6 +18,28 @@ function enterRoutePlanning(){
  routePlan();if(navigationState.steps.length){const floor=referenceFloor(mapUI.from)||mapUI.manual?.floor;showFloor(floor,false);if(!document.body.classList.contains('view-3d')){const points=floorRouteLines(mapUI.graph,mapUI.path,floor).flat();const v=ui('mapViewport'),fit=fitNavigationBounds(points,{width:v.clientWidth-40,height:Math.max(160,v.clientHeight-300)});if(fit){const [w,h]=floorInfo(floor).size;mapUI.zoom=Math.max(.7,Math.min(8,fit.scale/mapUI.base));const scale=mapUI.base*mapUI.zoom;mapUI.pan=[(w/2-fit.center[0])*scale,(h/2-fit.center[1])*scale+30];applyMapTransform();}}}
  syncRoutePanels();
 }
+const entranceNoticeState={key:'',surface:'',dismissed:false};
+let startingNavigationFromPreview=false;
+function syncEntranceNotice(notice,planning){
+ const active=navigationState.active;
+ if(notice){
+  const key=JSON.stringify([mapUI.from,mapUI.goal.ref,notice.text]);
+  if(key!==entranceNoticeState.key)Object.assign(entranceNoticeState,{key,surface:'',dismissed:false});
+  if(!entranceNoticeState.surface)entranceNoticeState.surface=active?'navigation':planning?'planning':'';
+  if(active&&(navigationState.index>0||entranceNoticeState.surface==='planning'))entranceNoticeState.dismissed=true;
+ }
+ for(const [id,surface,shown] of [
+  ['routeEntranceNotice','planning',planning&&!active],
+  ['navigationEntranceNotice','navigation',active&&navigationState.index===0],
+ ]){
+  const element=ui(id);
+  element.hidden=!notice||!shown||entranceNoticeState.dismissed||entranceNoticeState.surface!==surface;
+  const message=element.querySelector('[role=status]');
+  const text=notice?.text||'';
+  if(message.textContent!==text)message.textContent=text;
+  element.dataset.blocked=String(Boolean(notice?.blocked));
+ }
+}
 function syncRoutePanels(){
  if(reviewEmbedded)return;
  document.body.classList.toggle('place-selected',Boolean(mapUI.goal));
@@ -25,7 +47,7 @@ function syncRoutePanels(){
  ui('chooseCurrentMapPoint').hidden=true;
  ui('swapRoutePlaces').disabled=!mapUI.startConfirmed||!mapUI.goal||mapUI.goal.usage==='emergency-only';
  const notice=mapUI.goal?routeEntranceNotice(mapUI.from,mapUI.goal.ref,mapUI.graph,mapUI.path):null;
- for(const id of ['routeEntranceNotice','navigationEntranceNotice']){const element=ui(id);element.hidden=!notice;element.textContent=notice?.text||'';element.dataset.blocked=String(Boolean(notice?.blocked));}
+ syncEntranceNotice(notice,!ui('routeOptionsDock').hidden&&!startingNavigationFromPreview);
  ui('routeDockNavigate').disabled=Boolean(notice?.blocked);
  syncSearchControls();
 }
@@ -35,7 +57,14 @@ function initRouteExperience(){
  const planner=ui('routePlanner'),header=document.createElement('div');header.className='route-planning-header';header.innerHTML='<button id="closeRoutePlanning" aria-label="施設の案内に戻る">‹</button>';planner.prepend(header);
  const swap=document.createElement('button');swap.id='swapRoutePlaces';swap.className='swap-route-places';swap.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 20V4m-4 4 4-4 4 4M17 4v16m-4-4 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';swap.setAttribute('aria-label','出発地と目的地を入れ替える');planner.append(swap);swap.onclick=swapRoutePlaces;ui('mapViewport').append(planner);
  const dock=document.createElement('section');dock.id='routeOptionsDock';dock.className='route-options-dock';dock.setAttribute('aria-label','ナビ開始');dock.hidden=true;header.append(document.querySelector('.route-travel-tabs'));const start=document.createElement('button');start.id='routeDockNavigate';start.className='primary';start.textContent='ナビ開始';start.onclick=()=>{if(!ensureIndoorStart())return;routePlan();startNavigation();syncRoutePanels();};const mapStart=ui('chooseCurrentMapPoint');mapStart.textContent='出発地を地図上で選んでください。';dock.append(mapStart,start);ui('mapViewport').append(dock);
- for(const id of ['routeEntranceNotice','navigationEntranceNotice']){const note=document.createElement('p');note.id=id;note.className='entrance-route-notice';note.setAttribute('role','status');note.hidden=true;if(id==='routeEntranceNotice')dock.prepend(note);else ui('navigationInstruction').after(note);}
+ for(const id of ['routeEntranceNotice','navigationEntranceNotice']){
+  const note=document.createElement('div'),message=document.createElement('span'),close=document.createElement('button');
+  note.id=id;note.className='entrance-route-notice';note.hidden=true;
+  message.setAttribute('role','status');close.type='button';close.textContent='×';close.setAttribute('aria-label','閉門案内を閉じる');
+  close.onclick=()=>{entranceNoticeState.dismissed=true;syncRoutePanels();};
+  note.append(message,close);
+  if(id==='routeEntranceNotice')dock.prepend(note);else ui('navigationInstruction').after(note);
+ }
  for(const icon of document.querySelectorAll('.route-travel-tabs .official-wheelchair-icon'))icon.innerHTML=officialIconSVG(2,[1480,405,40,40]);
  ui('closeRoutePlanning').onclick=()=>{stopNavigation();document.body.classList.remove('route-planning');dock.hidden=true;planner.hidden=true;if(mapUI.goal)updateDestinationPhoto(mapUI.goal);ui('routeSummary').hidden=true;syncRoutePanels();};
  ui('detailRoute').onclick=enterRoutePlanning;

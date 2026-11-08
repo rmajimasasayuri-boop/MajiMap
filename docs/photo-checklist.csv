@@ -3,7 +3,7 @@
 "1","設備","1階 AED","outpatient:1::equipment-aed"
 "1","WC","外来中央 トイレ","outpatient:1::publicToilet-central"
 "2","設備","2階 自動販売機","outpatient:2::equipment-vending"
-"2","設備","2階 救急外来専用 精算機","outpatient:2::equipment-paymentEmergency"
+"2","設備","救急外来　自動支払機","outpatient:2::equipment-paymentEmergency"
 "2","設備","2階 AED","outpatient:2::equipment-aedNorth"
 "2","設備","2階 AED","outpatient:2::equipment-aedSouth"
 "2","設備","2階 公衆電話","outpatient:2::equipment-phone"

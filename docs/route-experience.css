@@ -102,6 +102,8 @@ body.visitor-experience .maji-attribution{bottom:calc(1px + env(safe-area-inset-
 }
 
 .entrance-route-notice{margin:0 0 5px;padding:7px 10px;border-radius:8px;background:#fff7e8;color:#864900;font-size:.875rem;line-height:1.4}
+.entrance-route-notice:not([hidden]){display:flex;align-items:center;gap:6px;padding-block:0;padding-right:0}
+.entrance-route-notice button{flex:none;margin-left:auto;min-width:44px;min-height:44px;padding:0;border:0;background:none;color:inherit;font-size:1.375rem;box-shadow:none}
 .entrance-route-notice[data-blocked=true]{background:#fff2f3;color:#a12d34}
 #routeEntranceNotice{position:absolute;left:8px;right:8px;bottom:100%;background:#fff7e8;box-shadow:0 1px 5px #183b4928}
 #routeEntranceNotice[data-blocked=true]{background:#fff2f3}
