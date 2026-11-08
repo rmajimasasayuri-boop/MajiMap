@@ -5,7 +5,7 @@ function syncSearchControls(){
  ui('clearPlaceSearch').hidden=!ui('findPlace').value;if(typeof syncDiscoveryFloors==='function')syncDiscoveryFloors();if(typeof scheduleCandidateIndex==='function')scheduleCandidateIndex();
 }
 function swapRoutePlaces(){
- if(!mapUI.goal||!mapUI.startConfirmed)return;
+ if(!mapUI.goal||!mapUI.startConfirmed||mapUI.goal.usage==='emergency-only')return;
  const goal=mapUI.goal,oldManual=mapUI.manual,oldManualGoal=mapUI.manualGoal;
  const start=oldManual?{ref:'hospital:'+oldManual.floor+'::__manualGoal',routeReference:'hospital:'+oldManual.floor+'::__manualGoal',floor:oldManual.floor,name:'地図で指定した目的地',code:'',type:'manual',point:oldManual.point}:destinationList.find(d=>d.ref===mapUI.from||navigationTargetReference(d)===mapUI.from)||{ref:mapUI.from,routeReference:mapUI.from,floor:referenceFloor(mapUI.from),point:routeStartPoint(),name:ui('currentName').textContent,type:'point',code:''};
  mapUI.startChosenOnMap=Boolean(oldManualGoal);mapUI.manual=oldManualGoal;mapUI.manualGoal=oldManual;mapUI.from=oldManualGoal?'hospital:'+goal.floor+'::__manualStart':navigationTargetReference(goal);mapUI.startName=oldManualGoal?null:destinationDisplayName(goal);mapUI.startConfirmed=true;
@@ -23,7 +23,10 @@ function syncRoutePanels(){
  document.body.classList.toggle('place-selected',Boolean(mapUI.goal));
  const planning=document.body.classList.contains('route-planning');ui('routeOptionsDock').hidden=!planning||navigationState.active||!mapUI.goal;
  ui('chooseCurrentMapPoint').hidden=true;
- ui('swapRoutePlaces').disabled=!mapUI.startConfirmed||!mapUI.goal;
+ ui('swapRoutePlaces').disabled=!mapUI.startConfirmed||!mapUI.goal||mapUI.goal.usage==='emergency-only';
+ const notice=mapUI.goal?routeEntranceNotice(mapUI.from,mapUI.goal.ref,mapUI.graph,mapUI.path):null;
+ for(const id of ['routeEntranceNotice','navigationEntranceNotice']){const element=ui(id);element.hidden=!notice;element.textContent=notice?.text||'';element.dataset.blocked=String(Boolean(notice?.blocked));}
+ ui('routeDockNavigate').disabled=Boolean(notice?.blocked);
  syncSearchControls();
 }
 function initRouteExperience(){
@@ -32,6 +35,7 @@ function initRouteExperience(){
  const planner=ui('routePlanner'),header=document.createElement('div');header.className='route-planning-header';header.innerHTML='<button id="closeRoutePlanning" aria-label="施設の案内に戻る">‹</button>';planner.prepend(header);
  const swap=document.createElement('button');swap.id='swapRoutePlaces';swap.className='swap-route-places';swap.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 20V4m-4 4 4-4 4 4M17 4v16m-4-4 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';swap.setAttribute('aria-label','出発地と目的地を入れ替える');planner.append(swap);swap.onclick=swapRoutePlaces;ui('mapViewport').append(planner);
  const dock=document.createElement('section');dock.id='routeOptionsDock';dock.className='route-options-dock';dock.setAttribute('aria-label','ナビ開始');dock.hidden=true;header.append(document.querySelector('.route-travel-tabs'));const start=document.createElement('button');start.id='routeDockNavigate';start.className='primary';start.textContent='ナビ開始';start.onclick=()=>{if(!ensureIndoorStart())return;routePlan();startNavigation();syncRoutePanels();};const mapStart=ui('chooseCurrentMapPoint');mapStart.textContent='出発地を地図上で選んでください。';dock.append(mapStart,start);ui('mapViewport').append(dock);
+ for(const id of ['routeEntranceNotice','navigationEntranceNotice']){const note=document.createElement('p');note.id=id;note.className='entrance-route-notice';note.setAttribute('role','status');note.hidden=true;if(id==='routeEntranceNotice')dock.prepend(note);else ui('navigationInstruction').after(note);}
  for(const icon of document.querySelectorAll('.route-travel-tabs .official-wheelchair-icon'))icon.innerHTML=officialIconSVG(2,[1480,405,40,40]);
  ui('closeRoutePlanning').onclick=()=>{stopNavigation();document.body.classList.remove('route-planning');dock.hidden=true;planner.hidden=true;if(mapUI.goal)updateDestinationPhoto(mapUI.goal);ui('routeSummary').hidden=true;syncRoutePanels();};
  ui('detailRoute').onclick=enterRoutePlanning;

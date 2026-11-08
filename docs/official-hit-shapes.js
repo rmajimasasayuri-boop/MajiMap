@@ -14,5 +14,22 @@ function placeLabelPolygons(d){return placeLabelBounds(d).map(([x,y,w,h])=>[[x,y
 
 // Resolve overlapping drawing regions consistently in both map views.
 function placeAtMapPoint(places,floor,point){const candidates=places.filter(d=>d.floor===floor&&placeHitPolygons(d).some(ps=>insideArea(point,ps))&&!wardCourtyardPolygons(d).some(ps=>insideArea(point,ps)));const distance=d=>Math.min(...placeLabelBounds(d).map(([x,y,w,h])=>Math.hypot(Math.max(x-point[0],0,point[0]-x-w),Math.max(y-point[1],0,point[1]-y-h))));return candidates.sort((a,b)=>distance(a)-distance(b))[0]||null;}
+function equipmentTapAudit(places){
+ const items=places.filter(d=>['equipment','toilet'].includes(d.type)||d.ref==='outpatient:3::rotaryBusStop');
+ const issues=[];let icons=0,checked=0;
+ for(const d of items){
+  const bounds=placeLabelBounds(d);
+  if(!bounds.length)issues.push({floor:d.floor,name:d.name,ref:d.ref});
+  for(const [x,y,w,h] of bounds){
+   icons++;
+   for(const [dx,dy] of [[0,0],[-.2,0],[.2,0],[0,-.2],[0,.2]]){
+    const point=[x+w*(.5+dx),y+h*(.5+dy)],hit=placeAtMapPoint(places,d.floor,point);
+    checked++;
+    if(hit?.ref!==d.ref)issues.push({floor:d.floor,name:d.name,ref:d.ref,point,hit:hit?.name});
+   }
+  }
+ }
+ return {icons,checked,issues};
+}
 function placeAtPointer(e){const r=ui('mapSheet').getBoundingClientRect(),[w,h]=floorInfo(mapUI.floor).size;return placeAtMapPoint(destinationList,mapUI.floor,[(e.clientX-r.left)/r.width*w,(e.clientY-r.top)/r.height*h]);}
 function syncPlaceHighlights(hoverRef=null){const active=mapUI.previewPlace?.ref||hoverRef||mapUI.goal?.ref;for(const e of document.querySelectorAll('.place-map-target')){const d=destinationList.find(d=>d.ref===e.dataset.placeRef),start=d&&mapUI.startConfirmed&&navigationTargetReference(d)===mapUI.from;let mode=e.dataset.placeRef===active?((hoverRef||mapUI.previewPlace)&&mapUI.pickMode==='start'?'start':'goal'):start?'start':'';e.dataset.highlight=mode;}}

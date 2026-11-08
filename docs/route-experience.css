@@ -100,3 +100,8 @@ body.visitor-experience .maji-attribution{bottom:calc(1px + env(safe-area-inset-
  body.visitor-experience .route-options-dock{bottom:calc(68px + env(safe-area-inset-bottom,0px))!important}
  body.visitor-experience .campus-map-button{bottom:calc(0px + env(safe-area-inset-bottom,0px));padding:0 6px;line-height:18px;font-size:9px}
 }
+
+.entrance-route-notice{margin:0 0 5px;padding:7px 10px;border-radius:8px;background:#fff7e8;color:#864900;font-size:.875rem;line-height:1.4}
+.entrance-route-notice[data-blocked=true]{background:#fff2f3;color:#a12d34}
+#routeEntranceNotice{position:absolute;left:8px;right:8px;bottom:100%;background:#fff7e8;box-shadow:0 1px 5px #183b4928}
+#routeEntranceNotice[data-blocked=true]{background:#fff2f3}

@@ -5,7 +5,7 @@ function routeIssues(item){return reviewState.audit?.revision===reviewCatalog.re
 function itemStatus(item){return reviewStatus(item,reviewState.records[item.id],routeIssues(item));}
 function saveReview(){try{localStorage.setItem(reviewStorageKey,JSON.stringify({records:reviewState.records,audit:reviewState.audit}));rr('saveStatus').textContent='この端末に保存しました';}catch{rr('saveStatus').textContent='端末に保存できません。確認記録を書き出してください。';}}
 function currentItem(){return reviewCatalog.items.find(d=>d.id===reviewState.selected);}
-function filteredItems(){const q=rr('reviewSearch').value.normalize('NFKC').toLowerCase().replace(/\s/g,'');return reviewCatalog.items.filter(d=>(rr('reviewFloor').value==='all'||d.floor===Number(rr('reviewFloor').value))&&(rr('reviewKind').value==='all'||d.kind===rr('reviewKind').value)&&(rr('reviewStatus').value==='all'||itemStatus(d)===rr('reviewStatus').value)&&(d.title+d.name+d.code+d.floor+'階').normalize('NFKC').toLowerCase().replace(/\s/g,'').includes(q)).sort((a,b)=>a.floor-b.floor||(a.kind==='floor'?-1:0)-(b.kind==='floor'?-1:0));}
+function filteredItems(){const q=rr('reviewSearch').value.normalize('NFKC').toLowerCase().replace(/\s/g,'');return reviewCatalog.items.filter(d=>(rr('reviewFloor').value==='all'||d.floor===Number(rr('reviewFloor').value))&&(rr('reviewKind').value==='all'||d.kind===rr('reviewKind').value||rr('reviewKind').value==='equipment'&&(['equipment','toilet'].includes(d.type)||d.ref==='outpatient:3::rotaryBusStop'))&&(rr('reviewStatus').value==='all'||itemStatus(d)===rr('reviewStatus').value)&&(d.title+d.name+d.code+d.floor+'階').normalize('NFKC').toLowerCase().replace(/\s/g,'').includes(q)).sort((a,b)=>a.floor-b.floor||(a.kind==='floor'?-1:0)-(b.kind==='floor'?-1:0));}
 function renderQueue(){if(typeof renderRouteConcerns==='function')renderRouteConcerns();const counts={pending:0,issue:0,confirmed:0};for(const d of reviewCatalog.items)counts[itemStatus(d)]++;rr('allCount').textContent=reviewCatalog.items.length;for(const k of Object.keys(counts))rr(k+'Count').textContent=counts[k];const items=filteredItems();rr('queueCount').textContent=items.length+'件';rr('reviewQueue').replaceChildren();for(const d of items){const b=document.createElement('button');b.className='queue-row';b.setAttribute('aria-pressed',String(d.id===reviewState.selected));b.dataset.itemId=d.id;const title=document.createElement('strong'),meta=document.createElement('small'),badge=document.createElement('span');title.textContent=d.title;meta.textContent=d.floor+'階 · '+(d.kind==='floor'?'共通通路・EV':d.code||'リハビリ入口');const st=itemStatus(d);badge.className='badge '+st;badge.textContent=statusNames[st]+(reviewIsStale(d,reviewState.records[d.id])?' / 地図更新あり':'');b.append(title,meta,badge);b.onclick=()=>selectReviewItem(d.id);rr('reviewQueue').append(b);}if(!reviewState.selected&&items[0])selectReviewItem(items[0].id);}
 function sendMap(action='show'){const d=currentItem();if(!d||!reviewState.mapReady)return;rr('mapStatus').textContent='地図を切り替え中';rr('reviewMap').contentWindow.postMessage({type:'maji-review-open',floor:d.floor,ref:d.ref||null,action,comment:reviewState.records[d.id]?.note||''},location.origin);}
 function selectReviewItem(id){reviewState.selected=id;renderDetail();renderQueue();sendMap();}
@@ -33,3 +33,17 @@ function updateAnnotationSummary(){if(typeof renderRouteConcerns==='function')re
 window.addEventListener('storage',e=>{if(e.key===mapAnnotationStorage)updateAnnotationSummary();});
 
 window.addEventListener('storage',e=>{if(e.key===reviewStorageKey&&document.activeElement?.id!=='reviewNote'){try{const saved=JSON.parse(e.newValue||'null');if(saved){reviewState.records=validateReviewRecords(saved.records||{});renderQueue();renderDetail();}}catch{}}});
+
+rr('runEquipmentAudit').onclick=()=>{
+ const summary=rr('equipmentAuditSummary');
+ if(!reviewState.mapReady){summary.textContent='地図を読み込んでいます。開いてから検査してください。';return;}
+ summary.textContent='検査中…';
+ rr('reviewMap').contentWindow.postMessage({type:'maji-review-equipment-audit'},location.origin);
+};
+window.addEventListener('message',e=>{
+ if(e.origin!==location.origin||e.source!==rr('reviewMap').contentWindow||e.data?.type!=='maji-review-equipment-result')return;
+ const {icons,checked,issues}=e.data,list=rr('equipmentAuditIssues');
+ rr('equipmentAuditSummary').textContent=icons+'個のアイコンを'+checked+'点で検査。選択できない点・別の場所になる点 '+issues.length+'件。';
+ list.replaceChildren();list.hidden=!issues.length;
+ for(const issue of issues){const row=document.createElement('li');row.textContent=issue.floor+'階 '+issue.name+'：'+(issue.hit?'選択先は '+issue.hit:'反応なし');list.append(row);}
+});
