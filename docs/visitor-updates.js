@@ -24,7 +24,7 @@ function placeOfficialIcons(d){
  }
  if(d.type==='toilet'){
  const names={'01':'男性トイレ','02':'女性トイレ','05':'車椅子対応','24':'オストメイト対応','35':'ストレッチャー対応',unisex:'男女共用トイレ'};
- return (d.detail?.toiletIcons||['01','02']).map(id=>'<img class="facility-pict" alt="'+names[id]+'" title="'+names[id]+'" src="assets/legend-toilet-'+id+'.svg?v=20261110b'+'">');
+ return (d.detail?.toiletIcons||['01','02']).map(id=>'<img class="facility-pict" alt="'+names[id]+'" title="'+names[id]+'" src="assets/legend-toilet-'+id+'.svg?v=20261110c'+'">');
  }return [];
 }
 const candidateSignColors={green:'#b0c548',yellow:'#e8b52f',blue:'#3989c6'};
@@ -60,8 +60,43 @@ function initVisitorUpdates(){
  const basePanel=togglePlacePanel;togglePlacePanel=function(open,focus=false){if(open)closeVisitorPreview();basePanel(open,focus);if(open)resetCandidateScroll();};
  const baseSelect=selectPlace;selectPlace=function(d,...args){const via=mapUI.addingWaypoint;if(mapUI.pickMode!=='start')mapUI.destinationSearchQuery=ui('findPlace').value;const result=baseSelect(d,...args);if(via&&mapUI.waypoint){togglePlacePanel(false);ui('findPlace').blur();closeVisitorPreview();syncRoutePanels();}return result;};
 
- const basePreviewActions=updatePreviewActions;updatePreviewActions=function(){basePreviewActions();const d=destinationPhotoState.place;if(d?.type==='manual'){ui('detailRoute').textContent='経路';ui('detailNavigate').disabled=false;ui('detailRoute').disabled=false;}if(d?.type!=='manual')ui('detailRoute').textContent='経路';if(d&&entranceAvailability(d.ref).closed){ui('detailNavigate').disabled=true;ui('detailNavigate').textContent='閉鎖中';ui('detailRoute').disabled=true;}const parking=d?.ref==='outpatient:3::patientParking'&&!unifiedMapModel.floors[3].outdoorExtension.completed;ui('detailNavigate').hidden=parking;const start=mapUI.pickMode==='start';ui('facilityDetails').dataset.previewAction=start?'start':'navigate';ui('detailRoute').hidden=start||parking;if(start){ui('detailNavigate').textContent='出発地に設定';ui('detailNavigate').disabled=!d||d.usage==='emergency-only'||isGuideOnly(d)||Boolean(d&&entranceAvailability(d.ref).closed);const website=ui('detailWebsite');if(d&&website.hidden){website.href='https://www.med.kindai.ac.jp/floormap_facility.html';website.onclick=null;website.hidden=false;}}};
- const baseNavigate=navigateVisitorPreview;navigateVisitorPreview=function(){const d=destinationPhotoState.place;if(d?.manualSelection)mapUI.manualGoal=d.manualSelection;if(d?.type!=='manual')ui('detailRoute').textContent='経路';if(d&&entranceAvailability(d.ref).closed)return;return baseNavigate();};
+ const basePreviewActions=updatePreviewActions;
+ updatePreviewActions=function(){
+  basePreviewActions();
+  const d=destinationPhotoState.place,route=ui('detailRoute'),navigate=ui('detailNavigate');
+  const closed=Boolean(d&&entranceAvailability(d.ref).closed);
+  const parking=d?.ref==='outpatient:3::patientParking'&&!unifiedMapModel.floors[3].outdoorExtension.completed;
+  const start=mapUI.pickMode==='start';
+  route.textContent='経路';
+  route.disabled=!d;
+  route.hidden=start||parking||closed;
+  navigate.hidden=parking;
+  ui('facilityDetails').dataset.previewAction=start?'start':'navigate';
+  if(d?.type==='manual')navigate.disabled=false;
+  if(closed&&!start){
+   navigate.textContent='目的地に設定';
+   navigate.disabled=false;
+  }
+  if(start){
+   navigate.textContent='出発地に設定';
+   navigate.disabled=!d||d.usage==='emergency-only'||isGuideOnly(d)||closed;
+   const website=ui('detailWebsite');
+   if(d&&website.hidden){website.href='https://www.med.kindai.ac.jp/floormap_facility.html';website.onclick=null;website.hidden=false;}
+  }
+ };
+ const baseNavigate=navigateVisitorPreview;
+ navigateVisitorPreview=function(){
+  const d=destinationPhotoState.place;
+  if(d?.manualSelection)mapUI.manualGoal=d.manualSelection;
+  if(!d||!entranceAvailability(d.ref).closed)return baseNavigate();
+  closeVisitorPreview();
+  choosePlace(d,true);
+  rememberPlace(d);
+  document.body.classList.remove('route-planning');
+  ui('routePlanner').hidden=true;
+  renderPlacePhoto(d);
+  syncRoutePanels();
+ };
  ui('detailNavigate').onclick=()=>{if(mapUI.pickMode!=='start')return navigateVisitorPreview();const d=destinationPhotoState.place;if(!d||d.usage==='emergency-only'||isGuideOnly(d)||entranceAvailability(d.ref).closed)return;if(d.manualSelection)baseManual(d.manualSelection.point);else selectStartPlace(d,true);closeVisitorPreview();setSelectionMode('goal');if(mapUI.goal){ui('findPlace').value=placeListText(mapUI.goal);enterRoutePlanning();}else{ui('findPlace').value='';document.body.classList.remove('route-planning');}updateRoutePlanner();renderOverlay();};
  const baseManual=selectMapPoint;selectMapPoint=function(point){previewManualDestination(point);};
  previewPlacePhoto=function(d,anchor,pinned=false){if(!pinned||!d)return;showVisitorPreview(d);};
@@ -78,6 +113,6 @@ function initVisitorUpdates(){
  const oldPlan=routePlan;routePlan=function(){const notice=mapUI.goal&&routeEntranceNotice(mapUI.from,mapUI.goal.ref,null,[]);if(notice?.blocked){clearRouteSelection();if(!reviewEmbedded)syncRoutePanels();return;}return oldPlan();};
  updateSearchChoices();updateVisitorFavorites();renderResults();syncVisitorRefinements();updateCardHeading(destinationPhotoState.place);if(mapUI.goal&&!document.body.classList.contains('place-searching'))ui('findPlace').value=placeListText(mapUI.goal);
 
- let last=regularEntranceRefs.map(r=>entranceAvailability(r).state).join();setInterval(()=>{const next=regularEntranceRefs.map(r=>entranceAvailability(r).state).join();if(next!==last){last=next;renderResults();if(mapUI.goal){stopNavigation();routePlan();}}},15000);
+ let last=regularEntranceRefs.map(r=>entranceAvailability(r).state).join();setInterval(()=>{const next=regularEntranceRefs.map(r=>entranceAvailability(r).state).join();if(next!==last){last=next;renderResults();updateFacilityHours(destinationPhotoState.place);updatePreviewActions();if(mapUI.goal){stopNavigation();routePlan();}}},15000);
 }
 initVisitorUpdates();

@@ -148,7 +148,8 @@ body.visitor-experience .official-result-icons{max-width:108px}
 #outdoorPositionPanel [hidden]{display:none!important}
 
 /* Square sign tiles follow the supplied hospital sign photographs. */
-body.visitor-experience #placeResults .place-row .code,body.visitor-experience #placeResults .official-result-icons .facility-pict{width:40px!important;height:40px!important;min-width:40px!important;max-width:40px!important;padding:0!important;border-radius:5px;overflow:hidden;flex:0 0 40px;font-size:13px!important;white-space:nowrap}
+body.visitor-experience #placeResults .place-row .code,body.visitor-experience #placeResults .official-result-icons .facility-pict{width:40px!important;height:40px!important;min-width:40px!important;max-width:40px!important;padding:0!important;overflow:hidden;flex:0 0 40px;font-size:13px!important;white-space:nowrap}
+body.visitor-experience #placeResults .place-row .code{border-radius:5px}
 body.visitor-experience #placeResults .place-row .code[data-kind="ward"]{background:#fff!important;color:var(--sign-color)!important;border:1px solid #d6e0e5}
 body.visitor-experience #placeResults .official-result-icons{max-width:126px}
 #outdoorPositionPanel label{display:block}#outdoorPositionPanel input[type=range]{width:100%}
