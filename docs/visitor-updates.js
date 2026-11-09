@@ -18,10 +18,13 @@ const toiletIconTiles={
  'outpatient:6::publicToilet-central':[[546,494],[546,538],[546,582]],
  'outpatient:6::publicToilet-south':[[548,866],[548,910]]};
 function placeOfficialIcons(d){
- if(d.type==='equipment'){const id={payment:'33',parking:'34',vending:'36',aed:'23',phone:'26',baby:'03',bloodPressure:'28',scale:'29'}[d.category];return id?['<img class="facility-pict" alt="" referrerpolicy="no-referrer" src="https://www.med.kindai.ac.jp/img/common/map/icon-'+id+'.png">']:[];}
+ if(d.type==='equipment'){
+  const icon=officialEquipmentIcon(d.category);
+  return icon?[icon]:[];
+ }
  if(d.type==='toilet'){
  const names={'01':'男性トイレ','02':'女性トイレ','05':'車椅子対応','24':'オストメイト対応','35':'ストレッチャー対応',unisex:'男女共用トイレ'};
- return (d.detail?.toiletIcons||['01','02']).map(id=>'<img class="facility-pict" alt="'+names[id]+'" title="'+names[id]+'" src="assets/legend-toilet-'+id+'.svg?v=20261109a'+'">');
+ return (d.detail?.toiletIcons||['01','02']).map(id=>'<img class="facility-pict" alt="'+names[id]+'" title="'+names[id]+'" src="assets/legend-toilet-'+id+'.svg?v=20261109b'+'">');
  }return [];
 }
 const candidateSignColors={green:'#b0c548',yellow:'#e8b52f',blue:'#3989c6'};

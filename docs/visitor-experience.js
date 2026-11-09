@@ -25,7 +25,11 @@ function focusNavigationStep(){
  mapUI.zoom=Math.max(.7,Math.min(12,fit.scale/mapUI.base));const scale=mapUI.base*mapUI.zoom;
  mapUI.pan=[(w/2-fit.center[0])*scale,(h/2-fit.center[1])*scale+(65+area.height/2)-v.clientHeight/2];applyMapTransform();
 }
-function officialIconSVG(f,box){const size={1:[1758,1200],2:[1994,1200],3:[1758,892],4:[1758,1060],5:[1758,1060],6:[1758,1060]}[f]||unifiedMapModel.floors[f].size;return '<svg class="facility-pict" viewBox="'+box.join(' ')+'" aria-hidden="true"><image href="assets/visitor-floor-'+f+'.svg?v=20261109a" width="'+size[0]+'" height="'+size[1]+'"/></svg>';}
+const equipmentPictogramKinds=new Set(['payment','parking','vending','aed','phone','baby','bloodPressure','scale','wheelchair','toilet']);
+function officialEquipmentIcon(kind){
+ if(!equipmentPictogramKinds.has(kind))return '';
+ return '<svg class="facility-pict" viewBox="0 0 40 40" aria-hidden="true"><use href="assets/equipment-pictograms.svg?v=20261109b#'+kind+'" width="40" height="40"/></svg>';
+}
 function initVisitorExperience(){
  if(reviewEmbedded)return;
  document.body.classList.add('visitor-experience');
@@ -45,9 +49,9 @@ function initVisitorExperience(){
  ui('findPlace').addEventListener('input',()=>{mapUI.resultFloor=null;select.value='';});
  for(const b of document.querySelectorAll('[data-filter]'))b.addEventListener('click',()=>{mapUI.resultFloor=null;select.value='';renderResults();});
  for(const b of ui('nearbyEquipmentBar').querySelectorAll('button')){
-  const category=b.dataset.nearbyCategory;let icon;
-  if(b.id==='nearestToilet'){b.textContent='トイレ';icon=officialIconSVG(5,[1200,474,42,42]);}
-  else{const d=mobilityData.equipment.find(d=>d.category===category);if(d)icon=officialIconSVG(d.floor,[d.iconPoint[0]-21,d.iconPoint[1]-21,42,42]);}
+  const category=b.dataset.nearbyCategory;
+  if(b.id==='nearestToilet')b.textContent='トイレ';
+  const icon=officialEquipmentIcon(b.id==='nearestToilet'?'toilet':category);
   if(icon)b.insertAdjacentHTML('afterbegin',icon);
  }
  for(const b of ui('nearbyEquipmentBar').querySelectorAll('button'))b.addEventListener('click',e=>{if(!ensureIndoorStart()){e.preventDefault();e.stopImmediatePropagation();}},true);

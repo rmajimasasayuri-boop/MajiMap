@@ -65,7 +65,7 @@ function initRouteExperience(){
   note.append(message,close);
   if(id==='routeEntranceNotice')dock.prepend(note);else ui('navigationInstruction').after(note);
  }
- for(const icon of document.querySelectorAll('.route-travel-tabs .official-wheelchair-icon'))icon.innerHTML=officialIconSVG(2,[1480,405,40,40]);
+ for(const icon of document.querySelectorAll('.route-travel-tabs .official-wheelchair-icon'))icon.innerHTML=officialEquipmentIcon('wheelchair');
  ui('closeRoutePlanning').onclick=()=>{stopNavigation();document.body.classList.remove('route-planning');dock.hidden=true;planner.hidden=true;if(mapUI.goal)updateDestinationPhoto(mapUI.goal);ui('routeSummary').hidden=true;syncRoutePanels();};
  ui('detailRoute').onclick=enterRoutePlanning;
  ui('openPlaceSearch').onclick=()=>{const open=document.querySelector('main').classList.contains('settings-hidden');if(open&&mapUI.goal&&ui('findPlace').value===destinationDisplayName(mapUI.goal)){ui('findPlace').value='';mapUI.filter='all';document.querySelectorAll('[data-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.filter==='all')));renderResults();}togglePlacePanel(open,open);syncSearchControls();};
