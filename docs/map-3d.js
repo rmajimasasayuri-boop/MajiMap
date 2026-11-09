@@ -49,7 +49,6 @@
        data={...data,maps:data.maps.filter(m=>fs.includes(m.floor)),lines:data.lines.filter(l=>fs.includes(l.floor)),transfers:step.kind==='transfer'?data.transfers.filter(t=>fs.includes(t.from.floor)&&fs.includes(t.to.floor)):[]};
       }
       viewer.draw(data);viewer.preview(mapUI.previewPlace||null);if(navigationState.active&&navigationFollow)viewer.focusStep();
-      el('map3DFocusFloors').replaceChildren(...data.maps.map(map=>{const b=document.createElement('button');b.textContent=map.floor+'階を拡大';b.onclick=()=>viewer?.focusFloor(map.floor);return b;}));
       el('map3DFloor').textContent=scope==='route'?'経路全体 · '+data.maps.map(m=>m.floor+'F').join('・'):mapUI.floor+'階';
       status.textContent='矢印の向きに進んでください。病棟名・施設名をクリックして設定できます。';
     } catch(e) {
@@ -76,8 +75,6 @@
   el('map3DRotateLeft').onclick=()=>viewer?.rotate(-1);
   el('map3DRotateRight').onclick=()=>viewer?.rotate(1);
   el('map3DHome').onclick=()=>viewer?.home();
-  el('map3DZoomIn').onclick=()=>viewer?.zoom(.8);
-  el('map3DZoomOut').onclick=()=>viewer?.zoom(1.25);
   el('map3DRetry').onclick=()=>{el('map3DRetry').hidden=true;queueUpdate();};
   for(const id of ['annToggle','toggleArrowEditor','editMedicineEVMain'])el(id).addEventListener('click',()=>setMode('2d'),true);
   window.addEventListener('maji-map-update',queueUpdate);window.addEventListener('maji-navigation-focus',()=>viewer?.focusStep());
@@ -192,11 +189,11 @@
       if(key===previousKey){if(hoverPlace)highlight(hoverPlace);updateProgress();return;}
       const reset=previousKey!==key;previousKey=key;freeGroup();floorLevels=createMap3DLayout(data.maps);floorDepths=createMap3DDepths(data.maps);floorRegistration=createMap3DRegistration(data.maps,data.transfers);
       const box=new T.Box3();
-      const floorTextures=new Set(data.maps.map(map=>map.image+'?v=20261109b'));
+      const floorTextures=new Set(data.maps.map(map=>map.image+'?v=20261109c'));
       for(const [src,tex] of textures)if(!floorTextures.has(src)){tex.dispose();textures.delete(src);}
       for(const map of data.maps) {
         const [w,h]=map.size,active=map.floor===data.floor;
-        const mat=new T.MeshBasicMaterial({map:texture(map.image+'?v=20261109b'),side:T.DoubleSide,transparent:false,opacity:1,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2});
+        const mat=new T.MeshBasicMaterial({map:texture(map.image+'?v=20261109c'),side:T.DoubleSide,transparent:false,opacity:1,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2});
         const plane=new T.Mesh(new T.PlaneGeometry(w*S,h*S),mat);
         plane.rotation.x=-Math.PI/2;plane.position.copy(at(map.floor,[w/2,h/2],0));
         plane.userData={floor:map.floor,width:w,height:h};planes.push(plane);group.add(plane);
@@ -245,10 +242,8 @@
       const box=new T.Box3().setFromPoints(ps),size=box.getSize(new T.Vector3()),center=box.getCenter(new T.Vector3()),radius=Math.max(size.x/Math.max(camera.aspect,.4),size.z,3.5);
       controls.target.copy(center);camera.position.copy(center).add(new T.Vector3(-radius*.12,radius*1.2,radius*.8));trackedPosition=null;controls.update();highlight(mapUI.previewPlace||mapUI.goal||null);
     }
-    function focusFloor(f){const plane=planes.find(p=>p.userData.floor===f);if(!plane)return;const {width,height}=plane.userData,center=at(f,[width/2,height/2],0),offset=new T.Vector3(...map3DHomeOffset([width*S,0,height*S],camera.aspect));controls.target.copy(center);camera.position.copy(center).add(offset);controls.update();highlight(mapUI.previewPlace||mapUI.goal||null);}
     function pan(x,y){camera.updateMatrixWorld();const step=camera.position.distanceTo(controls.target)*.09,delta=new T.Vector3().setFromMatrixColumn(camera.matrixWorld,0).multiplyScalar(x*step).addScaledVector(new T.Vector3().setFromMatrixColumn(camera.matrixWorld,1),y*step);camera.position.add(delta);controls.target.add(delta);controls.update();highlight(mapUI.previewPlace||mapUI.goal||null);}
     function rotate(direction){camera.position.sub(controls.target).applyAxisAngle(new T.Vector3(0,1,0),direction*Math.PI/12).add(controls.target);controls.update();highlight(mapUI.previewPlace||mapUI.goal||null);}
-    function zoom(factor){camera.position.sub(controls.target).multiplyScalar(factor).add(controls.target);controls.update();}
     function resize(){const w=container.clientWidth,h=container.clientHeight;if(!w||!h)return;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();}
     function loop(time=0){if(disposed||paused)return;frame=requestAnimationFrame(loop);for(const m of motion){const sample=sampleRouteMotion(m.track,m.offset+(reducedMotion.matches?0:time*.00065));m.arrow.position.fromArray(sample.point);m.arrow.quaternion.setFromUnitVectors(new T.Vector3(0,0,1),new T.Vector3(...sample.direction));}for(const pin of screenPins){const radius=pin.position.distanceTo(camera.position)*Math.tan(camera.fov*Math.PI/360)*24/Math.max(1,container.clientHeight);pin.scale.setScalar(radius/.18);}controls.update();renderer.render(scene,camera);}
     function pause(value){paused=value;cancelAnimationFrame(frame);if(!paused&&!disposed)loop();}
@@ -267,6 +262,6 @@
     document.addEventListener('pointerup',releasePointer);document.addEventListener('pointercancel',releasePointer);
     resize();loop();
     function dispose(){disposed=true;window.removeEventListener('maji-navigation-position',updateProgress);document.removeEventListener('pointerup',releasePointer);document.removeEventListener('pointercancel',releasePointer);cancelAnimationFrame(frame);controls.dispose();freeGroup();for(const t of textures.values())t.dispose();renderer.dispose();renderer.forceContextLoss();renderer.domElement.remove();}
-    return {preview:d=>highlight(d||mapUI.goal||null),draw,home,zoom,resize,pause,dispose,pan,rotate,focusFloor,focusStep,setInteraction};
+    return {preview:d=>highlight(d||mapUI.goal||null),draw,home,resize,pause,dispose,pan,rotate,focusStep,setInteraction};
   }
 })();

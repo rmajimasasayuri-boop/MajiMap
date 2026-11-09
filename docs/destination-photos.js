@@ -10,7 +10,7 @@ let destinationPhotoState={place:null,photos:[],index:0};
 function updateDestinationPhoto(d){if(typeof hidePlacePreview==='function')hidePlacePreview();renderPlacePhoto(d);}
 function renderPlacePhoto(d){
  const photos=officialPhotosFor(d),preview=document.getElementById('destinationPhotoPreview'),image=document.getElementById('destinationPhotoThumb');
- destinationPhotoState={place:d,photos,index:0};if(typeof updateRoutePlanner==='function')updateRoutePlanner();preview.hidden=true;const panel=document.getElementById('facilityDetails');panel.hidden=!d;if(!d)return;document.getElementById('facilityDetailName').textContent=destinationDisplayName(d);document.getElementById('facilityDetailFloor').textContent=d.floor+'階'+(d.code?' · '+d.code:'');updateDepartmentWebsite(d);document.getElementById('detailRoute').disabled=isGuideOnly(d);document.getElementById('detailStart').disabled=isGuideOnly(d);document.getElementById('detailNavigate').disabled=isGuideOnly(d);document.getElementById('detailNavigate').textContent=isGuideOnly(d)?'通路未登録':'ナビを開始';
+ destinationPhotoState={place:d,photos,index:0};if(typeof updateRoutePlanner==='function')updateRoutePlanner();preview.hidden=true;const panel=document.getElementById('facilityDetails');panel.hidden=!d;if(!d)return;document.getElementById('facilityDetailName').textContent=destinationDisplayName(d);document.getElementById('facilityDetailFloor').textContent=d.floor+'階'+(d.code?' · '+d.code:'');updateDepartmentWebsite(d);document.getElementById('detailRoute').disabled=isGuideOnly(d);document.getElementById('detailNavigate').disabled=isGuideOnly(d);document.getElementById('detailNavigate').textContent=isGuideOnly(d)?'通路未登録':'ナビを開始';
  if(!photos.length){image.removeAttribute('src');return;}
  const name=destinationDisplayName(d);document.getElementById('destinationPhotoLabel').textContent=name;
  image.alt=name+'の公式写真';document.getElementById('viewDestinationPhoto').setAttribute('aria-label',name+'の写真を見る');
@@ -29,7 +29,6 @@ document.getElementById('closeDestinationPhoto').onclick=()=>document.getElement
 
 const facilityDetails=document.getElementById('facilityDetails');
 document.getElementById('closeFacilityDetails').onclick=()=>{facilityDetails.hidden=true;hidePlacePreview();};
-document.getElementById('detailStart').onclick=()=>{const d=destinationPhotoState.place;if(d){selectStartPlace(d,true);updateDestinationPhoto(null);}};
 document.getElementById('detailRoute').onclick=()=>{const d=destinationPhotoState.place;if(!d)return;choosePlace(d,true);if(!ensureIndoorStart())return;routePlan();facilityDetails.hidden=true;};
 document.getElementById('detailNavigate').onclick=()=>{const d=destinationPhotoState.place;if(d){choosePlace(d,true);if(!ensureIndoorStart())return;routePlan();if(navigationState.steps.length)startNavigation();}};
 let facilityTouch=null;

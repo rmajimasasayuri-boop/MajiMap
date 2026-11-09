@@ -24,7 +24,7 @@ function placeOfficialIcons(d){
  }
  if(d.type==='toilet'){
  const names={'01':'男性トイレ','02':'女性トイレ','05':'車椅子対応','24':'オストメイト対応','35':'ストレッチャー対応',unisex:'男女共用トイレ'};
- return (d.detail?.toiletIcons||['01','02']).map(id=>'<img class="facility-pict" alt="'+names[id]+'" title="'+names[id]+'" src="assets/legend-toilet-'+id+'.svg?v=20261109b'+'">');
+ return (d.detail?.toiletIcons||['01','02']).map(id=>'<img class="facility-pict" alt="'+names[id]+'" title="'+names[id]+'" src="assets/legend-toilet-'+id+'.svg?v=20261109c'+'">');
  }return [];
 }
 const candidateSignColors={green:'#b0c548',yellow:'#e8b52f',blue:'#3989c6'};
@@ -59,7 +59,6 @@ function initVisitorUpdates(){
  const favoriteDialog=document.createElement('dialog');favoriteDialog.id='favoriteRemovalDialog';favoriteDialog.className='map-dialog';favoriteDialog.innerHTML='<h2>お気に入りから削除しますか？</h2><p id="favoriteRemovalName"></p><div class="actions"><button id="cancelFavoriteRemoval">キャンセル</button><button id="confirmFavoriteRemoval" class="primary">削除</button></div>';document.body.append(favoriteDialog);let pendingFavorite=null;const baseFavorite=toggleVisitorFavorite;toggleVisitorFavorite=function(d=destinationPhotoState.place){if(d&&readPlaceFavorites().includes(d.ref)){pendingFavorite=d;ui('favoriteRemovalName').textContent=destinationDisplayName(d);favoriteDialog.showModal();return;}return baseFavorite(d);};ui('favoritePlaceButton').onclick=()=>{baseFavorite();updateSearchChoices();};ui('cancelFavoriteRemoval').onclick=()=>{pendingFavorite=null;favoriteDialog.close();};ui('confirmFavoriteRemoval').onclick=()=>{const d=pendingFavorite;pendingFavorite=null;favoriteDialog.close();if(d){baseFavorite(d);updateSearchChoices();}};
  const basePanel=togglePlacePanel;togglePlacePanel=function(open,focus=false){if(open)closeVisitorPreview();basePanel(open,focus);if(open)resetCandidateScroll();};
  const baseSelect=selectPlace;selectPlace=function(d,...args){const via=mapUI.addingWaypoint;if(mapUI.pickMode!=='start')mapUI.destinationSearchQuery=ui('findPlace').value;const result=baseSelect(d,...args);if(via&&mapUI.waypoint){togglePlacePanel(false);ui('findPlace').blur();closeVisitorPreview();syncRoutePanels();}return result;};
- mapUI.waypoint=null;mapUI.manualVia=null;mapUI.addingWaypoint=false;previewOffersWaypoint=()=>false;beginWaypointSelection=()=>{};setVisitorWaypoint=()=>{};
 
  const basePreviewActions=updatePreviewActions;updatePreviewActions=function(){basePreviewActions();const d=destinationPhotoState.place;if(d?.type==='manual'){ui('detailRoute').textContent='経路';ui('detailNavigate').disabled=false;ui('detailRoute').disabled=false;}if(d?.type!=='manual')ui('detailRoute').textContent='経路';if(d&&entranceAvailability(d.ref).closed){ui('detailNavigate').disabled=true;ui('detailNavigate').textContent='閉鎖中';ui('detailRoute').disabled=true;}const parking=d?.ref==='outpatient:3::patientParking'&&!unifiedMapModel.floors[3].outdoorExtension.completed;ui('detailNavigate').hidden=parking;const start=mapUI.pickMode==='start';ui('facilityDetails').dataset.previewAction=start?'start':'navigate';ui('detailRoute').hidden=start||parking;if(start){ui('detailNavigate').textContent='出発地に設定';ui('detailNavigate').disabled=!d||d.usage==='emergency-only'||isGuideOnly(d)||Boolean(d&&entranceAvailability(d.ref).closed);const website=ui('detailWebsite');if(d&&website.hidden){website.href='https://www.med.kindai.ac.jp/floormap_facility.html';website.onclick=null;website.hidden=false;}}};
  const baseNavigate=navigateVisitorPreview;navigateVisitorPreview=function(){const d=destinationPhotoState.place;if(d?.manualSelection)mapUI.manualGoal=d.manualSelection;if(d?.type!=='manual')ui('detailRoute').textContent='経路';if(d&&entranceAvailability(d.ref).closed)return;return baseNavigate();};
@@ -72,14 +71,12 @@ function initVisitorUpdates(){
  ui('clearPlaceSearch').onclick=()=>{ui('findPlace').blur();cancelDestination();togglePlacePanel(false,false);mapUI.plot=false;setSelectionMode('goal');showFloor(mapUI.manual?.floor||referenceFloor(mapUI.from)||3,true);syncSearchControls();};
  ui('openPlaceSearch').onclick=()=>{if(document.body.classList.contains('place-searching')){if(placeSearchView!=='home'){searchHome(false);return;}togglePlacePanel(false);ui('findPlace').blur();if(mapUI.goal)enterRoutePlanning();}else searchHome(true);};
  const travel=ui('travelChoice');let saved;try{saved=localStorage.getItem('maji-visitor-travel');}catch{}travel.value=saved==='elevator'?'elevator':'auto';travelMode=travel.value;const changed=travel.onchange;travel.onchange=()=>{try{localStorage.setItem('maji-visitor-travel',travel.value);}catch{}changed();};updateRoutePlanner();
- const oldSync=syncVisitorRefinements;syncVisitorRefinements=function(){mapUI.waypoint=null;mapUI.manualVia=null;mapUI.addingWaypoint=false;oldSync();ui('routeAddWaypoint').hidden=true;ui('routeViaRow').hidden=true;};
 
  const oldClose=closeVisitorPreview;closeVisitorPreview=function(){oldClose();mapUI.previewPlace=null;};
  const information=destinationList.find(d=>d.ref==='services::information');if(information)information.name='インフォメーション・情報コーナー';
  const oldPhoto=renderPlacePhoto;renderPlacePhoto=function(d){oldPhoto(d);updateCardHeading(d);updateFacilityHours(d);updatePreviewActions();};
  const oldPlan=routePlan;routePlan=function(){const notice=mapUI.goal&&routeEntranceNotice(mapUI.from,mapUI.goal.ref,null,[]);if(notice?.blocked){clearRouteSelection();if(!reviewEmbedded)syncRoutePanels();return;}return oldPlan();};
  updateSearchChoices();updateVisitorFavorites();renderResults();syncVisitorRefinements();updateCardHeading(destinationPhotoState.place);if(mapUI.goal&&!document.body.classList.contains('place-searching'))ui('findPlace').value=placeListText(mapUI.goal);
- ui('campusMapButton')?.remove();
 
  let last=regularEntranceRefs.map(r=>entranceAvailability(r).state).join();setInterval(()=>{const next=regularEntranceRefs.map(r=>entranceAvailability(r).state).join();if(next!==last){last=next;renderResults();if(mapUI.goal){stopNavigation();routePlan();}}},15000);
 }

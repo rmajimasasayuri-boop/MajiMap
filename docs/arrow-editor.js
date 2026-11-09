@@ -40,7 +40,7 @@ function renderEntranceArrows(svg){
 }
 function initArrowEditor(){
  ui('settings').insertBefore(ui('arrowEditorPanel'),ui('settings').querySelector('.location-card'));
- ui('toggleArrowEditor').onclick=()=>{arrowEditor.active=!arrowEditor.active;mapUI.plot=false;ui('plotCurrent').textContent='地図で出発地を指定';ui('mapPlaceCard').hidden=true;if(arrowEditor.active){document.querySelector('main').classList.remove('settings-hidden');ui('toggleSettings').textContent='設定を閉じる';ui('toggleSettings').setAttribute('aria-expanded','true');stopNavigation();ui('routeSummary').hidden=true;}else if(mapUI.path.length)routePlan();syncArrowEditor();renderOverlay();updateMapMessage();};
+ ui('toggleArrowEditor').onclick=()=>{arrowEditor.active=!arrowEditor.active;mapUI.plot=false;if(arrowEditor.active){document.querySelector('main').classList.remove('settings-hidden');stopNavigation();ui('routeSummary').hidden=true;}else if(mapUI.path.length)routePlan();syncArrowEditor();renderOverlay();updateMapMessage();};
  ui('arrowSelect').onchange=()=>selectEntranceArrow(ui('arrowSelect').value);
  ui('arrowDirection').onchange=()=>{const id=arrowEditor.selected;if(!id)return;pushArrowUndo();arrowEditor.changes[id]={point:[...entranceArrow(id).point],angle:Number(ui('arrowDirection').value)};saveEntranceArrows();renderOverlay();};
  document.querySelectorAll('[data-arrow-nudge]').forEach(b=>b.onclick=()=>{const id=arrowEditor.selected;if(!id)return;const [dx,dy]=b.dataset.arrowNudge.split(',').map(Number),a=entranceArrow(id);pushArrowUndo();setArrowPoint(id,[a.point[0]+dx,a.point[1]+dy]);});

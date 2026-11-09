@@ -44,7 +44,6 @@ function syncRoutePanels(){
  if(reviewEmbedded)return;
  document.body.classList.toggle('place-selected',Boolean(mapUI.goal));
  const planning=document.body.classList.contains('route-planning');ui('routeOptionsDock').hidden=!planning||navigationState.active||!mapUI.goal;
- ui('chooseCurrentMapPoint').hidden=true;
  ui('swapRoutePlaces').disabled=!mapUI.startConfirmed||!mapUI.goal||mapUI.goal.usage==='emergency-only';
  const notice=mapUI.goal?routeEntranceNotice(mapUI.from,mapUI.goal.ref,mapUI.graph,mapUI.path):null;
  syncEntranceNotice(notice,!ui('routeOptionsDock').hidden&&!startingNavigationFromPreview);
@@ -56,7 +55,7 @@ function initRouteExperience(){
  const detailBody=ui('facilityDetails').querySelector('.facility-detail-body'),heading=document.createElement('div');heading.className='facility-heading';heading.append(ui('facilityDetailFloor'),ui('facilityDetailName'));detailBody.prepend(heading);detailBody.prepend(ui('destinationPhotoPreview'));
  const planner=ui('routePlanner'),header=document.createElement('div');header.className='route-planning-header';header.innerHTML='<button id="closeRoutePlanning" aria-label="施設の案内に戻る">‹</button>';planner.prepend(header);
  const swap=document.createElement('button');swap.id='swapRoutePlaces';swap.className='swap-route-places';swap.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 20V4m-4 4 4-4 4 4M17 4v16m-4-4 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';swap.setAttribute('aria-label','出発地と目的地を入れ替える');planner.append(swap);swap.onclick=swapRoutePlaces;ui('mapViewport').append(planner);
- const dock=document.createElement('section');dock.id='routeOptionsDock';dock.className='route-options-dock';dock.setAttribute('aria-label','ナビ開始');dock.hidden=true;header.append(document.querySelector('.route-travel-tabs'));const start=document.createElement('button');start.id='routeDockNavigate';start.className='primary';start.textContent='ナビ開始';start.onclick=()=>{if(!ensureIndoorStart())return;routePlan();startNavigation();syncRoutePanels();};const mapStart=ui('chooseCurrentMapPoint');mapStart.textContent='出発地を地図上で選んでください。';dock.append(mapStart,start);ui('mapViewport').append(dock);
+ const dock=document.createElement('section');dock.id='routeOptionsDock';dock.className='route-options-dock';dock.setAttribute('aria-label','ナビ開始');dock.hidden=true;header.append(document.querySelector('.route-travel-tabs'));const start=document.createElement('button');start.id='routeDockNavigate';start.className='primary';start.textContent='ナビ開始';start.onclick=()=>{if(!ensureIndoorStart())return;routePlan();startNavigation();syncRoutePanels();};dock.append(start);ui('mapViewport').append(dock);
  for(const id of ['routeEntranceNotice','navigationEntranceNotice']){
   const note=document.createElement('div'),message=document.createElement('span'),close=document.createElement('button');
   note.id=id;note.className='entrance-route-notice';note.hidden=true;

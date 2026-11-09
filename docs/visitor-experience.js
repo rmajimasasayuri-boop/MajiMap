@@ -28,7 +28,7 @@ function focusNavigationStep(){
 const equipmentPictogramKinds=new Set(['payment','parking','vending','aed','phone','baby','bloodPressure','scale','wheelchair','toilet']);
 function officialEquipmentIcon(kind){
  if(!equipmentPictogramKinds.has(kind))return '';
- return '<svg class="facility-pict" viewBox="0 0 40 40" aria-hidden="true"><use href="assets/equipment-pictograms.svg?v=20261109b#'+kind+'" width="40" height="40"/></svg>';
+ return '<svg class="facility-pict" viewBox="0 0 40 40" aria-hidden="true"><use href="assets/equipment-pictograms.svg?v=20261109c#'+kind+'" width="40" height="40"/></svg>';
 }
 function initVisitorExperience(){
  if(reviewEmbedded)return;
@@ -48,14 +48,6 @@ function initVisitorExperience(){
  const select=document.createElement('select');select.id='resultFloor';select.setAttribute('aria-label','候補の階');select.innerHTML='<option value="">すべての階</option>'+Array.from({length:10},(_,i)=>'<option value="'+(i+1)+'">'+(i+1)+'階</option>').join('');filter.append(select);ui('placeResults').before(filter);select.onchange=()=>{mapUI.resultFloor=Number(select.value)||null;renderResults();};
  ui('findPlace').addEventListener('input',()=>{mapUI.resultFloor=null;select.value='';});
  for(const b of document.querySelectorAll('[data-filter]'))b.addEventListener('click',()=>{mapUI.resultFloor=null;select.value='';renderResults();});
- for(const b of ui('nearbyEquipmentBar').querySelectorAll('button')){
-  const category=b.dataset.nearbyCategory;
-  if(b.id==='nearestToilet')b.textContent='トイレ';
-  const icon=officialEquipmentIcon(b.id==='nearestToilet'?'toilet':category);
-  if(icon)b.insertAdjacentHTML('afterbegin',icon);
- }
- for(const b of ui('nearbyEquipmentBar').querySelectorAll('button'))b.addEventListener('click',e=>{if(!ensureIndoorStart()){e.preventDefault();e.stopImmediatePropagation();}},true);
- ui('campusMapButton').onclick=()=>ui('campusMapDialog').showModal();ui('closeCampusMap').onclick=()=>ui('campusMapDialog').close();
  // A default mobile view fills the map height; panning reveals the rest of the floor.
  requestAnimationFrame(()=>{focusReadableMap();updateRoutePlanner();});
 }
