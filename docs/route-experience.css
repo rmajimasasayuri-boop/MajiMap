@@ -106,3 +106,6 @@ body.visitor-experience .maji-attribution{bottom:calc(1px + env(safe-area-inset-
 .entrance-route-notice[data-blocked=true]{background:#fff2f3;color:#a12d34}
 #routeEntranceNotice{position:absolute;left:8px;right:8px;bottom:100%;background:#fff7e8;box-shadow:0 1px 5px #183b4928}
 #routeEntranceNotice[data-blocked=true]{background:#fff2f3}
+
+/* Visitor instructions are shown in the navigation dock, never below the map. */
+body.visitor-experience #routeSteps{display:none!important}

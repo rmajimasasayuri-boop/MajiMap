@@ -29,13 +29,27 @@ function entranceEdgeAllowed(u,v,date=new Date(),nodes){
  const physicalDoor=r=>{const n=(typeof mobilityData!=='undefined'&&mobilityData.nodes[r])||(typeof confirmedNavigation!=='undefined'&&confirmedNavigation.nodes[r]);if(n?.floor!==3)return r;return regularEntranceRefs.find(id=>{const p=mobilityData.points[id];return p&&Math.hypot(p[0]-n.point[0],p[1]-n.point[1])<.1;})||r;};
  return !entranceAvailability(physicalDoor(u),date).closed&&!entranceAvailability(physicalDoor(v),date).closed;
 }
-function routeEntranceNotice(from,to,graph,path,date=new Date()){
- const endpoints=[['出発地',from],['目的地',to]];
- for(const [name,ref] of endpoints){
-  if(!regularEntranceRefs.includes(ref))continue;
-  const status=entranceAvailability(ref,date);
-  if(status.closed)return {blocked:true,text:`${name}の出入口は${status.closedToday?'本日閉門':'現在利用不可'}です。3階の時間外出入口を選択してください。`};
+// Find the registered public corridor next to the indoor side of a closed door.
+function closedEntranceApproaches(graph,ref,date=new Date()){
+ if(!entranceAvailability(ref,date).closed)return null;
+ const door=graph.nodes[ref]?.point;
+ if(!door)return [];
+ const pending=[ref],seen=new Set(pending),approaches=new Set();
+ for(const id of pending)for(const edge of graph.adj[id]||[]){
+  if(seen.has(edge.to)||edge.kind!=='walk'||edge.access!=='patient')continue;
+  seen.add(edge.to);
+  const node=graph.nodes[edge.to];
+  if(node?.floor!==3)continue;
+  const [dx,dy]=node.point.map((value,i)=>value-door[i]);
+  if(Math.hypot(dx,dy)<.1)pending.push(edge.to);
+  else if(Math.abs(dx)<1&&dy< -12)approaches.add(edge.to);
  }
+ return [...approaches];
+}
+function routeEntranceNotice(from,to,graph,path,date=new Date()){
+ const start=entranceAvailability(from,date),goal=entranceAvailability(to,date);
+ if(start.closed)return {blocked:true,text:`出発地の出入口は${start.closedToday?'本日閉門':'現在利用不可'}です。3階の時間外出入口を選択してください。`};
+ if(goal.closed)return {blocked:false,text:goal.state==='unknown'?'目的地の開門状況を確認できないため、院内側の手前まで案内します。':'目的地の出入口は閉鎖中です。院内側の手前まで案内します。'};
  const usesAfterHours=path.some((ref,i)=>i>0&&deckEntranceCrossing(graph?.nodes[path[i-1]],graph?.nodes[ref])===afterHoursEntranceRef);
  if(!usesAfterHours)return null;
  const status=entranceAvailability(regularEntranceRefs[0],date);

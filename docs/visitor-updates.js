@@ -24,7 +24,7 @@ function placeOfficialIcons(d){
  }
  if(d.type==='toilet'){
  const names={'01':'男性トイレ','02':'女性トイレ','05':'車椅子対応','24':'オストメイト対応','35':'ストレッチャー対応',unisex:'男女共用トイレ'};
- return (d.detail?.toiletIcons||['01','02']).map(id=>'<img class="facility-pict" alt="'+names[id]+'" title="'+names[id]+'" src="assets/legend-toilet-'+id+'.svg?v=20261110d'+'">');
+ return (d.detail?.toiletIcons||['01','02']).map(id=>'<img class="facility-pict" alt="'+names[id]+'" title="'+names[id]+'" src="assets/legend-toilet-'+id+'.svg?v=20261110e'+'">');
  }return [];
 }
 const candidateSignColors={green:'#b0c548',yellow:'#e8b52f',blue:'#3989c6'};
@@ -73,7 +73,6 @@ function initVisitorUpdates(){
   navigate.hidden=parking;
   ui('facilityDetails').dataset.previewAction=start?'start':'navigate';
   if(d?.type==='manual')navigate.disabled=false;
-  if(closed&&!start)navigate.disabled=true;
   if(start){
    navigate.textContent='出発地に設定';
    navigate.disabled=!d||d.usage==='emergency-only'||isGuideOnly(d)||closed;
@@ -85,7 +84,6 @@ function initVisitorUpdates(){
  navigateVisitorPreview=function(){
   const d=destinationPhotoState.place;
   if(d?.manualSelection)mapUI.manualGoal=d.manualSelection;
-  if(d&&entranceAvailability(d.ref).closed)return;
   return baseNavigate();
  };
  ui('detailNavigate').onclick=()=>{if(mapUI.pickMode!=='start')return navigateVisitorPreview();const d=destinationPhotoState.place;if(!d||d.usage==='emergency-only'||isGuideOnly(d)||entranceAvailability(d.ref).closed)return;if(d.manualSelection)baseManual(d.manualSelection.point);else selectStartPlace(d,true);closeVisitorPreview();setSelectionMode('goal');if(mapUI.goal){ui('findPlace').value=placeListText(mapUI.goal);enterRoutePlanning();}else{ui('findPlace').value='';document.body.classList.remove('route-planning');}updateRoutePlanner();renderOverlay();};

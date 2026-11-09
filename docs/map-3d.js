@@ -189,11 +189,11 @@
       if(key===previousKey){if(hoverPlace)highlight(hoverPlace);updateProgress();return;}
       const reset=previousKey!==key;previousKey=key;freeGroup();floorLevels=createMap3DLayout(data.maps);floorDepths=createMap3DDepths(data.maps);floorRegistration=createMap3DRegistration(data.maps,data.transfers);
       const box=new T.Box3();
-      const floorTextures=new Set(data.maps.map(map=>map.image+'?v=20261110d'));
+      const floorTextures=new Set(data.maps.map(map=>map.image+'?v=20261110e'));
       for(const [src,tex] of textures)if(!floorTextures.has(src)){tex.dispose();textures.delete(src);}
       for(const map of data.maps) {
         const [w,h]=map.size,active=map.floor===data.floor;
-        const mat=new T.MeshBasicMaterial({map:texture(map.image+'?v=20261110d'),side:T.DoubleSide,transparent:false,opacity:1,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2});
+        const mat=new T.MeshBasicMaterial({map:texture(map.image+'?v=20261110e'),side:T.DoubleSide,transparent:false,opacity:1,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2});
         const plane=new T.Mesh(new T.PlaneGeometry(w*S,h*S),mat);
         plane.rotation.x=-Math.PI/2;plane.position.copy(at(map.floor,[w/2,h/2],0));
         plane.userData={floor:map.floor,width:w,height:h};planes.push(plane);group.add(plane);
@@ -209,7 +209,7 @@
        if(t.kind==='elevator'){const height=Math.abs(b.y-a.y),shaft=new T.Mesh(new T.BoxGeometry(.4,height,.4),new T.MeshPhongMaterial({color:colorValue('#67adc9'),transparent:true,opacity:.12,depthWrite:false,shininess:80}));shaft.position.copy(a).lerp(b,.5);group.add(shaft);const frame=new T.LineSegments(new T.EdgesGeometry(shaft.geometry),new T.LineBasicMaterial({color:colorValue('#5b97b0'),transparent:true,opacity:.48}));frame.position.copy(shaft.position);group.add(frame);line([a,b],0x07527c,true);movingArrows([a,b]);tag('エレベーター EV',a.clone().lerp(b,.5),'#07527c',2.3);}
        else{line([a,b],0xd47717,true);movingArrows([a,b]);tag('エスカレーター',a.clone().lerp(b,.5),'#ad5a0d',2.3);}}
       if(mapUI.startConfirmed){const start=destinationList.find(d=>navigationTargetReference(d)===mapUI.from);if(start)outlinePlace(start,'#2580c5',group);}
-      if(phoneIconFrame(mapUI.goal))outlinePlace(mapUI.goal,'#ff0300',group);
+      if(equipmentIconFrames(mapUI.goal).length)outlinePlace(mapUI.goal,'#ff0300',group);
       const same=data.start?.floor===data.goal?.floor&&data.start?.point&&data.goal?.point&&Math.hypot(data.start.point[0]-data.goal.point[0],data.start.point[1]-data.goal.point[1])<1;
       if(!navigationState.active)pin(data.start,'出発地','#2580c5',same?-.13:0,placePinClearance(data.start?.point,mapUI.from));pin(data.goal,'目的地','#ff0300',same?.13:0,placePinClearance(data.goal?.point,mapUI.goal?.ref));
       const center=box.getCenter(new T.Vector3()),size=box.getSize(new T.Vector3());
