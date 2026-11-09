@@ -29,7 +29,7 @@
       graph:mapUI.graph,path:mapUI.path,
       nodeFloor:n=>floorMaps[n?.map]?.floor,pointAt:displayPoint,
       linesAt:(g,p,f)=>canDrawFloorRoute(f,p)?floorRouteLines(g,p,f).map(squareRoute):[],
-      start:{floor:mapUI.manual?.floor||referenceFloor(mapUI.from),point:mapUI.manual?.point||routeStartPoint()},
+      start:hasVisibleStart()?{floor:mapUI.manual?.floor||referenceFloor(mapUI.from),point:mapUI.manual?.point||routeStartPoint()}:null,
       goal:mapUI.goal?{floor:mapUI.goal.floor,point:routeGoalPoint()}:null});
   }
   function queueUpdate() {
@@ -189,11 +189,11 @@
       if(key===previousKey){if(hoverPlace)highlight(hoverPlace);updateProgress();return;}
       const reset=previousKey!==key;previousKey=key;freeGroup();floorLevels=createMap3DLayout(data.maps);floorDepths=createMap3DDepths(data.maps);floorRegistration=createMap3DRegistration(data.maps,data.transfers);
       const box=new T.Box3();
-      const floorTextures=new Set(data.maps.map(map=>map.image+'?v=20261109f'));
+      const floorTextures=new Set(data.maps.map(map=>map.image+'?v=20261110a'));
       for(const [src,tex] of textures)if(!floorTextures.has(src)){tex.dispose();textures.delete(src);}
       for(const map of data.maps) {
         const [w,h]=map.size,active=map.floor===data.floor;
-        const mat=new T.MeshBasicMaterial({map:texture(map.image+'?v=20261109f'),side:T.DoubleSide,transparent:false,opacity:1,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2});
+        const mat=new T.MeshBasicMaterial({map:texture(map.image+'?v=20261110a'),side:T.DoubleSide,transparent:false,opacity:1,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2});
         const plane=new T.Mesh(new T.PlaneGeometry(w*S,h*S),mat);
         plane.rotation.x=-Math.PI/2;plane.position.copy(at(map.floor,[w/2,h/2],0));
         plane.userData={floor:map.floor,width:w,height:h};planes.push(plane);group.add(plane);
