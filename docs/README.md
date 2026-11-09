@@ -46,6 +46,6 @@
 
 ## 出典
 
-[近畿大学病院 フロアマップ・施設案内](https://www.med.kindai.ac.jp/floormap_facility.html)を参考に作成しています。地図画像・ピクトグラムの権利は各権利者に帰属します。病院公式のナビではありません。
+[近畿大学病院 フロアマップ・施設案内](https://www.med.kindai.ac.jp/floormap_facility.html)を参考に作成しています。一部のピクトグラムは[国土交通省の案内用図記号](https://www.mlit.go.jp/sogoseisaku/barrierfree/sosei_barrierfree_tk_000145.html)から描画しています。診療科の看板の文字はNoto Sans JP（SIL OFL 1.1）の輪郭を使用しています。地図画像・ピクトグラムの権利は各権利者に帰属します。病院公式のナビではありません。
 
 3Dの階層表示は[近大病院 院内ナビ](https://mynrminto.github.io/kindai-hospital-navi/)を参考にしています。同サイトのThree.js r128 / OrbitControls（MIT）を利用し、ライセンスをvendor/に同梱しています。
