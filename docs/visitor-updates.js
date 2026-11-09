@@ -24,7 +24,7 @@ function placeOfficialIcons(d){
  }
  if(d.type==='toilet'){
  const names={'01':'男性トイレ','02':'女性トイレ','05':'車椅子対応','24':'オストメイト対応','35':'ストレッチャー対応',unisex:'男女共用トイレ'};
- return (d.detail?.toiletIcons||['01','02']).map(id=>'<img class="facility-pict" alt="'+names[id]+'" title="'+names[id]+'" src="assets/legend-toilet-'+id+'.svg?v=20261109c'+'">');
+ return (d.detail?.toiletIcons||['01','02']).map(id=>'<img class="facility-pict" alt="'+names[id]+'" title="'+names[id]+'" src="assets/legend-toilet-'+id+'.svg?v=20261109d'+'">');
  }return [];
 }
 const candidateSignColors={green:'#b0c548',yellow:'#e8b52f',blue:'#3989c6'};

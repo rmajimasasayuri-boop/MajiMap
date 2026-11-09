@@ -28,7 +28,7 @@ function focusNavigationStep(){
 const equipmentPictogramKinds=new Set(['payment','parking','vending','aed','phone','baby','bloodPressure','scale','wheelchair','toilet']);
 function officialEquipmentIcon(kind){
  if(!equipmentPictogramKinds.has(kind))return '';
- return '<svg class="facility-pict" viewBox="0 0 40 40" aria-hidden="true"><use href="assets/equipment-pictograms.svg?v=20261109c#'+kind+'" width="40" height="40"/></svg>';
+ return '<svg class="facility-pict" viewBox="0 0 40 40" aria-hidden="true"><use href="assets/equipment-pictograms.svg?v=20261109d#'+kind+'" width="40" height="40"/></svg>';
 }
 function initVisitorExperience(){
  if(reviewEmbedded)return;
