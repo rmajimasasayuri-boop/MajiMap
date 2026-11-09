@@ -13,7 +13,7 @@ body.visitor-experience #routePlanner[hidden]{display:none!important}
 .swap-route-places{position:absolute;right:9px;top:65px;border:0;background:transparent;color:#46646d;font-size:25px;padding:6px}
 .route-options-dock{position:absolute;z-index:7;bottom:46px;left:12px;display:flex;align-items:center;gap:10px;padding:12px;background:white;border:1px solid #dce5e8;border-radius:16px;box-shadow:0 3px 15px #183b4917}
 .route-options-dock[hidden]{display:none!important}.route-options-dock .route-travel-tabs{margin:0;padding:0}.route-options-dock>.primary{min-height:42px;padding:10px 16px;white-space:nowrap}
-body.route-planning:not(.place-searching) .map-search-bar,body.route-planning .nearby-equipment-bar,body.route-planning .selection-toolbar,body.route-planning .facility-details,body.route-planning .route-summary{display:none!important}
+body.route-planning:not(.place-searching) .map-search-bar,body.route-planning .nearby-equipment-bar,body.route-planning .facility-details,body.route-planning .route-summary{display:none!important}
 body.place-searching #routePlanner,body.place-searching .route-options-dock{display:none!important}
 body.navigation-active #routePlanner,body.navigation-active .route-options-dock{display:none!important}
 .navigation-floor-strip{position:absolute;left:12px;top:12px;display:flex;gap:6px;z-index:8}.navigation-floor-strip[hidden]{display:none}.navigation-floor-strip button{background:white;border:1px solid #d6e3e7;border-radius:16px;padding:9px 12px;color:#176f68;font-size:12px;font-weight:bold;box-shadow:0 2px 10px #24455417}
@@ -44,7 +44,6 @@ body.visitor-experience.navigation-active .view-switch{bottom:auto!important;top
 /* Selection remains visible after the pointer leaves, in both endpoint colours. */
 body.visitor-experience .place-map-target[data-selected="goal"] rect{fill:#d83a4014!important;stroke:#d83a40!important;stroke-width:2!important;vector-effect:non-scaling-stroke}
 body.visitor-experience .place-map-target[data-selected="start"] rect{fill:#2580c514!important;stroke:#2580c5!important;stroke-width:2!important;vector-effect:non-scaling-stroke}
-body.visitor-experience .selection-toolbar{display:none!important}
 body.visitor-experience #routePlanner>.route-travel-tabs{display:flex;gap:8px;margin:0 0 10px;padding:0;border:0}
 body.visitor-experience #routePlanner>.route-travel-tabs button{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:24px;padding:9px 6px;font-size:12px}
 body.visitor-experience .swap-route-places{top:116px}

@@ -22,7 +22,7 @@ body.visitor-experience #mapPlaceCard{display:none!important}
 .return-position{position:absolute;right:16px;bottom:180px;z-index:8;background:white;color:#176f68;border:1px solid #d5e2e7;border-radius:22px;padding:10px 15px;box-shadow:0 2px 12px #24455422}
 .return-position[hidden]{display:none}.navigation-mode-badge{display:inline-block;color:#176f68;font-weight:700;font-size:12px;padding:5px 9px;background:#e2f2ee;border-radius:7px;grid-column:1/-1}
 .navigation-mode-badge[data-kind=elevator]{color:#07527c;background:#e1effa}.navigation-mode-badge[data-kind=escalator]{color:#8b4500;background:#fff0d8}
-body.navigation-active .map-search-bar,body.navigation-active .nearby-equipment-bar,body.navigation-active .selection-toolbar,body.navigation-active .facility-details,body.navigation-active #settings,body.navigation-active .map-heading,body.navigation-active #walkingHint,body.navigation-active .campus-map-button{display:none!important}
+body.navigation-active .map-search-bar,body.navigation-active .nearby-equipment-bar,body.navigation-active .facility-details,body.navigation-active #settings,body.navigation-active .map-heading,body.navigation-active #walkingHint,body.navigation-active .campus-map-button{display:none!important}
 body.visitor-experience.navigation-active .navigation-panel{bottom:48px!important;left:12px!important;width:min(560px,calc(100% - 24px))!important}
 body.navigation-active .view-switch{bottom:auto;top:12px;right:12px}
 body.navigation-active .zoom-tools{top:70px!important}
@@ -33,7 +33,6 @@ body.navigation-active .floor-toolbar{top:10px!important;bottom:auto!important;l
 @media(max-width:700px){
  body.visitor-experience .map-search-bar{top:8px;left:8px;width:calc(100% - 16px)}
  body.visitor-experience .nearby-equipment-bar{top:64px;left:8px;right:8px}
- body.visitor-experience .selection-toolbar{top:116px!important}
  body.visitor-experience .map-heading{top:116px!important}
  body.visitor-experience main:not(.settings-hidden) #settings{position:fixed!important;inset:0!important;width:100%!important;max-height:none!important;height:100dvh!important;border:0;border-radius:0!important;z-index:30;padding:76px 12px 12px!important;display:flex;flex-direction:column}
  body.visitor-experience main:not(.settings-hidden) .map-search-bar{position:fixed;z-index:32;top:10px}

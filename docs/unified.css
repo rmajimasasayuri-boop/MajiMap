@@ -30,7 +30,7 @@
 /* Selection colors match map pins. */
 :root{--start-color:#2580c5;--goal-color:#d83a40;--selection-color:var(--goal-color);--selection-tint:#d83a4015}body[data-pick-mode=start]{--selection-color:var(--start-color);--selection-tint:#2580c515}
 .goal-dot{background:var(--goal-color)}
-.selection-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}.selection-toolbar button{background:white;border:1px solid #ccd6dc;border-radius:8px;padding:9px 12px;font-weight:700;cursor:pointer}.selection-toolbar [data-pick-mode=start]{color:var(--start-color)}.selection-toolbar [data-pick-mode=goal]{color:var(--goal-color)}[data-pick-mode][aria-pressed=true]{box-shadow:inset 0 0 0 2px currentColor}.selection-toolbar span{font-size:12px;color:#526978}.map-viewport{border:1px solid #d7e3e8}.map-viewport:focus{outline:none}.map-viewport:focus-visible{outline:2px solid #72848d;outline-offset:2px}body[data-pick-mode=start] .start-card{border:2px solid var(--start-color)}body[data-pick-mode=goal] .destination-card{border:2px solid var(--goal-color)}.start-card>button,.destination-card>button{margin:8px 0}body.review-embedded .selection-toolbar{display:none}
+.selection-status{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.map-viewport{border:1px solid #d7e3e8}.map-viewport:focus{outline:none}.map-viewport:focus-visible{outline:2px solid #72848d;outline-offset:2px}body[data-pick-mode=start] .start-card{border:2px solid var(--start-color)}body[data-pick-mode=goal] .destination-card{border:2px solid var(--goal-color)}
 /* The map and endpoint controls stay in one viewport. Only lists scroll. */
 body:not(.review-embedded):not(.corridor-editing):not(:has(.arrow-editing)){height:100dvh;overflow:hidden}
 body:not(.review-embedded)>header{height:52px;padding:0 20px}
@@ -69,9 +69,6 @@ body:not(.review-embedded) .floors button{min-width:30px;padding:6px;font-size:1
 body:not(.review-embedded) #annToggle,body:not(.review-embedded) #toggleArrowEditor{font-size:10px;white-space:nowrap;padding:6px}
 body:not(.review-embedded) #wardFocus{margin-left:auto;font-size:10px;padding:6px}
 body:not(.review-embedded) .walking-hint{flex:none;font-size:11px;padding:5px 9px;margin:0}
-body:not(.review-embedded) .selection-toolbar{flex:none;margin:0;min-height:18px}
-body:not(.review-embedded) .selection-toolbar button{display:none}
-body:not(.review-embedded) .selection-toolbar span{font-size:11px}
 body:not(.review-embedded) .map-viewport{flex:1;min-height:0;height:auto;width:100%}
 body:not(.review-embedded) .map-message{flex:none;font-size:10px;margin:0;min-height:16px}
 body:not(.review-embedded) .route-summary{flex:none;padding:8px 10px;margin:0;align-items:center}
@@ -118,7 +115,6 @@ body.corridor-editing:not(.review-embedded) .map-viewport,body:has(.arrow-editin
  body:not(.review-embedded) #annToggle{max-width:65px;white-space:normal;line-height:1.2}
  body:not(.review-embedded) #wardFocus{display:none}body:not(.review-embedded) .walking-hint{display:none}
  body:not(.review-embedded) .map-message{font-size:9px;min-height:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
- body:not(.review-embedded) .selection-toolbar{min-height:14px}body:not(.review-embedded) .selection-toolbar span{font-size:10px}
  body:not(.review-embedded) .map-place-card{left:8px;bottom:45px;padding:9px;width:min(250px,calc(100% - 16px))}.map-place-card strong{font-size:14px}
  body:not(.review-embedded) .route-summary{padding:5px 7px}body:not(.review-embedded) .route-summary strong{font-size:10px}
  body:not(.review-embedded) .route-summary-actions button{font-size:10px;padding:6px 7px}
@@ -141,9 +137,6 @@ body.map-first:not(.review-embedded):not(.corridor-editing):not(:has(.arrow-edit
 body.map-first:not(.review-embedded) .map-heading h2 span{font-size:10px}
 body.map-first:not(.review-embedded):not(.corridor-editing):not(:has(.arrow-editing)) .floor-toolbar{position:absolute;z-index:4;top:74px;right:16px;background:#fffffff5;border:1px solid #dce5e8;border-radius:9px;padding:5px;box-shadow:0 2px 12px #183b4912}
 body.map-first:not(.review-embedded):not(.corridor-editing):not(:has(.arrow-editing)) #openPlaceSearch{display:block;position:absolute;z-index:5;top:14px;left:16px;width:318px;text-align:left;margin:0;padding:14px 16px;background:white;color:#31515d;border:1px solid #dce5e8;border-radius:12px;box-shadow:0 3px 14px #183b4920;font-size:15px;font-weight:600}
-body.map-first:not(.review-embedded):not(.corridor-editing):not(:has(.arrow-editing)) .selection-toolbar{position:absolute;z-index:4;top:76px;left:16px;display:flex;gap:7px;margin:0;background:transparent}
-body.map-first:not(.review-embedded):not(.corridor-editing):not(:has(.arrow-editing)) .selection-toolbar button{display:block;padding:8px 11px;background:white;box-shadow:0 2px 9px #183b4915;border-radius:20px;font-size:11px}
-body.map-first:not(.review-embedded):not(.corridor-editing):not(:has(.arrow-editing)) .selection-toolbar span{display:none}
 body.map-first:not(.review-embedded):not(.corridor-editing):not(:has(.arrow-editing)) #settings{position:absolute;z-index:8;top:14px;left:16px;bottom:18px;width:336px;max-height:620px;height:auto;display:flex;flex-direction:column;background:#fff;box-shadow:0 6px 30px #183b4926;border:1px solid #dce5e8;border-radius:14px;padding:12px;gap:8px;overflow:hidden}
 body.map-first:not(.review-embedded):not(.corridor-editing):not(:has(.arrow-editing)) .settings-hidden #settings{display:none}
 body.map-first:not(.review-embedded) .aside-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
@@ -159,12 +152,11 @@ body.map-first:not(.review-embedded) .map-edit-actions{display:flex;gap:8px;flex
 body.map-first:not(.review-embedded) #maximizeMap{font-size:11px;white-space:nowrap;padding:6px 9px}
 body.map-first.map-maximized:not(.review-embedded)>header{display:none}
 body.map-first.map-maximized:not(.review-embedded):not(.corridor-editing):not(:has(.arrow-editing))>main{height:100dvh}
-body.map-first.map-maximized:not(.review-embedded) #openPlaceSearch,body.map-first.map-maximized:not(.review-embedded) .selection-toolbar,body.map-first.map-maximized:not(.review-embedded) .map-message,body.map-first.map-maximized:not(.review-embedded) .map-heading #mapInfoButton{display:none}
+body.map-first.map-maximized:not(.review-embedded) #openPlaceSearch,body.map-first.map-maximized:not(.review-embedded) .map-message,body.map-first.map-maximized:not(.review-embedded) .map-heading #mapInfoButton{display:none}
 body.map-first.map-maximized:not(.review-embedded) .map-heading h2 span{display:none}
 @media(max-width:1000px){
  body.map-first:not(.review-embedded):not(.corridor-editing):not(:has(.arrow-editing))>main{height:calc(100dvh - 44px)}
  body.map-first:not(.review-embedded):not(.corridor-editing):not(:has(.arrow-editing)) #openPlaceSearch{top:10px;left:10px;width:min(310px,calc(100% - 20px));padding:12px 14px;font-size:14px}
- body.map-first:not(.review-embedded):not(.corridor-editing):not(:has(.arrow-editing)) .selection-toolbar{top:65px;left:10px}
  body.map-first:not(.review-embedded):not(.corridor-editing):not(:has(.arrow-editing)) .map-heading{top:110px;right:10px;left:10px;width:max-content;max-width:calc(100% - 20px);padding:6px 8px;gap:6px}
  body.map-first:not(.review-embedded) .map-heading h2{font-size:16px}
  body.map-first:not(.review-embedded) .map-heading h2 span{display:none}
@@ -196,7 +188,7 @@ body.map-first.map-maximized:not(.review-embedded) .map-heading h2 span{display:
  body.map-first.map-maximized:not(.review-embedded):not(.corridor-editing):not(:has(.arrow-editing)) .map-heading{top:10px;left:auto;right:10px}
  body.map-first.map-maximized:not(.review-embedded) .zoom-tools{top:75px}
 }
-body.map-first.map-maximized:not(.review-embedded) #openPlaceSearch,body.map-first.map-maximized:not(.review-embedded) .selection-toolbar,body.map-first.map-maximized:not(.review-embedded) .map-message{display:none!important}
+body.map-first.map-maximized:not(.review-embedded) #openPlaceSearch,body.map-first.map-maximized:not(.review-embedded) .map-message{display:none!important}
 body.map-first:not(.review-embedded):not(.corridor-editing):not(:has(.arrow-editing)) .map-message{display:none}
 body.map-first:not(.review-embedded):not(.corridor-editing):not(:has(.arrow-editing)) .map-message[data-important=true]{display:block!important;pointer-events:auto}
 
