@@ -141,10 +141,10 @@
         mesh.position.copy(points[i-1]).addScaledVector(delta,.5);mesh.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),delta.normalize());mesh.renderOrder=8;group.add(mesh);
       }
     }
-    function pin(p,label,color,shift=0) {
+    function pin(p,label,color,shift=0,clearance=Infinity) {
       if(!p?.point||!planes.some(plane=>plane.userData.floor===p.floor))return;
-      const pos=at(p.floor,p.point,.2);pos.x+=shift;
-      const ball=new T.Mesh(new T.SphereGeometry(.18,20,16),new T.MeshBasicMaterial({color:colorValue(color),depthTest:false,transparent:true}));ball.position.copy(pos);ball.renderOrder=10;group.add(ball);screenPins.push(ball);
+      const pos=at(p.floor,p.point,Number.isFinite(clearance)?.025:.2);pos.x+=shift;
+      const ball=new T.Mesh(new T.SphereGeometry(.18,20,16),new T.MeshBasicMaterial({color:colorValue(color),depthTest:false,transparent:true}));ball.position.copy(pos);ball.renderOrder=10;ball.userData.maxRadius=clearance*S*.5;group.add(ball);screenPins.push(ball);
       // Pins retain their color without a floating name label.
     }
     function movingArrows(points) {
@@ -189,11 +189,11 @@
       if(key===previousKey){if(hoverPlace)highlight(hoverPlace);updateProgress();return;}
       const reset=previousKey!==key;previousKey=key;freeGroup();floorLevels=createMap3DLayout(data.maps);floorDepths=createMap3DDepths(data.maps);floorRegistration=createMap3DRegistration(data.maps,data.transfers);
       const box=new T.Box3();
-      const floorTextures=new Set(data.maps.map(map=>map.image+'?v=20261109e'));
+      const floorTextures=new Set(data.maps.map(map=>map.image+'?v=20261109f'));
       for(const [src,tex] of textures)if(!floorTextures.has(src)){tex.dispose();textures.delete(src);}
       for(const map of data.maps) {
         const [w,h]=map.size,active=map.floor===data.floor;
-        const mat=new T.MeshBasicMaterial({map:texture(map.image+'?v=20261109e'),side:T.DoubleSide,transparent:false,opacity:1,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2});
+        const mat=new T.MeshBasicMaterial({map:texture(map.image+'?v=20261109f'),side:T.DoubleSide,transparent:false,opacity:1,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2});
         const plane=new T.Mesh(new T.PlaneGeometry(w*S,h*S),mat);
         plane.rotation.x=-Math.PI/2;plane.position.copy(at(map.floor,[w/2,h/2],0));
         plane.userData={floor:map.floor,width:w,height:h};planes.push(plane);group.add(plane);
@@ -210,7 +210,7 @@
        else{line([a,b],0xd47717,true);movingArrows([a,b]);tag('エスカレーター',a.clone().lerp(b,.5),'#ad5a0d',2.3);}}
       if(mapUI.startConfirmed){const start=destinationList.find(d=>navigationTargetReference(d)===mapUI.from);if(start)outlinePlace(start,'#2580c5',group);}
       const same=data.start?.floor===data.goal?.floor&&data.start?.point&&data.goal?.point&&Math.hypot(data.start.point[0]-data.goal.point[0],data.start.point[1]-data.goal.point[1])<1;
-      if(!navigationState.active)pin(data.start,'出発地','#2580c5',same?-.13:0);pin(data.goal,'目的地','#ff0300',same?.13:0);
+      if(!navigationState.active)pin(data.start,'出発地','#2580c5',same?-.13:0,receptionPinClearance(data.start?.point,mapUI.from));pin(data.goal,'目的地','#ff0300',same?.13:0,receptionPinClearance(data.goal?.point,mapUI.goal?.ref));
       const center=box.getCenter(new T.Vector3()),size=box.getSize(new T.Vector3());
       const cameraOffset=new T.Vector3(...map3DHomeOffset(size.toArray(),camera.aspect));
       // A floor change should frame the new map; pointer selection keeps the view.
@@ -245,7 +245,7 @@
     function pan(x,y){camera.updateMatrixWorld();const step=camera.position.distanceTo(controls.target)*.09,delta=new T.Vector3().setFromMatrixColumn(camera.matrixWorld,0).multiplyScalar(x*step).addScaledVector(new T.Vector3().setFromMatrixColumn(camera.matrixWorld,1),y*step);camera.position.add(delta);controls.target.add(delta);controls.update();highlight(mapUI.previewPlace||mapUI.goal||null);}
     function rotate(direction){camera.position.sub(controls.target).applyAxisAngle(new T.Vector3(0,1,0),direction*Math.PI/12).add(controls.target);controls.update();highlight(mapUI.previewPlace||mapUI.goal||null);}
     function resize(){const w=container.clientWidth,h=container.clientHeight;if(!w||!h)return;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();}
-    function loop(time=0){if(disposed||paused)return;frame=requestAnimationFrame(loop);for(const m of motion){const sample=sampleRouteMotion(m.track,m.offset+(reducedMotion.matches?0:time*.00065));m.arrow.position.fromArray(sample.point);m.arrow.quaternion.setFromUnitVectors(new T.Vector3(0,0,1),new T.Vector3(...sample.direction));}for(const pin of screenPins){const radius=pin.position.distanceTo(camera.position)*Math.tan(camera.fov*Math.PI/360)*24/Math.max(1,container.clientHeight);pin.scale.setScalar(radius/.18);}controls.update();renderer.render(scene,camera);}
+    function loop(time=0){if(disposed||paused)return;frame=requestAnimationFrame(loop);for(const m of motion){const sample=sampleRouteMotion(m.track,m.offset+(reducedMotion.matches?0:time*.00065));m.arrow.position.fromArray(sample.point);m.arrow.quaternion.setFromUnitVectors(new T.Vector3(0,0,1),new T.Vector3(...sample.direction));}for(const pin of screenPins){const radius=pin.position.distanceTo(camera.position)*Math.tan(camera.fov*Math.PI/360)*24/Math.max(1,container.clientHeight);pin.scale.setScalar(Math.min(radius,pin.userData.maxRadius)/.18);}controls.update();renderer.render(scene,camera);}
     function pause(value){paused=value;cancelAnimationFrame(frame);if(!paused&&!disposed)loop();}
     renderer.domElement.addEventListener('pointerdown',e=>{if(navigationState.active)navigationFollow=false;activePointers.add(e.pointerId);down=activePointers.size===1?{x:e.clientX,y:e.clientY,id:e.pointerId,moved:false}:null;});
     renderer.domElement.addEventListener('pointermove',e=>{if(down){if(Math.hypot(e.clientX-down.x,e.clientY-down.y)>5)down.moved=true;highlight(mapUI.previewPlace||mapUI.goal||null);return;}if(activePointers.size)return;const hit=pointerHit(e);highlight(hit?.place||mapUI.previewPlace||mapUI.goal||null,hit?.place?{x:e.clientX,y:e.clientY}:undefined);});
