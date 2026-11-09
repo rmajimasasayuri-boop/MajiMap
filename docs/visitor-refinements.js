@@ -79,7 +79,7 @@ function initVisitorRefinements(){
  ui('detailNavigate').onclick=navigateVisitorPreview;ui('detailWebsite').textContent='ウェブサイト';ui('detailWebsite').setAttribute('aria-label','ウェブサイト');
  ui('closeFacilityDetails').onclick=closeVisitorPreview;
  ui('routeDockNavigate').textContent='ナビ開始';
- const reset=document.createElement('button');reset.id='visitorMapHome';reset.className='floor-home-button';reset.textContent='全体';reset.onclick=()=>document.body.classList.contains('view-3d')?ui('map3DHome').click():ui('resetMap').click();document.querySelector('.map-navigation-rail').append(reset);
+ const reset=document.createElement('button');reset.id='visitorMapHome';reset.className='floor-home-button';reset.textContent='全体';reset.onclick=()=>document.body.classList.contains('view-3d')?ui('map3DHome').click():ui('resetMap').click();document.querySelector('.map-navigation-rail').append(reset,ui('returnToPosition'));
  const home=ui('map3DHome');home.classList.add('floor-home-button');document.querySelector('.map-navigation-rail').append(home);
  const wheelchair=document.querySelector('[data-travel-choice="elevator"]');wheelchair.setAttribute('aria-label','車椅子（EVのみ）');wheelchair.title='階の移動にはエレベーターのみを使います';for(const node of [...wheelchair.childNodes])if(node.nodeType===3)node.textContent='車椅子';
  // Equipment icons are subfilters shown only inside Equipment, avoiding duplicate categories.

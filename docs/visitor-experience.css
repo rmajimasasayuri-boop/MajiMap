@@ -19,8 +19,10 @@ body.visitor-experience #mapPlaceCard{display:none!important}
 .official-wheelchair-icon{filter:sepia(.3) hue-rotate(105deg);background-color:#e7f0f0}
 .result-floor-filter{display:flex;align-items:center;gap:8px;font-size:12px;color:#46646d;padding:6px 0}.result-floor-filter select{font:inherit;padding:6px;border:1px solid #dce5e8;border-radius:7px;background:white}
 .result-floor-heading{position:sticky;top:0;background:#edf4f5;padding:8px;margin:8px 0 3px;font-size:13px;z-index:1}
-.return-position{position:absolute;right:16px;bottom:180px;z-index:8;background:white;color:#176f68;border:1px solid #d5e2e7;border-radius:22px;padding:10px 15px;box-shadow:0 2px 12px #24455422}
-.return-position[hidden]{display:none}.navigation-mode-badge{display:inline-block;color:#176f68;font-weight:700;font-size:12px;padding:5px 9px;background:#e2f2ee;border-radius:7px;grid-column:1/-1}
+body.visitor-experience .map-navigation-rail .return-position{flex:none;display:grid;place-items:center;width:44px;height:44px;padding:0;background:transparent;color:#176f68;border:0;border-radius:50%}
+.map-navigation-rail .return-position::before{content:"";grid-area:1/1;width:32px;height:32px;background:#fff;border:1px solid #bdcfd8;border-radius:50%}
+.map-navigation-rail .return-position svg{grid-area:1/1;z-index:1}
+.return-position[hidden]{display:none!important}.navigation-mode-badge{display:inline-block;color:#176f68;font-weight:700;font-size:12px;padding:5px 9px;background:#e2f2ee;border-radius:7px;grid-column:1/-1}
 .navigation-mode-badge[data-kind=elevator]{color:#07527c;background:#e1effa}.navigation-mode-badge[data-kind=escalator]{color:#8b4500;background:#fff0d8}
 body.navigation-active .map-search-bar,body.navigation-active .nearby-equipment-bar,body.navigation-active .facility-details,body.navigation-active #settings,body.navigation-active .map-heading,body.navigation-active #walkingHint,body.navigation-active .campus-map-button{display:none!important}
 body.visitor-experience.navigation-active .navigation-panel{bottom:48px!important;left:12px!important;width:min(560px,calc(100% - 24px))!important}
@@ -53,7 +55,6 @@ body.navigation-active .floor-toolbar{top:10px!important;bottom:auto!important;l
  body.visitor-experience .navigation-panel h3{font-size:16px}.navigation-panel .navigation-position-note{font-size:9px}
  body.visitor-experience.navigation-active .navigation-panel{bottom:12px!important;max-height:38dvh;overflow:auto}
  body.visitor-experience.navigation-active .navigation-panel p{max-height:70px}
- body.visitor-experience.navigation-active .return-position{bottom:calc(38dvh + 20px);right:10px;padding:9px 12px}
  body.visitor-experience.navigation-active .map-3d-controls{top:64px;max-width:155px}
  body.visitor-experience.navigation-active .floor-toolbar{display:none!important}
 }
@@ -63,7 +64,6 @@ body.visitor-experience.navigation-active .navigation-panel h3{width:auto!import
 body.visitor-experience.navigation-active .navigation-panel p{font-size:12px!important;line-height:1.5;margin:5px 0!important;max-height:56px}
 body.visitor-experience.navigation-active .navigation-buttons{display:flex!important;justify-content:space-between!important;margin-top:9px;gap:12px}
 body.visitor-experience.navigation-active .navigation-buttons button{min-width:100px!important}
-body.visitor-experience.navigation-active .return-position{bottom:265px}
 @media(max-width:700px){body.visitor-experience.navigation-active .navigation-panel{max-height:250px!important}body.visitor-experience.navigation-active .navigation-position-note{font-size:9px}}
 @media(max-width:700px){
  body.visitor-experience main:not(.settings-hidden) #settings#settings{position:fixed!important;top:0!important;left:0!important;right:0!important;bottom:0!important;width:100vw!important;height:100dvh!important;max-height:100dvh!important;padding-top:76px!important}

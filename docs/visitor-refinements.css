@@ -125,7 +125,6 @@ body.visitor-experience .facility-details{left:calc(8px + var(--visitor-safe-lef
 body.visitor-experience .maji-attribution{left:calc(8px + var(--visitor-safe-left));bottom:calc(2px + var(--visitor-safe-bottom))!important}
 body.visitor-experience #routeOptionsDock{bottom:calc(2px + var(--visitor-safe-bottom))!important;right:calc(76px + var(--visitor-safe-right))!important}
 body.visitor-experience.navigation-active .navigation-panel{left:calc(8px + var(--visitor-safe-left))!important;bottom:calc(28px + var(--visitor-safe-bottom))!important;width:min(520px,calc(100% - 16px - var(--visitor-safe-left) - var(--visitor-safe-right)))!important;max-height:calc(48dvh - var(--visitor-safe-bottom))!important}
-body.visitor-experience .return-position{right:calc(10px + var(--visitor-safe-right))!important}
 body.visitor-experience .navigation-floor-strip{top:calc(10px + var(--visitor-safe-top))!important;left:calc(8px + var(--visitor-safe-left))!important}
 body.visitor-experience.compact-floor-rail .map-navigation-rail .view-switch{position:absolute!important;top:0!important;right:64px!important}
 body.visitor-experience.compact-floor-rail #visitorMapHome{position:absolute;top:64px;right:64px}
