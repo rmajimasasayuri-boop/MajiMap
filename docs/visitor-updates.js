@@ -24,7 +24,7 @@ function placeOfficialIcons(d){
  }
  if(d.type==='toilet'){
  const names={'01':'男性トイレ','02':'女性トイレ','05':'車椅子対応','24':'オストメイト対応','35':'ストレッチャー対応',unisex:'男女共用トイレ'};
- return (d.detail?.toiletIcons||['01','02']).map(id=>'<img class="facility-pict" alt="'+names[id]+'" title="'+names[id]+'" src="assets/legend-toilet-'+id+'.svg?v=20261110c'+'">');
+ return (d.detail?.toiletIcons||['01','02']).map(id=>'<img class="facility-pict" alt="'+names[id]+'" title="'+names[id]+'" src="assets/legend-toilet-'+id+'.svg?v=20261110d'+'">');
  }return [];
 }
 const candidateSignColors={green:'#b0c548',yellow:'#e8b52f',blue:'#3989c6'};
@@ -68,15 +68,12 @@ function initVisitorUpdates(){
   const parking=d?.ref==='outpatient:3::patientParking'&&!unifiedMapModel.floors[3].outdoorExtension.completed;
   const start=mapUI.pickMode==='start';
   route.textContent='経路';
-  route.disabled=!d;
-  route.hidden=start||parking||closed;
+  route.disabled=!d||isGuideOnly(d);
+  route.hidden=start||parking;
   navigate.hidden=parking;
   ui('facilityDetails').dataset.previewAction=start?'start':'navigate';
   if(d?.type==='manual')navigate.disabled=false;
-  if(closed&&!start){
-   navigate.textContent='目的地に設定';
-   navigate.disabled=false;
-  }
+  if(closed&&!start)navigate.disabled=true;
   if(start){
    navigate.textContent='出発地に設定';
    navigate.disabled=!d||d.usage==='emergency-only'||isGuideOnly(d)||closed;
@@ -88,19 +85,13 @@ function initVisitorUpdates(){
  navigateVisitorPreview=function(){
   const d=destinationPhotoState.place;
   if(d?.manualSelection)mapUI.manualGoal=d.manualSelection;
-  if(!d||!entranceAvailability(d.ref).closed)return baseNavigate();
-  closeVisitorPreview();
-  choosePlace(d,true);
-  rememberPlace(d);
-  document.body.classList.remove('route-planning');
-  ui('routePlanner').hidden=true;
-  renderPlacePhoto(d);
-  syncRoutePanels();
+  if(d&&entranceAvailability(d.ref).closed)return;
+  return baseNavigate();
  };
  ui('detailNavigate').onclick=()=>{if(mapUI.pickMode!=='start')return navigateVisitorPreview();const d=destinationPhotoState.place;if(!d||d.usage==='emergency-only'||isGuideOnly(d)||entranceAvailability(d.ref).closed)return;if(d.manualSelection)baseManual(d.manualSelection.point);else selectStartPlace(d,true);closeVisitorPreview();setSelectionMode('goal');if(mapUI.goal){ui('findPlace').value=placeListText(mapUI.goal);enterRoutePlanning();}else{ui('findPlace').value='';document.body.classList.remove('route-planning');}updateRoutePlanner();renderOverlay();};
  const baseManual=selectMapPoint;selectMapPoint=function(point){previewManualDestination(point);};
  previewPlacePhoto=function(d,anchor,pinned=false){if(!pinned||!d)return;showVisitorPreview(d);};
- ui('detailRoute').onclick=()=>{const d=destinationPhotoState.place;if(!d||entranceAvailability(d.ref).closed)return;if(d.manualSelection)mapUI.manualGoal=d.manualSelection;closeVisitorPreview();choosePlace(d,true);rememberPlace(d);enterRoutePlanning();};
+ ui('detailRoute').onclick=()=>{const d=destinationPhotoState.place;if(!d)return;if(d.manualSelection)mapUI.manualGoal=d.manualSelection;closeVisitorPreview();choosePlace(d,true);rememberPlace(d);enterRoutePlanning();};
  ui('closeFacilityDetails').onclick=()=>{if(mapUI.previewPlace){closeVisitorPreview();return;}const other=mapUI.previewPlace&&mapUI.goal&&mapUI.previewPlace.ref!==mapUI.goal.ref;closeVisitorPreview();if(other||mapUI.goal&&document.body.classList.contains('route-planning')){enterRoutePlanning();return;}cancelDestination();};
  ui('closeRoutePlanning').textContent='‹';ui('closeRoutePlanning').setAttribute('aria-label','目的地のマップと写真カードに戻る');ui('closeRoutePlanning').onclick=()=>{const d=mapUI.goal;if(!d){searchHome(false);return;}clearRouteSelection();closeVisitorPreview();document.body.classList.remove('route-planning');ui('routePlanner').hidden=true;ui('routeOptionsDock').hidden=true;togglePlacePanel(false,false);ui('findPlace').value=placeListText(d);ui('findPlace').blur();renderPlacePhoto(d);updateRoutePlanner();showFloor(d.floor,true);syncRoutePanels();requestAnimationFrame(focusReadableMap);};
  ui('clearPlaceSearch').onclick=()=>{ui('findPlace').blur();cancelDestination();togglePlacePanel(false,false);mapUI.plot=false;setSelectionMode('goal');showFloor(mapUI.manual?.floor||referenceFloor(mapUI.from)||3,true);syncSearchControls();};
