@@ -104,7 +104,7 @@
     const activePointers=new Set();
     const colorValue=color=>new T.Color(color).convertSRGBToLinear();
     const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
-    let floorLevels={},floorDepths={},floorRegistration={},motion=[],screenPins=[],hoverGroup=null,hoverPlace=null,hoverMode=null,progressMarker=null,elevatorCabin=null,stepEndMarker=null;
+    let floorLevels={},floorDepths={},floorRegistration={},motion=[],screenPins=[],floorBadges=[],hoverGroup=null,hoverPlace=null,hoverMode=null,progressMarker=null,elevatorCabin=null,stepEndMarker=null;
     const hoverCard=el('map3DHover');
     let group=new T.Group(),planes=[],frame,paused=false,disposed=false,previousKey='',homeView,down;
     scene.add(group);
@@ -112,7 +112,7 @@
     const at=(f,p,lift=.1)=>new T.Vector3((p[0]+(floorRegistration[f]?.[0]||0))*S,(floorLevels[f]||0)+lift,(p[1]+offset(f)+(floorRegistration[f]?.[1]||0))*S);
     function freeGroup() {
       group.traverse(o=>{o.geometry?.dispose();for(const m of Array.isArray(o.material)?o.material:o.material?[o.material]:[]){if(m.userData.ownsTexture)m.map?.dispose();m.dispose();}});
-      scene.remove(group);group=new T.Group();scene.add(group);planes=[];motion=[];screenPins=[];hoverGroup=null;hoverPlace=null;hoverMode=null;hoverCard.hidden=true;progressMarker=null;elevatorCabin=null;stepEndMarker=null;
+      scene.remove(group);group=new T.Group();scene.add(group);planes=[];motion=[];screenPins=[];floorBadges=[];hoverGroup=null;hoverPlace=null;hoverMode=null;hoverCard.hidden=true;progressMarker=null;elevatorCabin=null;stepEndMarker=null;
     }
     function texture(src) {
       if(!textures.has(src)) {
@@ -121,13 +121,29 @@
       }
       return textures.get(src);
     }
-    function tag(text,point,color,width=2.5) {
-      const c=document.createElement('canvas');c.width=512;c.height=96;
-      const ctx=c.getContext('2d');ctx.fillStyle=color;ctx.fillRect(0,0,512,96);
-      ctx.fillStyle='white';ctx.font='bold 42px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,256,50,480);
-      const tex=new T.CanvasTexture(c);tex.encoding=T.sRGBEncoding;
-      const mat=new T.SpriteMaterial({map:tex,depthTest:false});mat.userData.ownsTexture=true;
-      const sprite=new T.Sprite(mat);sprite.scale.set(width,width*96/512,1);sprite.position.copy(point);sprite.renderOrder=10;group.add(sprite);
+    function tag(text,point,color,width=2.5,{floorEdge}={}) {
+      const floorBadge=Boolean(floorEdge);
+      const canvas=document.createElement('canvas');
+      canvas.width=floorBadge?192:512;
+      canvas.height=96;
+      const ctx=canvas.getContext('2d');
+      ctx.fillStyle=color;
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.fillStyle='white';
+      ctx.font=floorBadge?'bold 74px sans-serif':'bold 42px sans-serif';
+      ctx.textAlign='center';
+      ctx.textBaseline='middle';
+      ctx.fillText(text,canvas.width/2,50,canvas.width-16);
+      const texture=new T.CanvasTexture(canvas);
+      texture.encoding=T.sRGBEncoding;
+      const material=new T.SpriteMaterial({map:texture,depthTest:false,sizeAttenuation:!floorBadge});
+      material.userData.ownsTexture=true;
+      const sprite=new T.Sprite(material);
+      sprite.scale.set(width,width*canvas.height/canvas.width,1);
+      sprite.position.copy(point);
+      sprite.renderOrder=10;
+      group.add(sprite);
+      if(floorBadge)floorBadges.push({sprite,anchor:point,farEdge:floorEdge});
     }
     function line(points,color,dashed=false) {
       if(points.length<2)return;
@@ -201,7 +217,7 @@
         const slab=new T.Mesh(new T.BoxGeometry(w*S,.20,h*S),new T.MeshPhongMaterial({color:colorValue(active?'#c0d8de':'#d4e0e6'),shininess:35}));slab.position.copy(at(map.floor,[w/2,h/2],-.16));group.add(slab);
         const lowerEdge=new T.LineSegments(new T.EdgesGeometry(slab.geometry),new T.LineBasicMaterial({color:colorValue(active?'#2e737d':'#8eaab8'),transparent:true,opacity:.65}));lowerEdge.position.copy(slab.position);group.add(lowerEdge);
         const edge=new T.LineSegments(new T.EdgesGeometry(plane.geometry),new T.LineBasicMaterial({color:active?0x176f68:0x9fb8c4}));edge.rotation.copy(plane.rotation);edge.position.copy(plane.position);group.add(edge);
-        tag(map.floor+'F',at(map.floor,[-65,h/2],.3),active?'#176f68':'#607d8c',.9);
+        tag(map.floor+'F',at(map.floor,[-80,h/2],.3),active?'#176f68':'#607d8c',.9,{floorEdge:at(map.floor,[w,h/2],.3)});
         box.expandByPoint(at(map.floor,[0,0],0));box.expandByPoint(at(map.floor,[w,h],0));
       }
       for(const l of data.lines){const points=l.points.map(p=>at(l.floor,p));line(points,0x1683d1);movingArrows(points.map(p=>p.clone().add(new T.Vector3(0,.035,0))));}
@@ -245,8 +261,35 @@
     }
     function pan(x,y){camera.updateMatrixWorld();const step=camera.position.distanceTo(controls.target)*.09,delta=new T.Vector3().setFromMatrixColumn(camera.matrixWorld,0).multiplyScalar(x*step).addScaledVector(new T.Vector3().setFromMatrixColumn(camera.matrixWorld,1),y*step);camera.position.add(delta);controls.target.add(delta);controls.update();highlight(mapUI.previewPlace||mapUI.goal||null);}
     function rotate(direction){camera.position.sub(controls.target).applyAxisAngle(new T.Vector3(0,1,0),direction*Math.PI/12).add(controls.target);controls.update();highlight(mapUI.previewPlace||mapUI.goal||null);}
-    function resize(){const w=container.clientWidth,h=container.clientHeight;if(!w||!h)return;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();}
-    function loop(time=0){if(disposed||paused)return;frame=requestAnimationFrame(loop);for(const m of motion){const sample=sampleRouteMotion(m.track,m.offset+(reducedMotion.matches?0:time*.00065));m.arrow.position.fromArray(sample.point);m.arrow.quaternion.setFromUnitVectors(new T.Vector3(0,0,1),new T.Vector3(...sample.direction));}for(const pin of screenPins){const radius=pin.position.distanceTo(camera.position)*Math.tan(camera.fov*Math.PI/360)*24/Math.max(1,container.clientHeight);pin.scale.setScalar(Math.min(radius,pin.userData.maxRadius)/.18);}controls.update();renderer.render(scene,camera);}
+    function resize(){
+      const width=container.clientWidth,height=container.clientHeight;
+      if(!width||!height)return;
+      renderer.setSize(width,height);
+      camera.aspect=width/height;
+      camera.updateProjectionMatrix();
+      // Perspective-independent sprites keep the floor label readable after zooming out.
+      const unitsPerPixel=2*Math.tan(camera.fov*Math.PI/360)/height;
+      for(const {sprite} of floorBadges)sprite.scale.set(38*unitsPerPixel,19*unitsPerPixel,1);
+    }
+    const projectedBadge=new T.Vector3(),projectedEdge=new T.Vector3();
+    function positionFloorBadges(){
+      camera.updateMatrixWorld();
+      const leftLimit=-1+48/Math.max(1,container.clientWidth);
+      for(const {sprite,anchor,farEdge} of floorBadges){
+        projectedBadge.copy(anchor).project(camera);
+        sprite.position.copy(anchor);
+        sprite.visible=true;
+        if(projectedBadge.x>=leftLimit||Math.abs(projectedBadge.z)>1)continue;
+        // Keep the badge at the edge of the screen while its floor extends into view.
+        if(projectedEdge.copy(farEdge).project(camera).x< -1){
+          sprite.visible=false;
+          continue;
+        }
+        projectedBadge.x=leftLimit;
+        sprite.position.copy(projectedBadge.unproject(camera));
+      }
+    }
+    function loop(time=0){if(disposed||paused)return;frame=requestAnimationFrame(loop);for(const m of motion){const sample=sampleRouteMotion(m.track,m.offset+(reducedMotion.matches?0:time*.00065));m.arrow.position.fromArray(sample.point);m.arrow.quaternion.setFromUnitVectors(new T.Vector3(0,0,1),new T.Vector3(...sample.direction));}for(const pin of screenPins){const radius=pin.position.distanceTo(camera.position)*Math.tan(camera.fov*Math.PI/360)*24/Math.max(1,container.clientHeight);pin.scale.setScalar(Math.min(radius,pin.userData.maxRadius)/.18);}controls.update();positionFloorBadges();renderer.render(scene,camera);}
     function pause(value){paused=value;cancelAnimationFrame(frame);if(!paused&&!disposed)loop();}
     renderer.domElement.addEventListener('pointerdown',e=>{if(navigationState.active)navigationFollow=false;activePointers.add(e.pointerId);down=activePointers.size===1?{x:e.clientX,y:e.clientY,id:e.pointerId,moved:false}:null;});
     renderer.domElement.addEventListener('pointermove',e=>{if(down){if(Math.hypot(e.clientX-down.x,e.clientY-down.y)>5)down.moved=true;highlight(mapUI.previewPlace||mapUI.goal||null);return;}if(activePointers.size)return;const hit=pointerHit(e);highlight(hit?.place||mapUI.previewPlace||mapUI.goal||null,hit?.place?{x:e.clientX,y:e.clientY}:undefined);});
