@@ -8,7 +8,7 @@ function swapRoutePlaces(){
  if(!mapUI.goal||!mapUI.startConfirmed||mapUI.goal.usage==='emergency-only'||entranceAvailability(mapUI.goal.ref).closed)return;
  const goal=mapUI.goal,oldManual=mapUI.manual,oldManualGoal=mapUI.manualGoal;
  const start=oldManual?{ref:'hospital:'+oldManual.floor+'::__manualGoal',routeReference:'hospital:'+oldManual.floor+'::__manualGoal',floor:oldManual.floor,name:'地図で指定した目的地',code:'',type:'manual',point:oldManual.point}:destinationList.find(d=>d.ref===mapUI.from||navigationTargetReference(d)===mapUI.from)||{ref:mapUI.from,routeReference:mapUI.from,floor:referenceFloor(mapUI.from),point:routeStartPoint(),name:ui('currentName').textContent,type:'point',code:''};
- mapUI.startChosenOnMap=Boolean(oldManualGoal);mapUI.manual=oldManualGoal;mapUI.manualGoal=oldManual;mapUI.from=oldManualGoal?'hospital:'+goal.floor+'::__manualStart':navigationTargetReference(goal);mapUI.startName=oldManualGoal?null:destinationDisplayName(goal);mapUI.startConfirmed=true;
+ mapUI.startChosenOnMap=Boolean(oldManualGoal);mapUI.manual=oldManualGoal;mapUI.manualGoal=oldManual;mapUI.from=oldManualGoal?'hospital:'+goal.floor+'::__manualStart':(southWardToiletRefs.includes(goal.ref)?mapUI.routeArrival?.anchor:null)||navigationTargetReference(goal);mapUI.startName=oldManualGoal?null:destinationDisplayName(goal);mapUI.startConfirmed=true;
  choosePlace(start,true);updateCurrentLabel();routePlan();updateRoutePlanner();
 }
 function enterRoutePlanning(){

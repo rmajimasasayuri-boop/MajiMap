@@ -197,7 +197,9 @@
       if(d?.ref===hoverPlace?.ref&&hoverMode===mapUI.pickMode){if(d&&anchor)previewPlacePhoto(d,anchor);return;}
       clearHover();if(!d)return;if(anchor)previewPlacePhoto(d,anchor);hoverPlace=d;hoverMode=mapUI.pickMode;
       const color=mapUI.pickMode==='start'?'#2580c5':'#ff0300';hoverGroup=new T.Group();group.add(hoverGroup);
-      outlinePlace(d,color,hoverGroup);
+      const places=mapUI.pickMode!=='start'&&southWardToiletRefs.includes(d.ref)
+        ?destinationList.filter(place=>southWardToiletRefs.includes(place.ref)):[d];
+      for(const place of places)outlinePlace(place,color,hoverGroup);
       container.style.cursor='pointer';
     }
     function outlinePlace(d,color,target) {

@@ -2,7 +2,7 @@ function resultCategoryMatches(d){if(d.usage==='emergency-only')return mapUI.fil
 function routeProximityFor(matches){
  const scores=new Map();if(!mapUI.startConfirmed||mapUI.pickMode==='start'||!matches.length||!(mapUI.filter==='equipment'||mapUI.filter==='entrance'||matches.every(d=>placeNearestKind(d))))return scores;
  travelMode=ui('travelChoice').value;const graph=attachManualSelections(buildNetwork()),from=mapUI.manual?'hospital:'+mapUI.manual.floor+'::__manualStart':entryReference(mapUI.from),starts=typeof additionalNavigation!=='undefined'&&additionalNavigation.arrivalOptions?.[from]||[from],trees=new Map();
- for(const d of matches){let best=Infinity;if(d.nearestEligible!==false&&!isGuideOnly(d)&&!entranceAvailability(d.ref).closed)for(const start of starts){const end=navigationTargetReference(d),via3F=routeNeeds3F(graph,start,end),key=start+'|'+via3F;let tree=trees.get(key);if(!tree){tree=auditedRouteTree(graph,start,via3F);trees.set(key,tree);}best=Math.min(best,tree.labels.get(end)?.cost??Infinity);}scores.set(d.ref,best);}return scores;
+ for(const d of matches){let best=Infinity;if(d.nearestEligible!==false&&!isGuideOnly(d)&&!entranceAvailability(d.ref).closed)for(const start of starts){const grouped=southWardToiletRefs.includes(d.ref);for(const end of grouped?navigationEndOptions(graph,d):[navigationTargetReference(d)]){const via3F=routeNeeds3F(graph,start,end),key=start+'|'+via3F+'|'+(grouped?end:'');let tree=trees.get(key);if(!tree){tree=auditedRouteTree(graph,start,via3F,grouped?end:undefined);trees.set(key,tree);}best=Math.min(best,tree.labels.get(end)?.cost??Infinity);}}scores.set(d.ref,best);}return scores;
 }
 let searchFocusLock=false;
 let placeSearchView='home',preferredCandidateFloor=null;
@@ -27,8 +27,8 @@ function syncDiscoveryFloors(){
  for(const b of ui('allFloors').querySelectorAll('button')){const f=Number(b.dataset.floor);b.disabled=searching&&!available.has(f);b.setAttribute('aria-pressed',String(searching?mapUI.resultFloor===f:mapUI.floor===f));b.setAttribute('aria-label',searching?f+'階の候補へ移動':f+'階の地図を表示');}
 }
 const searchHistoryKey='maji-place-history-v1';
-function readPlaceHistory(){try{const value=JSON.parse(localStorage.getItem(searchHistoryKey)||'[]');return Array.isArray(value)?value.filter(ref=>typeof ref==='string'&&destinationList.some(d=>d.ref===ref&&d.usage!=='emergency-only')).slice(0,10):[];}catch{return [];}}
-function rememberPlace(d){if(!d||d.type==='manual'||d.usage==='emergency-only'||!destinationList.some(p=>p.ref===d.ref))return;try{localStorage.setItem(searchHistoryKey,JSON.stringify([d.ref,...readPlaceHistory().filter(ref=>ref!==d.ref)].slice(0,10)));}catch{}updateSearchChoices();}
+function readPlaceHistory(){try{const value=JSON.parse(localStorage.getItem(searchHistoryKey)||'[]');return Array.isArray(value)?[...new Set(value.filter(ref=>typeof ref==='string'&&destinationList.some(d=>d.ref===ref&&d.usage!=='emergency-only')).map(destinationIdentity))].slice(0,10):[];}catch{return [];}}
+function rememberPlace(d){if(!d||d.type==='manual'||d.usage==='emergency-only'||!destinationList.some(p=>p.ref===d.ref))return;try{localStorage.setItem(searchHistoryKey,JSON.stringify([destinationIdentity(d.ref),...readPlaceHistory().filter(ref=>ref!==destinationIdentity(d.ref))].slice(0,10)));}catch{}updateSearchChoices();}
 function updateSearchChoices(){
  if(!ui('searchChoices'))return;const current=mapUI.startConfirmed?(mapUI.manual?'地図で指定した場所':ui('currentName').textContent):'未設定';ui('searchCurrentPlace').title='現在地：'+current;ui('searchCurrentPlace').setAttribute('aria-label','現在地：'+current);
  const list=ui('recentPlaces');list.replaceChildren();for(const ref of readPlaceHistory().slice(0,10)){const d=destinationList.find(p=>p.ref===ref),b=document.createElement('button');b.dataset.ref=ref;b.textContent=destinationDisplayName(d);b.onclick=()=>selectPlace(d);list.append(b);}ui('recentEmpty').hidden=Boolean(list.children.length);
