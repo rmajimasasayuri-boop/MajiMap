@@ -8,7 +8,7 @@
   const host=el('map3D');
   const status=el('map3DStatus');
   const scope='route';
-  let mode='2d', interaction='move', library, viewer, pending=0, revision=0;
+  let mode='2d', preferredMode='2d', interaction='move', library, viewer, pending=0, revision=0;
   const toggle=el('toggleMapView');
   function loadScript(src) {
     return new Promise((resolve,reject)=>{
@@ -53,11 +53,17 @@
       status.textContent='矢印の向きに進んでください。病棟名・施設名をクリックして設定できます。';
     } catch(e) {
       if(task!==revision||mode!=='3d')return;
+      if(navigationState.active&&preferredMode==='2d'){
+        setMode('2d');
+        focusNavigationStep();
+        return;
+      }
       status.textContent='3Dを表示できません。2Dマップをご利用ください。';
       el('map3DRetry').hidden=false;
     }
   }
   function setMode(next) {
+    if(next===mode)return;
     if(next==='3d'&&(corridorEditor.active||arrowEditor.active))return;
     mode=next;revision++;
     document.body.classList.toggle('view-3d',mode==='3d');
@@ -69,14 +75,22 @@
     if(mode==='3d') {status.textContent='3Dマップを準備しています…';queueUpdate();}
     else {cancelAnimationFrame(pending);if(viewer){viewer.dispose();viewer=null;}fitMap();}
   }
-  toggle.onclick=()=>setMode(mode==='2d'?'3d':'2d');
+  function setPreferredMode(next){
+    preferredMode=next;
+    setMode(next);
+  }
+  toggle.onclick=()=>setPreferredMode(mode==='2d'?'3d':'2d');
+  window.addEventListener('maji-navigation-step',()=>{
+    const step=navigationState.active?navigationState.steps[navigationState.index]:null;
+    setMode(step?.kind==='transfer'?'3d':preferredMode);
+  });
   for(const b of document.querySelectorAll('[data-3d-mode]'))b.onclick=()=>{interaction=b.dataset['3dMode'];for(const item of document.querySelectorAll('[data-3d-mode]'))item.setAttribute('aria-pressed',String(item===b));viewer?.setInteraction(interaction);el('map3DGestureHint').textContent=interaction==='move'?'1本指で移動 · 2本指で拡大縮小・移動':'マウスで回転 · 指は1本で移動／2本で拡大・回転';};
   for(const [id,x,y]of [['Left',-1,0],['Right',1,0],['Up',0,1],['Down',0,-1]])el('map3DPan'+id).onclick=()=>viewer?.pan(x,y);
   el('map3DRotateLeft').onclick=()=>viewer?.rotate(-1);
   el('map3DRotateRight').onclick=()=>viewer?.rotate(1);
   el('map3DHome').onclick=()=>viewer?.home();
   el('map3DRetry').onclick=()=>{el('map3DRetry').hidden=true;queueUpdate();};
-  for(const id of ['annToggle','toggleArrowEditor','editMedicineEVMain'])el(id).addEventListener('click',()=>setMode('2d'),true);
+  for(const id of ['annToggle','toggleArrowEditor','editMedicineEVMain'])el(id).addEventListener('click',()=>setPreferredMode('2d'),true);
   window.addEventListener('maji-map-update',queueUpdate);window.addEventListener('maji-navigation-focus',()=>viewer?.focusStep());
   new ResizeObserver(()=>viewer?.resize()).observe(host);
   document.addEventListener('visibilitychange',()=>viewer?.pause(document.hidden));
@@ -205,11 +219,11 @@
       if(key===previousKey){if(hoverPlace)highlight(hoverPlace);updateProgress();return;}
       const reset=previousKey!==key;previousKey=key;freeGroup();floorLevels=createMap3DLayout(data.maps);floorDepths=createMap3DDepths(data.maps);floorRegistration=createMap3DRegistration(data.maps,data.transfers);
       const box=new T.Box3();
-      const floorTextures=new Set(data.maps.map(map=>map.image+'?v=20261110f'));
+      const floorTextures=new Set(data.maps.map(map=>map.image+'?v=20261110i'));
       for(const [src,tex] of textures)if(!floorTextures.has(src)){tex.dispose();textures.delete(src);}
       for(const map of data.maps) {
         const [w,h]=map.size,active=map.floor===data.floor;
-        const mat=new T.MeshBasicMaterial({map:texture(map.image+'?v=20261110f'),side:T.DoubleSide,transparent:false,opacity:1,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2});
+        const mat=new T.MeshBasicMaterial({map:texture(map.image+'?v=20261110i'),side:T.DoubleSide,transparent:false,opacity:1,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2});
         const plane=new T.Mesh(new T.PlaneGeometry(w*S,h*S),mat);
         plane.rotation.x=-Math.PI/2;plane.position.copy(at(map.floor,[w/2,h/2],0));
         plane.userData={floor:map.floor,width:w,height:h};planes.push(plane);group.add(plane);
