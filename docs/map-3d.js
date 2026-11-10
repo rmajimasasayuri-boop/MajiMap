@@ -118,7 +118,7 @@
     const activePointers=new Set();
     const colorValue=color=>new T.Color(color).convertSRGBToLinear();
     const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
-    let floorLevels={},floorDepths={},floorRegistration={},motion=[],screenPins=[],floorBadges=[],hoverGroup=null,hoverPlace=null,hoverMode=null,progressMarker=null,elevatorCabin=null,stepEndMarker=null;
+    let floorLevels={},floorDepths={},floorRegistration={},motion=[],screenPins=[],floorBadges=[],hoverGroup=null,hoverPlace=null,hoverMode=null,goalPin=null,progressMarker=null,elevatorCabin=null,stepEndMarker=null;
     const hoverCard=el('map3DHover');
     let group=new T.Group(),planes=[],frame,paused=false,disposed=false,previousKey='',homeView,down;
     scene.add(group);
@@ -126,7 +126,7 @@
     const at=(f,p,lift=.1)=>new T.Vector3((p[0]+(floorRegistration[f]?.[0]||0))*S,(floorLevels[f]||0)+lift,(p[1]+offset(f)+(floorRegistration[f]?.[1]||0))*S);
     function freeGroup() {
       group.traverse(o=>{o.geometry?.dispose();for(const m of Array.isArray(o.material)?o.material:o.material?[o.material]:[]){if(m.userData.ownsTexture)m.map?.dispose();m.dispose();}});
-      scene.remove(group);group=new T.Group();scene.add(group);planes=[];motion=[];screenPins=[];floorBadges=[];hoverGroup=null;hoverPlace=null;hoverMode=null;hoverCard.hidden=true;progressMarker=null;elevatorCabin=null;stepEndMarker=null;
+      scene.remove(group);group=new T.Group();scene.add(group);planes=[];motion=[];screenPins=[];floorBadges=[];hoverGroup=null;hoverPlace=null;hoverMode=null;hoverCard.hidden=true;goalPin=null;progressMarker=null;elevatorCabin=null;stepEndMarker=null;
     }
     function texture(src) {
       if(!textures.has(src)) {
@@ -176,6 +176,7 @@
       const pos=at(p.floor,p.point,Number.isFinite(clearance)?.025:.2);pos.x+=shift;
       const ball=new T.Mesh(new T.SphereGeometry(.18,20,16),new T.MeshBasicMaterial({color:colorValue(color),depthTest:false,transparent:true}));ball.position.copy(pos);ball.renderOrder=10;ball.userData.maxRadius=clearance*S*.5;group.add(ball);screenPins.push(ball);
       // Pins retain their color without a floating name label.
+      return ball;
     }
     function movingArrows(points) {
       const track=createRouteMotionTrack(points.map(p=>p.toArray()));if(!track.length)return;
@@ -191,6 +192,7 @@
       hoverGroup=null;hoverPlace=null;hoverMode=null;container.style.cursor='grab';schedulePhotoRestore();
     }
     function highlight(d,anchor) {
+      if(goalPin)goalPin.visible=showCommittedGoalPin();
       if(anchor&&mapUI.previewPlace)d=mapUI.previewPlace;
       if(d?.ref===hoverPlace?.ref&&hoverMode===mapUI.pickMode){if(d&&anchor)previewPlacePhoto(d,anchor);return;}
       clearHover();if(!d)return;if(anchor)previewPlacePhoto(d,anchor);hoverPlace=d;hoverMode=mapUI.pickMode;
@@ -239,9 +241,8 @@
        if(t.kind==='elevator'){const height=Math.abs(b.y-a.y),shaft=new T.Mesh(new T.BoxGeometry(.4,height,.4),new T.MeshPhongMaterial({color:colorValue('#67adc9'),transparent:true,opacity:.12,depthWrite:false,shininess:80}));shaft.position.copy(a).lerp(b,.5);group.add(shaft);const frame=new T.LineSegments(new T.EdgesGeometry(shaft.geometry),new T.LineBasicMaterial({color:colorValue('#5b97b0'),transparent:true,opacity:.48}));frame.position.copy(shaft.position);group.add(frame);line([a,b],0x07527c,true);movingArrows([a,b]);tag('エレベーター EV',a.clone().lerp(b,.5),'#07527c',2.3);}
        else{line([a,b],0xd47717,true);movingArrows([a,b]);tag('エスカレーター',a.clone().lerp(b,.5),'#ad5a0d',2.3);}}
       if(mapUI.startConfirmed){const start=destinationList.find(d=>navigationTargetReference(d)===mapUI.from);if(start)outlinePlace(start,'#2580c5',group);}
-      if(equipmentIconFrames(mapUI.goal).length)outlinePlace(mapUI.goal,'#ff0300',group);
       const same=data.start?.floor===data.goal?.floor&&data.start?.point&&data.goal?.point&&Math.hypot(data.start.point[0]-data.goal.point[0],data.start.point[1]-data.goal.point[1])<1;
-      if(!navigationState.active)pin(data.start,'出発地','#2580c5',same?-.13:0,placePinClearance(data.start?.point,mapUI.from));pin(data.goal,'目的地','#ff0300',same?.13:0,placePinClearance(data.goal?.point,mapUI.goal?.ref));
+      if(!navigationState.active)pin(data.start,'出発地','#2580c5',same?-.13:0,placePinClearance(data.start?.point,mapUI.from));goalPin=pin(data.goal,'目的地','#ff0300',same?.13:0,placePinClearance(data.goal?.point,mapUI.goal?.ref));
       const center=box.getCenter(new T.Vector3()),size=box.getSize(new T.Vector3());
       const cameraOffset=new T.Vector3(...map3DHomeOffset(size.toArray(),camera.aspect));
       // A floor change should frame the new map; pointer selection keeps the view.
