@@ -54,6 +54,6 @@ function initVisitorExperience(){
  ui('findPlace').addEventListener('input',()=>{mapUI.resultFloor=null;select.value='';});
  for(const b of document.querySelectorAll('[data-filter]'))b.addEventListener('click',()=>{select.value='';renderResults();});
  // A default mobile view fills the map height; panning reveals the rest of the floor.
- requestAnimationFrame(()=>{focusReadableMap();updateRoutePlanner();});
+
 }
 initVisitorExperience();

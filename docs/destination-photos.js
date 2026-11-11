@@ -18,6 +18,18 @@ function renderPlacePhoto(d){
 }
 function showDestinationPhoto(){
  const {place,photos,index}=destinationPhotoState;if(!photos.length)return;
+ const badge=document.getElementById('destinationPhotoBadge');
+ badge.replaceChildren();
+ if(typeof styleCandidateCode==='function'){
+  const code=document.createElement('span');
+  code.className='code';
+  styleCandidateCode(code,place);
+  if(!code.hidden)badge.append(code);
+  else {
+   const icons=placeOfficialIcons(place);
+   if(icons.length){badge.className='official-result-icons';badge.innerHTML=icons.join('');}
+  }
+ }
  document.getElementById('destinationPhotoTitle').textContent=destinationDisplayName(place);
  const image=document.getElementById('destinationPhotoFull');image.alt=destinationDisplayName(place)+'（近畿大学病院公式フロアマップ掲載写真）';
  document.getElementById('destinationPhotoError').hidden=true;image.onerror=()=>{document.getElementById('destinationPhotoError').hidden=false;};image.src=photos[index].url;

@@ -48,8 +48,8 @@ function closedEntranceApproaches(graph,ref,date=new Date()){
 }
 function routeEntranceNotice(from,to,graph,path,date=new Date()){
  const start=entranceAvailability(from,date),goal=entranceAvailability(to,date);
- if(start.closed)return {blocked:true,text:`出発地の出入口は${start.closedToday?'本日閉門':'現在利用不可'}です。3階の時間外出入口を選択してください。`};
- if(goal.closed)return {blocked:false,text:goal.state==='unknown'?'目的地の開門状況を確認できないため、院内側の手前まで案内します。':'目的地の出入口は閉鎖中です。院内側の手前まで案内します。'};
+ if(goal.closed)return {blocked:false,text:goal.state==='unknown'?'目的地の開門状況を確認できないため、院内側の手前まで案内します。':'目的地の出入口は閉鎖中です。',autoDismiss:goal.state!=='unknown'};
+ if(start.closed)return {blocked:false,text:'出発地の出入口は閉鎖中です。屋外通路から案内します。'};
  const usesAfterHours=path.some((ref,i)=>i>0&&deckEntranceCrossing(graph?.nodes[path[i-1]],graph?.nodes[ref])===afterHoursEntranceRef);
  if(!usesAfterHours)return null;
  const status=entranceAvailability(regularEntranceRefs[0],date);

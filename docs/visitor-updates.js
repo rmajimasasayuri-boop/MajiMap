@@ -29,12 +29,13 @@ function placeOfficialIcons(d){
 }
 const candidateSignColors={green:'#b0c548',yellow:'#e8b52f',blue:'#3989c6'};
 function orderWardCandidates(places){const ordered=[...places],floors=new Set(places.filter(d=>d.type==='ward').map(d=>d.floor)),rank={westA:0,westB:1,eastA:2,eastB:3};for(const floor of floors){const indices=ordered.flatMap((d,i)=>d.type==='ward'&&d.floor===floor?[i]:[]),wards=indices.map(i=>ordered[i]).sort((a,b)=>(rank[a.ref.split('::').pop()]??99)-(rank[b.ref.split('::').pop()]??99));indices.forEach((index,i)=>ordered[index]=wards[i]);}return ordered;}
-function refreshResultDetails(){
- const rows=[...ui('placeResults').querySelectorAll('.place-row')];for(const row of rows){const d=destinationList.find(d=>row.dataset.placeRef===d.ref);if(!d)continue;
- const code=row.querySelector('.code');if(code){code.hidden=!(d.type==='clinic'||d.type==='ward'||d.type==='rehab');code.textContent=d.code||'';const ward=d.ref.split('::').pop(),colors={eastA:candidateSignColors.blue,eastB:candidateSignColors.yellow,westA:candidateSignColors.green,westB:'#eb808b'};const signColor=/^[1-6][ABJK]$/.test(d.code||'')?candidateSignColors.green:/^[1-6][CE]$/.test(d.code||'')?candidateSignColors.yellow:candidateSignColors.blue;const color=d.type==='rehab'?candidateSignColors.green:d.type==='ward'?(colors[ward]||candidateSignColors.blue):signColor;const unit=d.floor===5&&/^(ACU|HCU|ICU|CCMC|SCU)$/.test(d.code||'');code.dataset.kind=unit?'unit':d.type;code.style.setProperty('--sign-color',color);code.style.background=d.type==='ward'&&!unit?'#fff':color;
+function styleCandidateCode(code,d){code.hidden=!(d.type==='clinic'||d.type==='ward'||d.type==='rehab');code.textContent=d.code||'';const ward=d.ref.split('::').pop(),colors={eastA:candidateSignColors.blue,eastB:candidateSignColors.yellow,westA:candidateSignColors.green,westB:'#eb808b'};const signColor=/^[1-6][ABJK]$/.test(d.code||'')?candidateSignColors.green:/^[1-6][CE]$/.test(d.code||'')?candidateSignColors.yellow:candidateSignColors.blue;const color=d.type==='rehab'?candidateSignColors.green:d.type==='ward'?(colors[ward]||candidateSignColors.blue):signColor;const unit=d.floor===5&&/^(ACU|HCU|ICU|CCMC|SCU)$/.test(d.code||'');code.dataset.kind=unit?'unit':d.type;code.style.setProperty('--sign-color',color);code.style.background=d.type==='ward'&&!unit?'#fff':color;
  if(d.code==='CCMC'){const label=document.createElement('span');label.className='code-condensed';label.textContent=d.code;code.replaceChildren(label);}
  else if(d.type==='ward'&&/^10[東西][AB]$/.test(d.code||'')){const ten=document.createElement('span'),digits=document.createElement('span'),rest=document.createElement('span');ten.className='code-ten';digits.textContent='10';ten.append(digits);rest.className='code-remainder';rest.textContent=d.code.slice(2);code.replaceChildren(ten,rest);}
-}row.querySelector('.place-row-copy small')?.remove();const icons=placeOfficialIcons(d);if(icons.length){const box=document.createElement('span');box.className='official-result-icons';box.innerHTML=icons.join('');row.prepend(box);}
+}
+function refreshResultDetails(){
+ const rows=[...ui('placeResults').querySelectorAll('.place-row')];for(const row of rows){const d=destinationList.find(d=>row.dataset.placeRef===d.ref);if(!d)continue;
+ const code=row.querySelector('.code');if(code)styleCandidateCode(code,d);row.querySelector('.place-row-copy small')?.remove();const icons=placeOfficialIcons(d);if(icons.length){const box=document.createElement('span');box.className='official-result-icons';box.innerHTML=icons.join('');row.prepend(box);}
  const state=entranceAvailability(d.ref);if(state.label){const badge=document.createElement('span');badge.className='entrance-status';badge.dataset.state=state.state;badge.textContent=state.label;row.querySelector('.place-row-copy').append(badge);}
  }
 }
@@ -64,32 +65,34 @@ function initVisitorUpdates(){
  updatePreviewActions=function(){
   basePreviewActions();
   const d=destinationPhotoState.place,route=ui('detailRoute'),navigate=ui('detailNavigate');
-  const closed=Boolean(d&&entranceAvailability(d.ref).closed);
   const parking=d?.ref==='outpatient:3::patientParking'&&!unifiedMapModel.floors[3].outdoorExtension.completed;
-  const start=mapUI.pickMode==='start';
-  route.textContent='経路';
-  route.disabled=!d||isGuideOnly(d);
-  route.hidden=start||parking;
+  route.textContent='出発地';
+  route.disabled=!d||d.usage==='emergency-only'||isGuideOnly(d);
+  route.hidden=parking;
+  navigate.textContent='目的地';
+  navigate.disabled=!d||isGuideOnly(d);
   navigate.hidden=parking;
-  ui('facilityDetails').dataset.previewAction=start?'start':'navigate';
-  if(d?.type==='manual')navigate.disabled=false;
-  if(start){
-   navigate.textContent='出発地に設定';
-   navigate.disabled=!d||d.usage==='emergency-only'||isGuideOnly(d)||closed;
-   const website=ui('detailWebsite');
-   if(d&&website.hidden){website.href='https://www.med.kindai.ac.jp/floormap_facility.html';website.onclick=null;website.hidden=false;}
-  }
+  ui('facilityDetails').dataset.previewAction='endpoints';
  };
- const baseNavigate=navigateVisitorPreview;
- navigateVisitorPreview=function(){
+ ui('detailRoute').onclick=()=>{
   const d=destinationPhotoState.place;
-  if(d?.manualSelection)mapUI.manualGoal=d.manualSelection;
-  return baseNavigate();
+  if(!d||d.usage==='emergency-only'||isGuideOnly(d))return;
+  closeVisitorPreview();
+  selectStartPlace(d,true);
+  if(mapUI.goal){ui('findPlace').value=placeListText(mapUI.goal);enterRoutePlanning();}
+  updateRoutePlanner();
+  renderOverlay();
  };
- ui('detailNavigate').onclick=()=>{if(mapUI.pickMode!=='start')return navigateVisitorPreview();const d=destinationPhotoState.place;if(!d||d.usage==='emergency-only'||isGuideOnly(d)||entranceAvailability(d.ref).closed)return;if(d.manualSelection)baseManual(d.manualSelection.point);else selectStartPlace(d,true);closeVisitorPreview();setSelectionMode('goal');if(mapUI.goal){ui('findPlace').value=placeListText(mapUI.goal);enterRoutePlanning();}else{ui('findPlace').value='';document.body.classList.remove('route-planning');}updateRoutePlanner();renderOverlay();};
- const baseManual=selectMapPoint;selectMapPoint=function(point){previewManualDestination(point);};
- previewPlacePhoto=function(d,anchor,pinned=false){if(!pinned||!d)return;showVisitorPreview(d);};
- ui('detailRoute').onclick=()=>{const d=destinationPhotoState.place;if(!d)return;if(d.manualSelection)mapUI.manualGoal=d.manualSelection;closeVisitorPreview();choosePlace(d,true);rememberPlace(d);enterRoutePlanning();};
+ previewPlacePhoto=function(d,anchor,pinned=false){if(pinned&&d)showVisitorPreview(d);};
+ ui('detailNavigate').onclick=()=>{
+  const d=destinationPhotoState.place;
+  if(!d||isGuideOnly(d))return;
+  setSelectionMode('goal');
+  closeVisitorPreview();
+  choosePlace(d,true);
+  rememberPlace(d);
+  enterRoutePlanning();
+ };
  ui('closeFacilityDetails').onclick=()=>{if(mapUI.previewPlace){closeVisitorPreview();return;}const other=mapUI.previewPlace&&mapUI.goal&&mapUI.previewPlace.ref!==mapUI.goal.ref;closeVisitorPreview();if(other||mapUI.goal&&document.body.classList.contains('route-planning')){enterRoutePlanning();return;}cancelDestination();};
  ui('closeRoutePlanning').textContent='‹';ui('closeRoutePlanning').setAttribute('aria-label','目的地のマップと写真カードに戻る');ui('closeRoutePlanning').onclick=()=>{const d=mapUI.goal;if(!d){searchHome(false);return;}clearRouteSelection();closeVisitorPreview();document.body.classList.remove('route-planning');ui('routePlanner').hidden=true;ui('routeOptionsDock').hidden=true;togglePlacePanel(false,false);ui('findPlace').value=placeListText(d);ui('findPlace').blur();renderPlacePhoto(d);updateRoutePlanner();showFloor(d.floor,true);syncRoutePanels();requestAnimationFrame(focusReadableMap);};
  ui('clearPlaceSearch').onclick=()=>{ui('findPlace').blur();cancelDestination();togglePlacePanel(false,false);mapUI.plot=false;setSelectionMode('goal');showFloor(mapUI.manual?.floor||referenceFloor(mapUI.from)||3,true);syncSearchControls();};
@@ -105,3 +108,9 @@ function initVisitorUpdates(){
  let last=regularEntranceRefs.map(r=>entranceAvailability(r).state).join();setInterval(()=>{const next=regularEntranceRefs.map(r=>entranceAvailability(r).state).join();if(next!==last){last=next;renderResults();updateFacilityHours(destinationPhotoState.place);updatePreviewActions();if(mapUI.goal){stopNavigation();routePlan();}}},15000);
 }
 initVisitorUpdates();
+
+if(!reviewEmbedded)requestAnimationFrame(()=>{
+ if(useMobileWidthFit(ui('mapViewport'))){mapUI.zoom=1;mapUI.pan=[0,0];fitMap();}
+ else focusReadableMap();
+ updateRoutePlanner();
+});

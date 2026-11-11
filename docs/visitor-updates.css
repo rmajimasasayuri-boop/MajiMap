@@ -50,8 +50,8 @@ body.visitor-experience.route-planning.place-searching .map-navigation-rail{top:
 /* The official region remains the hit area; strengthen its outline without enlarging it. */
 .place-map-target:hover polygon,.place-map-target:focus polygon,
 .place-map-target[data-selected=goal] polygon,.place-map-target[data-selected=start] polygon{stroke-width:3;paint-order:stroke fill}
-body.visitor-experience #placeResults .place-row .code{min-width:36px!important;max-width:60px;white-space:normal;color:#fff!important;border:1px solid transparent;border-radius:5px;padding:5px 4px;text-align:center;font-weight:700}
-body.visitor-experience #placeResults .place-row .code[hidden]{display:none!important}
+body.visitor-experience :is(#placeResults .place-row,#destinationPhotoBadge) .code{min-width:36px!important;max-width:60px;white-space:normal;color:#fff!important;border:1px solid transparent;border-radius:5px;padding:5px 4px;text-align:center;font-weight:700}
+body.visitor-experience :is(#placeResults .place-row,#destinationPhotoBadge) .code[hidden]{display:none!important}
 body.visitor-experience #placeResults .place-result-photo{width:68px!important;height:auto!important;aspect-ratio:auto!important;object-fit:contain!important;flex:none}
 
 /* One consistent star shape and hit target in cards, favorites and history. */
@@ -142,15 +142,15 @@ body.visitor-experience #facilityDetailName.inline-code-heading{font-size:var(--
 
 /* Prefer code on its own line with up to three complete name lines. */
 .facility-name-track.two-line{max-height:none}
-body.visitor-experience #placeResults .code,body.visitor-experience #placeResults .official-result-icons .facility-pict{box-sizing:border-box;width:36px!important;height:30px!important;min-width:36px!important;max-width:36px!important;object-fit:contain;font-size:12px!important;padding:2px!important;display:inline-flex;align-items:center;justify-content:center;flex:none}
-body.visitor-experience #placeResults .code[hidden]{display:none!important}
+body.visitor-experience :is(#placeResults,#destinationPhotoBadge) .code,body.visitor-experience #placeResults .official-result-icons .facility-pict{box-sizing:border-box;width:36px!important;height:30px!important;min-width:36px!important;max-width:36px!important;object-fit:contain;font-size:12px!important;padding:2px!important;display:inline-flex;align-items:center;justify-content:center;flex:none}
+body.visitor-experience :is(#placeResults,#destinationPhotoBadge) .code[hidden]{display:none!important}
 body.visitor-experience .official-result-icons{max-width:108px}
 #outdoorPositionPanel [hidden]{display:none!important}
 
 /* Square sign tiles follow the supplied hospital sign photographs. */
-body.visitor-experience #placeResults .place-row .code,body.visitor-experience #placeResults .official-result-icons .facility-pict{width:40px!important;height:40px!important;min-width:40px!important;max-width:40px!important;padding:0!important;overflow:hidden;flex:0 0 40px;font-size:13px!important;white-space:nowrap}
-body.visitor-experience #placeResults .place-row .code{border-radius:5px}
-body.visitor-experience #placeResults .place-row .code[data-kind="ward"]{background:#fff!important;color:var(--sign-color)!important;border:1px solid #d6e0e5}
+body.visitor-experience :is(#placeResults .place-row,#destinationPhotoBadge) .code,body.visitor-experience #placeResults .official-result-icons .facility-pict{width:40px!important;height:40px!important;min-width:40px!important;max-width:40px!important;padding:0!important;overflow:hidden;flex:0 0 40px;font-size:13px!important;white-space:nowrap}
+body.visitor-experience :is(#placeResults .place-row,#destinationPhotoBadge) .code{border-radius:5px}
+body.visitor-experience :is(#placeResults .place-row,#destinationPhotoBadge) .code[data-kind="ward"]{background:#fff!important;color:var(--sign-color)!important;border:1px solid #d6e0e5}
 body.visitor-experience #placeResults .official-result-icons{max-width:126px}
 #outdoorPositionPanel label{display:block}#outdoorPositionPanel input[type=range]{width:100%}
 
@@ -163,14 +163,14 @@ body.outdoor-route-recording #annPanel{position:absolute;z-index:60;left:8px;top
 body.outdoor-route-recording #annPanel .ann-explainer,body.outdoor-route-recording #annPanel .ann-legend,body.outdoor-route-recording #mapSearchBar{display:none!important}
 
 /* Condense only the requested lettering; tile and character heights stay unchanged. */
-body.visitor-experience #placeResults .code .code-condensed{display:inline-block;flex:none;width:max-content;white-space:nowrap;transform:scaleX(.70);transform-origin:center}
-body.visitor-experience #placeResults .code .code-ten{display:inline-block;flex:none;width:.60em;overflow:visible}
-body.visitor-experience #placeResults .code .code-ten>span{display:block;width:max-content;transform:scaleX(.50);transform-origin:left center}
-body.visitor-experience #placeResults .code .code-remainder{display:inline-block;flex:none}
-body.visitor-experience #placeResults .place-row .code[data-kind="unit"]{background:var(--sign-color)!important;color:#fff!important;border-color:transparent}
-body.visitor-experience #placeResults .code .code-condensed,body.visitor-experience #placeResults .code .code-ten,body.visitor-experience #placeResults .code .code-ten>span,body.visitor-experience #placeResults .code .code-remainder{font-size:inherit!important;font-weight:inherit;line-height:inherit!important}
+body.visitor-experience :is(#placeResults,#destinationPhotoBadge) .code .code-condensed{display:inline-block;flex:none;width:max-content;white-space:nowrap;transform:scaleX(.70);transform-origin:center}
+body.visitor-experience :is(#placeResults,#destinationPhotoBadge) .code .code-ten{display:inline-block;flex:none;width:.60em;overflow:visible}
+body.visitor-experience :is(#placeResults,#destinationPhotoBadge) .code .code-ten>span{display:block;width:max-content;transform:scaleX(.50);transform-origin:left center}
+body.visitor-experience :is(#placeResults,#destinationPhotoBadge) .code .code-remainder{display:inline-block;flex:none}
+body.visitor-experience :is(#placeResults .place-row,#destinationPhotoBadge) .code[data-kind="unit"]{background:var(--sign-color)!important;color:#fff!important;border-color:transparent}
+body.visitor-experience :is(#placeResults,#destinationPhotoBadge) .code .code-condensed,body.visitor-experience :is(#placeResults,#destinationPhotoBadge) .code .code-ten,body.visitor-experience :is(#placeResults,#destinationPhotoBadge) .code .code-ten>span,body.visitor-experience :is(#placeResults,#destinationPhotoBadge) .code .code-remainder{font-size:inherit!important;font-weight:inherit;line-height:inherit!important}
 
-body.visitor-experience #placeResults .code:has(.code-ten){gap:0!important}
+body.visitor-experience :is(#placeResults,#destinationPhotoBadge) .code:has(.code-ten){gap:0!important}
 
 /* Shared layout for opening and business hours. */
 body.visitor-experience #facilityHours{gap:4px 10px}

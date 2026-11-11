@@ -20,7 +20,12 @@ function bestArrivalAnchor(graph,from,d){const options=typeof additionalNavigati
 
 function navigationEndOptions(graph,d){if(southWardToiletRefs.includes(d.ref))return southWardToiletRefs;return (typeof closedEntranceApproaches==='function'?closedEntranceApproaches(graph,d.ref):null)??(typeof additionalNavigation!=='undefined'&&additionalNavigation.arrivalOptions?.[d.ref]||[navigationTargetReference(d)]);}
 
-function bestNavigationEndpoints(graph,from,d){const arrivals=typeof additionalNavigation!=='undefined'&&additionalNavigation.arrivalOptions||{},starts=arrivals[from]||[from],ends=navigationEndOptions(graph,d);let best=null;for(const start of starts)for(const end of ends){const path=shortest(graph,start,end);if(!path.length)continue;let cost=0;for(let i=1;i<path.length;i++)cost+=graph.adj[path[i-1]].find(e=>e.to===path[i]).cost;const rides=path.slice(1).filter((id,i)=>['elevator','escalator'].includes(graph.adj[path[i]].find(e=>e.to===id)?.kind)).length;if(!best||rides<best.rides||rides===best.rides&&cost<best.cost)best={start,end,cost,rides};}return best||{start:from,end:ends[0]??navigationTargetReference(d)};}
+function navigationStartOptions(graph,from){
+ const outside=from+'Outside';
+ if(typeof entranceAvailability==='function'&&entranceAvailability(from).closed&&graph.nodes[outside])return [outside];
+ return (typeof additionalNavigation!=='undefined'&&additionalNavigation.arrivalOptions?.[from])||[from];
+}
+function bestNavigationEndpoints(graph,from,d){const starts=navigationStartOptions(graph,from),ends=navigationEndOptions(graph,d);let best=null;for(const start of starts)for(const end of ends){const path=shortest(graph,start,end);if(!path.length)continue;let cost=0;for(let i=1;i<path.length;i++)cost+=graph.adj[path[i-1]].find(e=>e.to===path[i]).cost;const rides=path.slice(1).filter((id,i)=>['elevator','escalator'].includes(graph.adj[path[i]].find(e=>e.to===id)?.kind)).length;if(!best||rides<best.rides||rides===best.rides&&cost<best.cost)best={start,end,cost,rides};}return best||{start:from,end:ends[0]??navigationTargetReference(d)};}
 
 // User-confirmed boarding sides; other floors remain unspecified.
 function escalatorBoardingSide(floor,up){return ({2:{up:'北側',down:'南側'},3:{up:'南側',down:'北側'}})[floor]?.[up?'up':'down']||'';}

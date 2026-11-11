@@ -20,7 +20,7 @@ function auditRouteSelection(graph,starts,ends,path){
  const optimal=[best.end];while(optimal[0]!==best.start){const prev=best.tree.previous.get(optimal[0]);if(!prev)return {valid:false,path:[],reason:'invalid-predecessor'};optimal.unshift(prev);}
  return {valid,path:valid?path:optimal,start:valid?path[0]:best.start,end:valid?path.at(-1):best.end,rides:best.rides,cost:best.cost,corrected:!valid};
 }
-function verifyNavigationRoute(graph,from,target,path){const options=typeof additionalNavigation!=='undefined'?additionalNavigation.arrivalOptions||{}:{};return auditRouteSelection(graph,options[from]||[from],(typeof navigationEndOptions==='function'?navigationEndOptions(graph,target):options[target.ref]||[navigationTargetReference(target)]),path);}
+function verifyNavigationRoute(graph,from,target,path){const options=typeof additionalNavigation!=='undefined'?additionalNavigation.arrivalOptions||{}:{};return auditRouteSelection(graph,(typeof navigationStartOptions==='function'?navigationStartOptions(graph,from):options[from]||[from]),(typeof navigationEndOptions==='function'?navigationEndOptions(graph,target):options[target.ref]||[navigationTargetReference(target)]),path);}
 
 // Compare the full journey through one public waypoint; the same entrance is used
 // on arrival and departure, so a shop never becomes an invented shortcut.

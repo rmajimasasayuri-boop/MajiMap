@@ -21,11 +21,16 @@ function enterRoutePlanning(){
 }
 const entranceNoticeState={key:'',surface:'',dismissed:false};
 let startingNavigationFromPreview=false;
+let entranceFadeTimer, entranceHideTimer, entranceFading=false;
 function syncEntranceNotice(notice,planning){
  const active=navigationState.active;
  if(notice){
   const key=JSON.stringify([mapUI.from,mapUI.goal.ref,notice.text]);
-  if(key!==entranceNoticeState.key)Object.assign(entranceNoticeState,{key,surface:'',dismissed:false});
+  if(key!==entranceNoticeState.key){
+   clearTimeout(entranceFadeTimer);clearTimeout(entranceHideTimer);
+   entranceFadeTimer=null;entranceFading=false;
+   Object.assign(entranceNoticeState,{key,surface:'',dismissed:false});
+  }
   if(!entranceNoticeState.surface)entranceNoticeState.surface=active?'navigation':planning?'planning':'';
   if(active&&(navigationState.index>0||entranceNoticeState.surface==='planning'))entranceNoticeState.dismissed=true;
  }
@@ -35,6 +40,14 @@ function syncEntranceNotice(notice,planning){
  ]){
   const element=ui(id);
   element.hidden=!notice||!shown||entranceNoticeState.dismissed||entranceNoticeState.surface!==surface;
+  element.classList.toggle('entrance-notice-fading',entranceFading);
+  if(!element.hidden&&notice.autoDismiss&&!entranceFadeTimer){
+   entranceFadeTimer=setTimeout(()=>{
+    entranceFading=true;
+    syncRoutePanels();
+    entranceHideTimer=setTimeout(()=>{entranceNoticeState.dismissed=true;syncRoutePanels();},800);
+   },3000);
+  }
   const message=element.querySelector('[role=status]');
   const text=notice?.text||'';
   if(message.textContent!==text)message.textContent=text;

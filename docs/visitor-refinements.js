@@ -32,6 +32,7 @@ function visitorCropBounds(floor=mapUI.floor){
  const [x,y,w,h]=visitorArtworkBounds[floor];
  return {x,y,w,h};
 }
+function useMobileWidthFit(viewport){return mapUI.floor<=6&&viewport.clientWidth<=700;}
 function visitorMapArea(){
  const viewport=ui('mapViewport'),box=viewport.getBoundingClientRect(),safe=visitorSafeArea(),gap=6;
  const visible=id=>{const el=ui(id),rect=el?.getBoundingClientRect();return rect?.width&&rect.height&&getComputedStyle(el).display!=='none'?rect:null;};
@@ -42,6 +43,7 @@ function visitorMapArea(){
  const panels=['facilityDetails','navigationPanel','routeOptionsDock'].map(visible).filter(Boolean);
  const bottom=Math.max(top+60,Math.min(viewport.clientHeight-safe.bottom,...panels.map(r=>r.top-box.top))-gap);
  const left=safe.left+gap,right=Math.max(left+100,Math.min(viewport.clientWidth-safe.right,railRect?.width?railRect.left-box.left:Infinity)-gap);
+ if(useMobileWidthFit(viewport))return {left:safe.left,right:viewport.clientWidth-safe.right,top,bottom};
  return {left,right,top,bottom};
 }
 function boundedVisitorPan(pan,size,scale,view,area,bounds={x:0,y:0,w:size[0],h:size[1]}){
