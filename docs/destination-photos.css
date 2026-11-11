@@ -107,6 +107,15 @@ body .place-preview[hidden]{display:none!important}body .place-preview[data-mode
 .destination-photo-dialog .dialog-heading{display:flex;align-items:center;gap:8px}
 .destination-photo-dialog .dialog-heading h2{flex:1;margin:0;font-size:clamp(15px,3.6vw,21px)}
 .destination-photo-dialog #destinationPhotoBadge:empty{display:none}
-.destination-photo-dialog #closeDestinationPhoto{position:static;flex:none;width:44px;height:44px;font-size:24px;line-height:1;padding:0}
+.destination-photo-dialog #closeDestinationPhoto{position:static;flex:none;width:44px;height:44px;font-size:24px;line-height:1;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
 .destination-photo-dialog>img{height:auto;width:100%;max-height:calc(100dvh - 120px);min-height:0;object-fit:contain;margin:0;border-radius:0}
 .destination-photo-dialog p{margin:0}
+
+.destination-photo-dialog #closeDestinationPhoto:focus:not(:focus-visible){outline:none}
+.destination-photo-dialog #destinationPhotoTitle:focus{outline:none}
+body.visitor-experience #destinationPhotoDialog #closeDestinationPhoto{
+ font-size:24px!important;line-height:1!important;
+}
+body.visitor-experience #destinationPhotoDialog #closeDestinationPhoto:not(:focus-visible){
+ outline:none!important;
+}

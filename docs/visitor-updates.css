@@ -181,3 +181,28 @@ body.visitor-experience #facilityHours{gap:4px 10px}
 #unifiedOverlay{overflow:hidden}
 
 body.visitor-experience #facilityDetails #detailRoute{background:#2580c5;border-color:#2580c5;color:white;font-weight:700}
+
+/* Match the corner radius and width of the three facility actions. */
+body.visitor-experience #routePlanner .route-travel-tabs button,
+body.visitor-experience #routeOptionsDock #routeDockNavigate:not([hidden]){border-radius:9px!important}
+body.visitor-experience #facilityDetails .facility-detail-actions{
+ display:grid!important;grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:6px;
+}
+body.visitor-experience #facilityDetails .facility-detail-actions>*{
+ flex:1 1 0!important;min-width:0!important;
+}
+body.visitor-experience #facilityDetails #detailWebsite{
+ display:flex;align-items:center;justify-content:center;text-align:center;
+}
+.facility-arrival-code.has-card-sign{position:relative}
+.card-sign-space{visibility:hidden}
+.card-facility-sign{
+ position:absolute;left:0;top:50%;transform:translateY(-50%);height:1.45em;
+ display:inline-flex;align-items:center;justify-content:center;min-width:1.65em;
+ padding:0 .25em;border-radius:4px;color:white;font:inherit;white-space:nowrap;
+}
+.card-facility-sign[data-kind="ward"]{color:var(--sign-color);box-shadow:inset 0 0 0 1px #d6e0e5}
+.card-facility-sign .code-condensed{transform:scaleX(.8)}
+.card-facility-sign .code-ten{letter-spacing:-.08em}
+.card-equipment-icons{display:inline-flex;align-items:center;vertical-align:middle;margin-left:.5em;gap:3px}
+.card-equipment-icons .facility-pict{width:1.35em;height:1.35em;object-fit:contain}

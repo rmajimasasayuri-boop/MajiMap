@@ -47,6 +47,23 @@ function previewManualDestination(point){return; /* Registered facilities only. 
 let facilityNameObserver=null;
 function updateCardHeading(d){
  if(!d)return;facilityNameObserver?.disconnect();const title=ui('facilityDetailName');title.classList.remove('inline-code-heading');title.style.removeProperty('--heading-size');title.replaceChildren();const code=document.createElement('small');code.className='facility-arrival-code';code.textContent=d.detail?.mapCaption|| (d.ref==='outpatient:3::patientParking'?'屋外・駐車場':d.ref==='outpatient:3::building7Entrance'?'屋外・7号館':/^(?:[1-9]|10)(?:[A-Z]|[東西][AB])$/.test(d.code||'')?d.code:d.floor+'階');const track=document.createElement('span');track.className='facility-name-track';const name=document.createElement('span');name.textContent=['equipment','toilet'].includes(d.type)?destinationDisplayName(d).replace(/^\d+階\s+/,''):destinationDisplayName(d);track.append(name);title.append(code,track);
+ const icons=placeOfficialIcons(d);
+ const sign=document.createElement('span');
+ sign.className='card-facility-sign';
+ styleCandidateCode(sign,d);
+ if(!sign.hidden&&d.code){
+  const original=document.createElement('span');
+  original.className='card-sign-space';
+  original.textContent=code.textContent;
+  original.setAttribute('aria-hidden','true');
+  code.classList.add('has-card-sign');
+  code.replaceChildren(original,sign);
+ }else if(icons.length){
+  const symbols=document.createElement('span');
+  symbols.className='card-equipment-icons';
+  symbols.innerHTML=icons.join('');
+  code.append(symbols);
+ }
  const measure=()=>{if(!track.isConnected||track.clientWidth===0)return;title.classList.remove('inline-code-heading');track.className='facility-name-track two-line';title.style.removeProperty('--heading-size');track.style.maxHeight='none';name.style.fontSize='';track.replaceChildren(name);const base=Math.max(16,parseFloat(getComputedStyle(title).fontSize)||16);const fits=(lines)=>name.getBoundingClientRect().height<=parseFloat(getComputedStyle(name).fontSize)*1.4*lines+2;let done=false;for(let size=base;size>=16;size-=.5){name.style.fontSize=size+'px';if(fits(3)){done=true;break;}}if(!done){title.classList.add('inline-code-heading');track.classList.remove('two-line');for(let size=base;size>=12;size-=.5){title.style.setProperty('--heading-size',size+'px');name.style.fontSize=size+'px';if(fits(3))break;}}track.title=destinationDisplayName(d);};
  facilityNameObserver=new ResizeObserver(measure);facilityNameObserver.observe(track);requestAnimationFrame(measure);document.fonts?.ready.then(measure);
 }
@@ -69,12 +86,12 @@ function initVisitorUpdates(){
   route.textContent='出発地';
   route.disabled=!d||d.usage==='emergency-only'||isGuideOnly(d);
   const mapChoice=mapUI.selectingEndpointOnMap;
-  route.hidden=parking||mapChoice==='goal';
+  route.hidden=parking;
   navigate.textContent='目的地';
   navigate.disabled=!d||isGuideOnly(d);
-  navigate.hidden=parking||mapChoice==='start';
+  navigate.hidden=parking;
   const website=ui('detailWebsite');
-  if(mapChoice&&d&&website.hidden){
+  if((mapChoice||mapUI.previewPlace)&&d&&website.hidden){
    website.href='https://www.med.kindai.ac.jp/floormap_facility.html';
    website.onclick=null;
    website.hidden=false;
@@ -97,6 +114,7 @@ function initVisitorUpdates(){
   const d=destinationPhotoState.place;
   if(!d||isGuideOnly(d))return;
   mapUI.selectingEndpointOnMap=null;
+  mapUI.selectingStartOnMap=false;
   setSelectionMode('goal');
   closeVisitorPreview();
   choosePlace(d,true);
