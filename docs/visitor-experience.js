@@ -2,8 +2,16 @@
 function ensureIndoorStart(prompt=true){
  if(mapUI.startConfirmed||reviewEmbedded)return true;
  ui('routeSummary').hidden=true;ui('beginNavigation').disabled=true;navigationState.steps=[];mapUI.path=[];
- if(prompt&&!ui('indoorLocationDialog').open)ui('indoorLocationDialog').showModal();
+ if(prompt)openIndoorStartSearch();
  return false;
+}
+function openIndoorStartSearch(){
+ setSelectionMode('start');
+ ui('findPlace').value='';
+ mapUI.resultFloor=null;
+ togglePlacePanel(true,true);
+ setPlaceSearchView('home');
+ renderResults();
 }
 function fitNavigationBounds(points,area){
  if(!points.length)return null;const xs=points.map(p=>p[0]),ys=points.map(p=>p[1]);
@@ -37,9 +45,6 @@ function initVisitorExperience(){
  mapUI.startConfirmed=Boolean(from);
  if(at){const d=destinationList.find(d=>d.ref===at);if(d&&!isGuideOnly(d))selectStartPlace(d,true);}
  if(!mapUI.startConfirmed){clearRouteSelection();updateCurrentLabel();if(mapUI.goal)updateRoutePlanner();}else if(mapUI.goal)routePlan();
- ui('closeIndoorLocation').onclick=()=>ui('indoorLocationDialog').close();
- ui('locateBySearch').onclick=()=>{ui('indoorLocationDialog').close();setSelectionMode('start');ui('findPlace').value='';mapUI.resultFloor=null;renderResults();togglePlacePanel(true,true);};
- ui('locateByMap').onclick=()=>{ui('indoorLocationDialog').close();setSelectionMode('start');ui('facilityDetails').hidden=true;togglePlacePanel(false);};
  ui('returnToPosition').onclick=()=>{navigationFollow=true;const p=navigationState.position;if(p&&mapUI.floor!==p.floor)showFloor(p.floor,false);focusNavigationStep();};
  ui('mapViewport').addEventListener('pointerdown',e=>{if(navigationState.active&&!e.target.closest('button,a'))navigationFollow=false;},{capture:true});
  window.addEventListener('maji-navigation-position',()=>{if(!navigationState.active)ui('returnToPosition').hidden=true;});
@@ -47,7 +52,7 @@ function initVisitorExperience(){
  const filter=document.createElement('label');filter.className='result-floor-filter';filter.textContent='階で絞る ';
  const select=document.createElement('select');select.id='resultFloor';select.setAttribute('aria-label','候補の階');select.innerHTML='<option value="">すべての階</option>'+Array.from({length:10},(_,i)=>'<option value="'+(i+1)+'">'+(i+1)+'階</option>').join('');filter.append(select);ui('placeResults').before(filter);select.onchange=()=>{mapUI.resultFloor=Number(select.value)||null;renderResults();};
  ui('findPlace').addEventListener('input',()=>{mapUI.resultFloor=null;select.value='';});
- for(const b of document.querySelectorAll('[data-filter]'))b.addEventListener('click',()=>{mapUI.resultFloor=null;select.value='';renderResults();});
+ for(const b of document.querySelectorAll('[data-filter]'))b.addEventListener('click',()=>{select.value='';renderResults();});
  // A default mobile view fills the map height; panning reveals the rest of the floor.
  requestAnimationFrame(()=>{focusReadableMap();updateRoutePlanner();});
 }

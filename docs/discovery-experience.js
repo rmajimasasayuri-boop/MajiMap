@@ -19,7 +19,12 @@ function jumpToCandidateFloor(floor){
 }
 function scheduleCandidateIndex(){
  if(reviewEmbedded)return;cancelAnimationFrame(candidateIndexFrame);candidateIndexFrame=requestAnimationFrame(()=>{const open=!document.querySelector('main').classList.contains('settings-hidden'),query=ui('findPlace').value.trim(),signature=query+'|'+mapUI.filter;if(searchFocusLock)return;
- if(open&&(!candidateIndexOpen||signature!==candidateIndexSignature))resetCandidateScroll();
+ if(open&&(!candidateIndexOpen||signature!==candidateIndexSignature)){
+  const previous=preferredCandidateFloor??mapUI.resultFloor;
+  const categoryOnly=candidateIndexOpen&&signature.split('|')[0]===candidateIndexSignature.split('|')[0];
+  if(categoryOnly&&previous&&ui('placeResults').querySelector('[data-floor="'+previous+'"]'))jumpToCandidateFloor(previous);
+  else{preferredCandidateFloor=null;resetCandidateScroll();}
+ }
  candidateIndexOpen=open;candidateIndexSignature=signature;});
 }
 function syncDiscoveryFloors(){
@@ -34,7 +39,7 @@ function updateSearchChoices(){
  const list=ui('recentPlaces');list.replaceChildren();for(const ref of readPlaceHistory().slice(0,10)){const d=destinationList.find(p=>p.ref===ref),b=document.createElement('button');b.dataset.ref=ref;b.textContent=destinationDisplayName(d);b.onclick=()=>selectPlace(d);list.append(b);}ui('recentEmpty').hidden=Boolean(list.children.length);
 }
 function chooseSearchCurrentPlace(){
- if(!mapUI.startConfirmed){ui('indoorLocationDialog').showModal();return;}
+ if(!mapUI.startConfirmed){openIndoorStartSearch();return;}
  if(mapUI.pickMode==='start'){setSelectionMode('goal');togglePlacePanel(false);showFloor(mapUI.manual?.floor||referenceFloor(mapUI.from));if(mapUI.goal)enterRoutePlanning();return;}
  if(mapUI.manual){const p=mapUI.manual;mapUI.manualGoal={...p,point:[...p.point]};choosePlace({ref:'hospital:'+p.floor+'::__manualGoal',routeReference:'hospital:'+p.floor+'::__manualGoal',name:'現在地',floor:p.floor,point:p.point,type:'manual',code:''},true);routePlan();}
  else{const d=destinationList.find(p=>navigationTargetReference(p)===mapUI.from||p.ref===mapUI.from);if(d)selectPlace(d);else{togglePlacePanel(false);showFloor(referenceFloor(mapUI.from));}}
@@ -52,7 +57,7 @@ function initSearchChoices(){
  input.addEventListener('keydown',e=>{if(e.key!=='Enter'||e.isComposing||e.keyCode===229)return;e.preventDefault();setPlaceSearchView(input.value.trim()?'results':'home');input.blur();});
  input.addEventListener('input',()=>{searchFocusLock=false;setPlaceSearchView(input.value.trim()?'results':'home');});updateSearchChoices();
 }
-function activateIndexedFloor(floor){if(!document.querySelector('main').classList.contains('settings-hidden')){preferredCandidateFloor=floor;jumpToCandidateFloor(floor);}else if(mapUI.floor!==floor)showFloor(floor);}
+function activateIndexedFloor(floor){if(!document.querySelector('main').classList.contains('settings-hidden')){preferredCandidateFloor=floor;jumpToCandidateFloor(floor);}else{showFloor(floor,false);if(document.body.classList.contains('view-3d'))requestAnimationFrame(()=>ui('map3DHome').click());}}
 function fitFloorRail(){if(reviewEmbedded)return;document.documentElement.style.setProperty('--floor-rail-height','320px');}
 function initFloorSlide(){
  const floors=ui('allFloors');let pointer=null,last=null;
@@ -69,7 +74,7 @@ function initDiscoveryExperience(){
  const hours=document.createElement('div');hours.id='facilityHours';hours.className='facility-hours';hours.hidden=true;ui('facilityDetails').querySelector('.facility-detail-body').append(hours);
  for(const b of document.querySelectorAll('[data-filter]'))b.addEventListener('click',syncDiscoveryFloors);
  window.addEventListener('maji-map-update',()=>{scheduleCandidateIndex();syncDiscoveryFloors();updateFacilityHours(destinationPhotoState.place);updateSearchChoices();fitFloorRail();});
- ui('placeResults').addEventListener('scroll',()=>{if(document.querySelector('main').classList.contains('settings-hidden'))return;const list=ui('placeResults');if(!list.getClientRects().length)return;const top=list.getBoundingClientRect().top;let active=null;for(const h of list.querySelectorAll('.result-floor-heading')){if(h.getBoundingClientRect().top<=top+8)active=Number(h.dataset.floor);else break;}if(active&&active!==mapUI.resultFloor){mapUI.resultFloor=active;syncDiscoveryFloors();}},{passive:true});
+ ui('placeResults').addEventListener('scroll',()=>{if(document.querySelector('main').classList.contains('settings-hidden'))return;const list=ui('placeResults');if(!list.getClientRects().length)return;const top=list.getBoundingClientRect().top;let active=null;for(const h of list.querySelectorAll('.result-floor-heading')){if(h.getBoundingClientRect().top<=top+8)active=Number(h.dataset.floor);else break;}if(active&&active!==mapUI.resultFloor){mapUI.resultFloor=active;preferredCandidateFloor=active;syncDiscoveryFloors();}},{passive:true});
  fitFloorRail();
  setInterval(()=>updateFacilityHours(destinationPhotoState.place),60000);updateFacilityHours(destinationPhotoState.place);syncDiscoveryFloors();
 }
