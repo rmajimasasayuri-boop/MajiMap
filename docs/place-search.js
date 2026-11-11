@@ -49,7 +49,10 @@ function placeSearchFields(d){
  return {name:normalizePlaceSearch(name),code:normalizePlaceSearch(d.code),aliases:aliases.map(normalizePlaceSearch),all:normalizePlaceSearch(name+' '+d.code+' '+aliases.join(' ')+' '+d.floor+'階 '+d.floor+'F')};
 }
 function placeSearchScore(d,query){
- const tokens=String(query||'').normalize('NFKC').split(/[\s　、,／/]+/).map(normalizePlaceSearch).filter(Boolean);
+ const input=String(query||'').normalize('NFKC').trim();
+ const nearby=input.match(/^(?:近く|ちかく)\s*の\s*(.*)$/);
+ if(nearby&&(!placeNearestKind(d)||d.nearestEligible===false||d.usage==='emergency-only'))return -1;
+ const tokens=(nearby?nearby[1]:input).split(/[\s　、,／/]+/).map(normalizePlaceSearch).filter(Boolean);
  if(!tokens.length)return 0;const fields=placeSearchFields(d);
  if(!tokens.every(token=>fields.all.includes(token)))return -1;
  return tokens.reduce((score,token)=>score+(fields.code===token?1000:normalizePlaceSearch(destinationDisplayName(d))===token?900:fields.aliases.includes(token)?850:fields.name.includes(token)?700:500),0);

@@ -1,7 +1,7 @@
 function resultCategoryMatches(d){if(d.usage==='emergency-only')return mapUI.filter==='equipment'&&mapUI.pickMode!=='start';if(mapUI.filter==='amenity')return ['services::restaurant','services::cafe','services::seven','services::green','services::cosmetics','services::glasses','services::hair'].includes(d.ref);if(mapUI.filter==='equipment'&&d.ref==='services::laundry')return true;if(mapUI.filter==='counter')return d.type==='reception'||['services::information','services::medicine','services::admission','services::lost'].includes(d.ref);if(mapUI.filter==='food')return ['services::restaurant','services::cafe'].includes(d.ref);if(mapUI.filter==='shopping')return ['services::seven','services::green','services::cosmetics','services::glasses','services::hair'].includes(d.ref);return mapUI.filter==='all'||d.type===mapUI.filter||mapUI.filter==='equipment'&&d.type==='toilet'||mapUI.filter==='service'&&['reception','entrance'].includes(d.type)||mapUI.filter==='ward'&&d.type==='rehab';}
 function routeProximityFor(matches){
  const scores=new Map();if(!mapUI.startConfirmed||mapUI.pickMode==='start'||!matches.length||!(mapUI.filter==='equipment'||mapUI.filter==='entrance'||matches.every(d=>placeNearestKind(d))))return scores;
- travelMode=ui('travelChoice').value;const graph=attachManualSelections(buildNetwork()),from=mapUI.manual?'hospital:'+mapUI.manual.floor+'::__manualStart':entryReference(mapUI.from),starts=typeof additionalNavigation!=='undefined'&&additionalNavigation.arrivalOptions?.[from]||[from],trees=new Map();
+ travelMode=ui('travelChoice').value;const graph=attachManualSelections(buildNetwork()),from=mapUI.manual?'hospital:'+mapUI.manual.floor+'::__manualStart':entryReference(mapUI.from),starts=typeof navigationStartOptions==='function'?navigationStartOptions(graph,from):(typeof additionalNavigation!=='undefined'&&additionalNavigation.arrivalOptions?.[from]||[from]),trees=new Map();
  for(const d of matches){let best=Infinity;if(d.nearestEligible!==false&&!isGuideOnly(d)&&!entranceAvailability(d.ref).closed)for(const start of starts){const grouped=southWardToiletRefs.includes(d.ref);for(const end of grouped?navigationEndOptions(graph,d):[navigationTargetReference(d)]){const via3F=routeNeeds3F(graph,start,end),key=start+'|'+via3F+'|'+(grouped?end:'');let tree=trees.get(key);if(!tree){tree=auditedRouteTree(graph,start,via3F,grouped?end:undefined);trees.set(key,tree);}best=Math.min(best,tree.labels.get(end)?.cost??Infinity);}}scores.set(d.ref,best);}return scores;
 }
 let searchFocusLock=false;
@@ -48,7 +48,13 @@ function initSearchChoices(){
  const box=document.createElement('section');box.id='searchChoices';box.className='search-choices';box.setAttribute('aria-label','場所の選び方');box.innerHTML='<div class="search-choice-buttons"><button id="searchCurrentPlace">◎ 現在地</button><button id="searchMapPoint">地図上で選択</button><button id="searchCandidateList">候補から選択</button></div><div class="recent-heading">履歴</div><div id="recentPlaces" class="recent-places"></div><small id="recentEmpty">まだ履歴はありません</small>';ui('settings').querySelector('.destination-card').prepend(box);
  ui('searchCurrentPlace').onclick=chooseSearchCurrentPlace;
  ui('searchMapPoint').onclick=()=>{mapUI.selectingEndpointOnMap=mapUI.pickMode;if(mapUI.pickMode==='start')mapUI.selectingStartOnMap=true;ui('findPlace').blur();togglePlacePanel(false);ui('facilityDetails').hidden=true;ui('mapMessage').dataset.important='false';ui('mapMessage').textContent='';};
- ui('searchCandidateList').onclick=()=>{setPlaceSearchView('browse');ui('findPlace').blur();ui('findPlace').value='';mapUI.filter='all';document.querySelectorAll('[data-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.filter==='all')));renderResults();resetCandidateScroll();};
+ ui('searchCandidateList').onclick=()=>{setPlaceSearchView('browse');ui('findPlace').blur();ui('findPlace').value='';mapUI.filter='all';document.querySelectorAll('[data-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.filter==='all')));renderResults();
+  const floor=mapUI.floor;
+  if(ui('placeResults').querySelector('[data-floor="'+floor+'"]')){
+   preferredCandidateFloor=floor;
+   jumpToCandidateFloor(floor);
+  }else resetCandidateScroll();
+ };
  const select=selectPlace,start=selectStartPlace;selectPlace=function(d,...args){rememberPlace(d);return select(d,...args);};selectStartPlace=function(d,...args){if(!isGuideOnly(d))rememberPlace(d);return start(d,...args);};
  const input=ui('findPlace');
  input.addEventListener('focus',()=>{document.body.classList.add('search-input-active');window.scrollTo(0,0);});

@@ -18,35 +18,17 @@ function enterRoutePlanning(){
  routePlan();if(navigationState.steps.length){const floor=referenceFloor(mapUI.from)||mapUI.manual?.floor;showFloor(floor,false);if(!document.body.classList.contains('view-3d')){const points=floorRouteLines(mapUI.graph,mapUI.path,floor).flat();const v=ui('mapViewport'),fit=fitNavigationBounds(points,{width:v.clientWidth-40,height:Math.max(160,v.clientHeight-300)});if(fit){const [w,h]=floorInfo(floor).size;mapUI.zoom=Math.max(.7,Math.min(8,fit.scale/mapUI.base));const scale=mapUI.base*mapUI.zoom;mapUI.pan=[(w/2-fit.center[0])*scale,(h/2-fit.center[1])*scale+30];applyMapTransform();}}}
  syncRoutePanels();
 }
-const entranceNoticeState={key:'',surface:'',dismissed:false};
+const entranceNoticeState={key:'',dismissed:false};
 let startingNavigationFromPreview=false;
-let entranceFadeTimer, entranceHideTimer, entranceFading=false;
 function syncEntranceNotice(notice,planning){
- const active=navigationState.active;
- if(notice){
-  const key=JSON.stringify([mapUI.from,mapUI.goal.ref,notice.text]);
-  if(key!==entranceNoticeState.key){
-   clearTimeout(entranceFadeTimer);clearTimeout(entranceHideTimer);
-   entranceFadeTimer=null;entranceFading=false;
-   Object.assign(entranceNoticeState,{key,surface:'',dismissed:false});
-  }
-  if(!entranceNoticeState.surface)entranceNoticeState.surface=active?'navigation':planning?'planning':'';
-  if(active&&(navigationState.index>0||entranceNoticeState.surface==='planning'))entranceNoticeState.dismissed=true;
- }
- for(const [id,surface,shown] of [
-  ['routeEntranceNotice','planning',planning&&!active],
-  ['navigationEntranceNotice','navigation',active&&navigationState.index===0],
+ const key=notice?JSON.stringify([mapUI.from,mapUI.goal.ref,notice.text]):'';
+ if(key!==entranceNoticeState.key)Object.assign(entranceNoticeState,{key,dismissed:false});
+ for(const [id,shown] of [
+  ['routeEntranceNotice',planning&&!navigationState.active],
+  ['navigationEntranceNotice',navigationState.active],
  ]){
   const element=ui(id);
-  element.hidden=!notice||!shown||entranceNoticeState.dismissed||entranceNoticeState.surface!==surface;
-  element.classList.toggle('entrance-notice-fading',entranceFading);
-  if(!element.hidden&&notice.autoDismiss&&!entranceFadeTimer){
-   entranceFadeTimer=setTimeout(()=>{
-    entranceFading=true;
-    syncRoutePanels();
-    entranceHideTimer=setTimeout(()=>{entranceNoticeState.dismissed=true;syncRoutePanels();},800);
-   },3000);
-  }
+  element.hidden=!notice||!shown||entranceNoticeState.dismissed;
   const message=element.querySelector('[role=status]');
   const text=notice?.text||'';
   if(message.textContent!==text)message.textContent=text;
