@@ -113,7 +113,7 @@ body .place-preview[hidden]{display:none!important}body .place-preview[data-mode
 
 .destination-photo-dialog #closeDestinationPhoto:focus:not(:focus-visible){outline:none}
 .destination-photo-dialog #destinationPhotoTitle:focus{outline:none}
-body.visitor-experience #destinationPhotoDialog #closeDestinationPhoto{
+body.visitor-experience:not(#original-type):not(#small-type):not(#tiny-type) #destinationPhotoDialog #closeDestinationPhoto{
  font-size:24px!important;line-height:1!important;
 }
 body.visitor-experience #destinationPhotoDialog #closeDestinationPhoto:not(:focus-visible){
