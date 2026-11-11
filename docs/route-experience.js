@@ -56,7 +56,7 @@ function syncEntranceNotice(notice,planning){
 function syncRoutePanels(){
  if(reviewEmbedded)return;
  document.body.classList.toggle('place-selected',Boolean(mapUI.goal));
- const planning=document.body.classList.contains('route-planning');ui('routeOptionsDock').hidden=!planning||navigationState.active||!mapUI.goal;
+ const planning=document.body.classList.contains('route-planning');ui('routeOptionsDock').hidden=!planning||navigationState.active||!mapUI.goal||!mapUI.startConfirmed;
  ui('swapRoutePlaces').disabled=!mapUI.startConfirmed||!mapUI.goal||mapUI.goal.usage==='emergency-only'||entranceAvailability(mapUI.goal.ref).closed;
  const notice=mapUI.goal?routeEntranceNotice(mapUI.from,mapUI.goal.ref,mapUI.graph,mapUI.path):null;
  syncEntranceNotice(notice,!ui('routeOptionsDock').hidden&&!startingNavigationFromPreview);

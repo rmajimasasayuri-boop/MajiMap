@@ -33,7 +33,6 @@ function showDestinationPhoto(){
  document.getElementById('destinationPhotoTitle').textContent=destinationDisplayName(place);
  const image=document.getElementById('destinationPhotoFull');image.alt=destinationDisplayName(place)+'（近畿大学病院公式フロアマップ掲載写真）';
  document.getElementById('destinationPhotoError').hidden=true;image.onerror=()=>{document.getElementById('destinationPhotoError').hidden=false;};image.src=photos[index].url;
- document.getElementById('destinationPhotoSource').href=photos[index].source;
  const dialog=document.getElementById('destinationPhotoDialog');if(!dialog.open)dialog.showModal();
 }
 document.getElementById('viewDestinationPhoto').onclick=showDestinationPhoto;

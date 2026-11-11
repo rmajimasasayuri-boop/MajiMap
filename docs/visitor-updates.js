@@ -1,6 +1,6 @@
 // 2026-10-30: explicit screen transitions and user-confirmed visitor rules.
 function searchHome(focus=false){closeVisitorPreview();ui('findPlace').value='';mapUI.filter='all';mapUI.resultFloor=null;togglePlacePanel(true,false);beginPlaceSearch();ui('findPlace').blur();if(focus)ui('findPlace').focus({preventScroll:true});}
-function cancelDestination(){mapUI.goal=null;const url=new URL(location.href);url.searchParams.delete('goal');history.replaceState(null,'',url);mapUI.waypoint=null;mapUI.manualGoal=null;mapUI.manualVia=null;mapUI.addingWaypoint=false;clearRouteSelection();closeVisitorPreview();document.body.classList.remove('route-planning','place-selected');ui('routePlanner').hidden=true;ui('routeOptionsDock').hidden=true;ui('findPlace').value='';ui('facilityDetails').hidden=true;searchHome(false);updateRoutePlanner();}
+function cancelDestination(){mapUI.selectingEndpointOnMap=null;mapUI.goal=null;const url=new URL(location.href);url.searchParams.delete('goal');history.replaceState(null,'',url);mapUI.waypoint=null;mapUI.manualGoal=null;mapUI.manualVia=null;mapUI.addingWaypoint=false;clearRouteSelection();closeVisitorPreview();document.body.classList.remove('route-planning','place-selected');ui('routePlanner').hidden=true;ui('routeOptionsDock').hidden=true;ui('findPlace').value='';ui('facilityDetails').hidden=true;searchHome(false);updateRoutePlanner();}
 const toiletIconTiles={
  'outpatient:2::publicToilet-south':[[1647,773],[1698,773],[1668,719]],
  'outpatient:2::publicToilet-gastro':[[1048,565],[1048,628],[1048,688]],
@@ -68,16 +68,24 @@ function initVisitorUpdates(){
   const parking=d?.ref==='outpatient:3::patientParking'&&!unifiedMapModel.floors[3].outdoorExtension.completed;
   route.textContent='出発地';
   route.disabled=!d||d.usage==='emergency-only'||isGuideOnly(d);
-  route.hidden=parking;
+  const mapChoice=mapUI.selectingEndpointOnMap;
+  route.hidden=parking||mapChoice==='goal';
   navigate.textContent='目的地';
   navigate.disabled=!d||isGuideOnly(d);
-  navigate.hidden=parking;
+  navigate.hidden=parking||mapChoice==='start';
+  const website=ui('detailWebsite');
+  if(mapChoice&&d&&website.hidden){
+   website.href='https://www.med.kindai.ac.jp/floormap_facility.html';
+   website.onclick=null;
+   website.hidden=false;
+  }
   ui('facilityDetails').dataset.previewAction='endpoints';
  };
  ui('detailRoute').onclick=()=>{
   const d=destinationPhotoState.place;
   if(!d||d.usage==='emergency-only'||isGuideOnly(d))return;
   closeVisitorPreview();
+  mapUI.selectingEndpointOnMap=null;
   selectStartPlace(d,true);
   if(mapUI.goal)ui('findPlace').value=placeListText(mapUI.goal);
   enterRoutePlanning();
@@ -88,6 +96,7 @@ function initVisitorUpdates(){
  ui('detailNavigate').onclick=()=>{
   const d=destinationPhotoState.place;
   if(!d||isGuideOnly(d))return;
+  mapUI.selectingEndpointOnMap=null;
   setSelectionMode('goal');
   closeVisitorPreview();
   choosePlace(d,true);

@@ -9,7 +9,7 @@ let placeSearchView='home',preferredCandidateFloor=null;
 function setPlaceSearchView(view){const changed=placeSearchView!==view;placeSearchView=view;document.body.dataset.searchView=view;fitFloorRail();if(changed)resetCandidateScroll();}
 let candidateResetFrame=0;
 function resetCandidateScroll(){cancelAnimationFrame(candidateResetFrame);const reset=()=>{const list=ui('placeResults');list.style.paddingBottom='';list.scrollTop=0;for(const id of ['settings','searchChoices','recentPlaces'])if(ui(id))ui(id).scrollTop=0;mapUI.resultFloor=list.getClientRects().length?Number(list.querySelector('.result-floor-heading')?.dataset.floor)||null:null;syncDiscoveryFloors();};reset();candidateResetFrame=requestAnimationFrame(reset);}
-function beginPlaceSearch(){resetCandidateScroll();mapUI.selectingStartOnMap=false;preferredCandidateFloor=null;ui('findPlace').value='';mapUI.filter='all';mapUI.resultFloor=null;document.querySelectorAll('[data-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.filter==='all')));setPlaceSearchView('home');renderResults();updateSearchChoices();}
+function beginPlaceSearch(){resetCandidateScroll();mapUI.selectingStartOnMap=false;mapUI.selectingEndpointOnMap=null;preferredCandidateFloor=null;ui('findPlace').value='';mapUI.filter='all';mapUI.resultFloor=null;document.querySelectorAll('[data-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.filter==='all')));setPlaceSearchView('home');renderResults();updateSearchChoices();}
 
 let candidateIndexOpen=false,candidateIndexFrame=0,candidateIndexSignature='';
 function jumpToCandidateFloor(floor){
@@ -47,7 +47,7 @@ function chooseSearchCurrentPlace(){
 function initSearchChoices(){
  const box=document.createElement('section');box.id='searchChoices';box.className='search-choices';box.setAttribute('aria-label','場所の選び方');box.innerHTML='<div class="search-choice-buttons"><button id="searchCurrentPlace">◎ 現在地</button><button id="searchMapPoint">地図上で選択</button><button id="searchCandidateList">候補から選択</button></div><div class="recent-heading">履歴</div><div id="recentPlaces" class="recent-places"></div><small id="recentEmpty">まだ履歴はありません</small>';ui('settings').querySelector('.destination-card').prepend(box);
  ui('searchCurrentPlace').onclick=chooseSearchCurrentPlace;
- ui('searchMapPoint').onclick=()=>{if(mapUI.pickMode==='start')mapUI.selectingStartOnMap=true;ui('findPlace').blur();togglePlacePanel(false);ui('facilityDetails').hidden=true;ui('mapMessage').dataset.important='false';ui('mapMessage').textContent='';};
+ ui('searchMapPoint').onclick=()=>{mapUI.selectingEndpointOnMap=mapUI.pickMode;if(mapUI.pickMode==='start')mapUI.selectingStartOnMap=true;ui('findPlace').blur();togglePlacePanel(false);ui('facilityDetails').hidden=true;ui('mapMessage').dataset.important='false';ui('mapMessage').textContent='';};
  ui('searchCandidateList').onclick=()=>{setPlaceSearchView('browse');ui('findPlace').blur();ui('findPlace').value='';mapUI.filter='all';document.querySelectorAll('[data-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.filter==='all')));renderResults();resetCandidateScroll();};
  const select=selectPlace,start=selectStartPlace;selectPlace=function(d,...args){rememberPlace(d);return select(d,...args);};selectStartPlace=function(d,...args){if(!isGuideOnly(d))rememberPlace(d);return start(d,...args);};
  const input=ui('findPlace');
