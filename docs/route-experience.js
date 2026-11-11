@@ -5,7 +5,7 @@ function syncSearchControls(){
  ui('clearPlaceSearch').hidden=!ui('findPlace').value;if(typeof syncDiscoveryFloors==='function')syncDiscoveryFloors();if(typeof scheduleCandidateIndex==='function')scheduleCandidateIndex();
 }
 function swapRoutePlaces(){
- if(!mapUI.goal||!mapUI.startConfirmed||mapUI.goal.usage==='emergency-only'||entranceAvailability(mapUI.goal.ref).closed)return;
+ if(!mapUI.goal||!mapUI.startConfirmed||mapUI.goal.usage==='emergency-only')return;
  const goal=mapUI.goal,oldManual=mapUI.manual,oldManualGoal=mapUI.manualGoal;
  const start=oldManual?{ref:'hospital:'+oldManual.floor+'::__manualGoal',routeReference:'hospital:'+oldManual.floor+'::__manualGoal',floor:oldManual.floor,name:'地図で指定した目的地',code:'',type:'manual',point:oldManual.point}:destinationList.find(d=>d.ref===mapUI.from||navigationTargetReference(d)===mapUI.from)||{ref:mapUI.from,routeReference:mapUI.from,floor:referenceFloor(mapUI.from),point:routeStartPoint(),name:ui('currentName').textContent,type:'point',code:''};
  mapUI.startChosenOnMap=Boolean(oldManualGoal);mapUI.manual=oldManualGoal;mapUI.manualGoal=oldManual;mapUI.from=oldManualGoal?'hospital:'+goal.floor+'::__manualStart':(southWardToiletRefs.includes(goal.ref)?mapUI.routeArrival?.anchor:null)||navigationTargetReference(goal);mapUI.startName=oldManualGoal?null:destinationDisplayName(goal);mapUI.startConfirmed=true;
@@ -39,7 +39,7 @@ function syncRoutePanels(){
  if(reviewEmbedded)return;
  document.body.classList.toggle('place-selected',Boolean(mapUI.goal));
  const planning=document.body.classList.contains('route-planning');ui('routeOptionsDock').hidden=!planning||navigationState.active||!mapUI.goal||!mapUI.startConfirmed;
- ui('swapRoutePlaces').disabled=!mapUI.startConfirmed||!mapUI.goal||mapUI.goal.usage==='emergency-only'||entranceAvailability(mapUI.goal.ref).closed;
+ ui('swapRoutePlaces').disabled=!mapUI.startConfirmed||!mapUI.goal||mapUI.goal.usage==='emergency-only';
  const notice=mapUI.goal?routeEntranceNotice(mapUI.from,mapUI.goal.ref,mapUI.graph,mapUI.path):null;
  syncEntranceNotice(notice,!ui('routeOptionsDock').hidden&&!startingNavigationFromPreview);
  ui('routeDockNavigate').disabled=Boolean(notice?.blocked);

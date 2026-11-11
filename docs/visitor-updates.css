@@ -40,7 +40,7 @@ body.visitor-experience #routeSummary,body.visitor-experience #showRouteSteps{di
 /* User withdrew waypoint functionality on 2026-10-30. */
 body.visitor-experience #routeAddWaypoint,body.visitor-experience #routeViaRow{display:none!important}
 
-body.visitor-experience:not(#original-type):not(#small-type):not(#tiny-type) :is(#favoritePlaceButton,.history-star,#clearPlaceSearch,#closeFacilityDetails,#openPlaceSearch){font-size:24px!important;line-height:1!important;min-width:44px;min-height:44px}
+body.visitor-experience:not(#original-type):not(#small-type):not(#tiny-type) :is(#favoritePlaceButton,.history-star,#clearPlaceSearch,#closeFacilityDetails,#openPlaceSearch,.entrance-route-notice button){font-size:24px!important;line-height:1!important;min-width:44px;min-height:44px}
 body.visitor-experience #favoritePlaceButton[aria-pressed=false],body.visitor-experience .history-star[data-saved=false]{color:#83969d!important}
 body.visitor-experience #favoritePlaceButton[aria-pressed=true],body.visitor-experience .history-star[data-saved=true],body.visitor-experience .favorite-place-row button:last-child{color:#f4c20d!important}
 body.visitor-experience #facilityDetails .facility-detail-body{grid-template-rows:minmax(88px,auto) auto auto!important}
@@ -50,9 +50,9 @@ body.visitor-experience.route-planning.place-searching .map-navigation-rail{top:
 /* The official region remains the hit area; strengthen its outline without enlarging it. */
 .place-map-target:hover polygon,.place-map-target:focus polygon,
 .place-map-target[data-selected=goal] polygon,.place-map-target[data-selected=start] polygon{stroke-width:3;paint-order:stroke fill}
-body.visitor-experience :is(#placeResults .place-row,#destinationPhotoBadge) .code{min-width:36px!important;max-width:60px;white-space:normal;color:#fff!important;border:1px solid transparent;border-radius:5px;padding:5px 4px;text-align:center;font-weight:700}
-body.visitor-experience :is(#placeResults .place-row,#destinationPhotoBadge) .code[hidden]{display:none!important}
-body.visitor-experience #placeResults .place-result-photo{width:68px!important;height:auto!important;aspect-ratio:auto!important;object-fit:contain!important;flex:none}
+body.visitor-experience :is(#placeResults .place-row,#destinationPhotoBadge,#facilityDetailName) .code{min-width:36px!important;max-width:60px;white-space:normal;color:#fff!important;border:1px solid transparent;border-radius:5px;padding:5px 4px;text-align:center;font-weight:700}
+body.visitor-experience :is(#placeResults .place-row,#destinationPhotoBadge,#facilityDetailName) .code[hidden]{display:none!important}
+body.visitor-experience #placeResults .place-result-photo{width:68px!important;height:auto!important;aspect-ratio:auto!important;object-fit:contain!important;flex:none;border-radius:0!important}
 
 /* One consistent star shape and hit target in cards, favorites and history. */
 body.visitor-experience :is(#favoritePlaceButton,.history-star,.favorite-place-row>button:last-child){display:grid!important;place-items:center;padding:0!important;width:44px!important;min-width:44px!important;height:44px!important;min-height:44px!important}
@@ -142,15 +142,15 @@ body.visitor-experience #facilityDetailName.inline-code-heading{font-size:var(--
 
 /* Prefer code on its own line with up to three complete name lines. */
 .facility-name-track.two-line{max-height:none}
-body.visitor-experience :is(#placeResults,#destinationPhotoBadge) .code,body.visitor-experience #placeResults .official-result-icons .facility-pict{box-sizing:border-box;width:36px!important;height:30px!important;min-width:36px!important;max-width:36px!important;object-fit:contain;font-size:12px!important;padding:2px!important;display:inline-flex;align-items:center;justify-content:center;flex:none}
-body.visitor-experience :is(#placeResults,#destinationPhotoBadge) .code[hidden]{display:none!important}
+body.visitor-experience :is(#placeResults,#destinationPhotoBadge,#facilityDetailName) .code,body.visitor-experience :is(#placeResults .official-result-icons,#facilityDetailName .card-equipment-icons) .facility-pict{box-sizing:border-box;width:36px!important;height:30px!important;min-width:36px!important;max-width:36px!important;object-fit:contain;font-size:12px!important;padding:2px!important;display:inline-flex;align-items:center;justify-content:center;flex:none}
+body.visitor-experience :is(#placeResults,#destinationPhotoBadge,#facilityDetailName) .code[hidden]{display:none!important}
 body.visitor-experience .official-result-icons{max-width:108px}
 #outdoorPositionPanel [hidden]{display:none!important}
 
 /* Square sign tiles follow the supplied hospital sign photographs. */
-body.visitor-experience :is(#placeResults .place-row,#destinationPhotoBadge) .code,body.visitor-experience #placeResults .official-result-icons .facility-pict{width:40px!important;height:40px!important;min-width:40px!important;max-width:40px!important;padding:0!important;overflow:hidden;flex:0 0 40px;font-size:13px!important;white-space:nowrap}
-body.visitor-experience :is(#placeResults .place-row,#destinationPhotoBadge) .code{border-radius:5px}
-body.visitor-experience :is(#placeResults .place-row,#destinationPhotoBadge) .code[data-kind="ward"]{background:#fff!important;color:var(--sign-color)!important;border:1px solid #d6e0e5}
+body.visitor-experience :is(#placeResults .place-row,#destinationPhotoBadge,#facilityDetailName) .code,body.visitor-experience :is(#placeResults .official-result-icons,#facilityDetailName .card-equipment-icons) .facility-pict{width:40px!important;height:40px!important;min-width:40px!important;max-width:40px!important;padding:0!important;overflow:hidden;flex:0 0 40px;font-size:13px!important;white-space:nowrap}
+body.visitor-experience :is(#placeResults .place-row,#destinationPhotoBadge,#facilityDetailName) .code{border-radius:5px}
+body.visitor-experience :is(#placeResults .place-row,#destinationPhotoBadge,#facilityDetailName) .code[data-kind="ward"]{background:#fff!important;color:var(--sign-color)!important;border:1px solid #d6e0e5}
 body.visitor-experience #placeResults .official-result-icons{max-width:126px}
 #outdoorPositionPanel label{display:block}#outdoorPositionPanel input[type=range]{width:100%}
 
@@ -163,14 +163,14 @@ body.outdoor-route-recording #annPanel{position:absolute;z-index:60;left:8px;top
 body.outdoor-route-recording #annPanel .ann-explainer,body.outdoor-route-recording #annPanel .ann-legend,body.outdoor-route-recording #mapSearchBar{display:none!important}
 
 /* Condense only the requested lettering; tile and character heights stay unchanged. */
-body.visitor-experience :is(#placeResults,#destinationPhotoBadge) .code .code-condensed{display:inline-block;flex:none;width:max-content;white-space:nowrap;transform:scaleX(.70);transform-origin:center}
-body.visitor-experience :is(#placeResults,#destinationPhotoBadge) .code .code-ten{display:inline-block;flex:none;width:.60em;overflow:visible}
-body.visitor-experience :is(#placeResults,#destinationPhotoBadge) .code .code-ten>span{display:block;width:max-content;transform:scaleX(.50);transform-origin:left center}
-body.visitor-experience :is(#placeResults,#destinationPhotoBadge) .code .code-remainder{display:inline-block;flex:none}
-body.visitor-experience :is(#placeResults .place-row,#destinationPhotoBadge) .code[data-kind="unit"]{background:var(--sign-color)!important;color:#fff!important;border-color:transparent}
-body.visitor-experience :is(#placeResults,#destinationPhotoBadge) .code .code-condensed,body.visitor-experience :is(#placeResults,#destinationPhotoBadge) .code .code-ten,body.visitor-experience :is(#placeResults,#destinationPhotoBadge) .code .code-ten>span,body.visitor-experience :is(#placeResults,#destinationPhotoBadge) .code .code-remainder{font-size:inherit!important;font-weight:inherit;line-height:inherit!important}
+body.visitor-experience :is(#placeResults,#destinationPhotoBadge,#facilityDetailName) .code .code-condensed{display:inline-block;flex:none;width:max-content;white-space:nowrap;transform:scaleX(.70);transform-origin:center}
+body.visitor-experience :is(#placeResults,#destinationPhotoBadge,#facilityDetailName) .code .code-ten{display:inline-block;flex:none;width:.60em;overflow:visible}
+body.visitor-experience :is(#placeResults,#destinationPhotoBadge,#facilityDetailName) .code .code-ten>span{display:block;width:max-content;transform:scaleX(.50);transform-origin:left center}
+body.visitor-experience :is(#placeResults,#destinationPhotoBadge,#facilityDetailName) .code .code-remainder{display:inline-block;flex:none}
+body.visitor-experience :is(#placeResults .place-row,#destinationPhotoBadge,#facilityDetailName) .code[data-kind="unit"]{background:var(--sign-color)!important;color:#fff!important;border-color:transparent}
+body.visitor-experience :is(#placeResults,#destinationPhotoBadge,#facilityDetailName) .code .code-condensed,body.visitor-experience :is(#placeResults,#destinationPhotoBadge,#facilityDetailName) .code .code-ten,body.visitor-experience :is(#placeResults,#destinationPhotoBadge,#facilityDetailName) .code .code-ten>span,body.visitor-experience :is(#placeResults,#destinationPhotoBadge,#facilityDetailName) .code .code-remainder{font-size:inherit!important;font-weight:inherit;line-height:inherit!important}
 
-body.visitor-experience :is(#placeResults,#destinationPhotoBadge) .code:has(.code-ten){gap:0!important}
+body.visitor-experience :is(#placeResults,#destinationPhotoBadge,#facilityDetailName) .code:has(.code-ten){gap:0!important}
 
 /* Shared layout for opening and business hours. */
 body.visitor-experience #facilityHours{gap:4px 10px}
@@ -195,13 +195,14 @@ body.visitor-experience #facilityDetails #detailWebsite{
  display:flex;align-items:center;justify-content:center;text-align:center;
 }
 
-body.visitor-experience #facilityDetails .facility-heading h2.with-card-equipment{
- display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:6px;align-items:center;
+body.visitor-experience #facilityDetails .facility-heading h2:is(.with-card-equipment,.with-card-ward){
+ display:grid!important;grid-template-columns:auto minmax(0,1fr);column-gap:8px;align-items:center;text-align:left;
 }
-.with-card-equipment .facility-arrival-code{grid-column:1/-1;grid-row:1}
+.with-card-equipment .facility-arrival-code{grid-column:2;grid-row:1;margin-inline:0}
 .with-card-equipment .facility-name-track{grid-column:2;grid-row:2}
-.card-equipment-icons{grid-column:1;grid-row:2;display:flex;align-items:center;gap:3px}
-.card-equipment-icons .facility-pict{width:28px;height:28px;flex:0 0 28px;object-fit:contain}
+.card-equipment-icons{grid-column:1;grid-row:1/3;display:flex;align-items:center;gap:3px}
+.with-card-ward .code{grid-column:1;grid-row:1}
+.with-card-ward .facility-name-track{grid-column:2;grid-row:1}
 body.visitor-experience .search-choice-buttons button,
 body.visitor-experience.navigation-active #navigationPanel .navigation-buttons button{
  border-radius:9px!important;

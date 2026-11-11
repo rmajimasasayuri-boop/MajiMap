@@ -46,9 +46,16 @@ function previewManualDestination(point){return; /* Registered facilities only. 
 
 let facilityNameObserver=null;
 function updateCardHeading(d){
- if(!d)return;facilityNameObserver?.disconnect();const title=ui('facilityDetailName');title.classList.remove('inline-code-heading','with-card-equipment');title.style.removeProperty('--heading-size');title.replaceChildren();const code=document.createElement('small');code.className='facility-arrival-code';code.textContent=d.detail?.mapCaption|| (d.ref==='outpatient:3::patientParking'?'屋外・駐車場':d.ref==='outpatient:3::building7Entrance'?'屋外・7号館':/^(?:[1-9]|10)(?:[A-Z]|[東西][AB])$/.test(d.code||'')?d.code:d.floor+'階');const track=document.createElement('span');track.className='facility-name-track';const name=document.createElement('span');name.textContent=['equipment','toilet'].includes(d.type)?destinationDisplayName(d).replace(/^\d+階\s+/,''):destinationDisplayName(d);track.append(name);title.append(code,track);
+ if(!d)return;facilityNameObserver?.disconnect();const title=ui('facilityDetailName');title.classList.remove('inline-code-heading','with-card-equipment','with-card-ward');title.style.removeProperty('--heading-size');title.replaceChildren();const code=document.createElement('small');code.className='facility-arrival-code';code.textContent=d.detail?.mapCaption|| (d.ref==='outpatient:3::patientParking'?'屋外・駐車場':d.ref==='outpatient:3::building7Entrance'?'屋外・7号館':/^(?:[1-9]|10)(?:[A-Z]|[東西][AB])$/.test(d.code||'')?d.code:d.floor+'階');const track=document.createElement('span');track.className='facility-name-track';const name=document.createElement('span');name.textContent=['equipment','toilet'].includes(d.type)?destinationDisplayName(d).replace(/^\d+階\s+/,''):destinationDisplayName(d);track.append(name);title.append(code,track);
  const icons=placeOfficialIcons(d);
- if(icons.length){
+ if(d.type==='ward'&&d.code){
+  const badge=document.createElement('span');
+  badge.className='code';
+  styleCandidateCode(badge,d);
+  title.classList.add('with-card-ward');
+  code.replaceWith(badge);
+ }else if(icons.length){
+  code.textContent=d.floor+'階';
   const symbols=document.createElement('span');
   symbols.className='card-equipment-icons';
   symbols.innerHTML=icons.join('');
