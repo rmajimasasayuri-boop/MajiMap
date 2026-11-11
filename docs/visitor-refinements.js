@@ -43,8 +43,16 @@ function visitorMapArea(){
  const panels=['facilityDetails','navigationPanel','routeOptionsDock'].map(visible).filter(Boolean);
  const bottom=Math.max(top+60,Math.min(viewport.clientHeight-safe.bottom,...panels.map(r=>r.top-box.top))-gap);
  const left=safe.left+gap,right=Math.max(left+100,Math.min(viewport.clientWidth-safe.right,railRect?.width?railRect.left-box.left:Infinity)-gap);
- if(useMobileWidthFit(viewport))return {left:safe.left,right:viewport.clientWidth-safe.right,top,bottom};
  return {left,right,top,bottom};
+}
+function mobileFullMapWidth(viewport){
+ const safe=visitorSafeArea();
+ return viewport.clientWidth-safe.left-safe.right;
+}
+function minimumVisitorZoom(viewport){
+ if(!useMobileWidthFit(viewport)||!visitorCropActive())return 1;
+ const {left,right}=visitorMapArea();
+ return Math.min(1,(right-left)/mobileFullMapWidth(viewport));
 }
 function boundedVisitorPan(pan,size,scale,view,area,bounds={x:0,y:0,w:size[0],h:size[1]}){
  const origin=[view.width/2-size[0]*scale/2+pan[0]+bounds.x*scale,view.height/2-size[1]*scale/2+pan[1]+bounds.y*scale];

@@ -79,7 +79,8 @@ function initVisitorUpdates(){
   if(!d||d.usage==='emergency-only'||isGuideOnly(d))return;
   closeVisitorPreview();
   selectStartPlace(d,true);
-  if(mapUI.goal){ui('findPlace').value=placeListText(mapUI.goal);enterRoutePlanning();}
+  if(mapUI.goal)ui('findPlace').value=placeListText(mapUI.goal);
+  enterRoutePlanning();
   updateRoutePlanner();
   renderOverlay();
  };
@@ -94,7 +95,7 @@ function initVisitorUpdates(){
   enterRoutePlanning();
  };
  ui('closeFacilityDetails').onclick=()=>{if(mapUI.previewPlace){closeVisitorPreview();return;}const other=mapUI.previewPlace&&mapUI.goal&&mapUI.previewPlace.ref!==mapUI.goal.ref;closeVisitorPreview();if(other||mapUI.goal&&document.body.classList.contains('route-planning')){enterRoutePlanning();return;}cancelDestination();};
- ui('closeRoutePlanning').textContent='‹';ui('closeRoutePlanning').setAttribute('aria-label','目的地のマップと写真カードに戻る');ui('closeRoutePlanning').onclick=()=>{const d=mapUI.goal;if(!d){searchHome(false);return;}clearRouteSelection();closeVisitorPreview();document.body.classList.remove('route-planning');ui('routePlanner').hidden=true;ui('routeOptionsDock').hidden=true;togglePlacePanel(false,false);ui('findPlace').value=placeListText(d);ui('findPlace').blur();renderPlacePhoto(d);updateRoutePlanner();showFloor(d.floor,true);syncRoutePanels();requestAnimationFrame(focusReadableMap);};
+ ui('closeRoutePlanning').textContent='‹';ui('closeRoutePlanning').setAttribute('aria-label','目的地のマップと写真カードに戻る');ui('closeRoutePlanning').onclick=()=>{const d=mapUI.goal;if(!d){document.body.classList.remove('route-planning');updateRoutePlanner();searchHome(false);return;}clearRouteSelection();closeVisitorPreview();document.body.classList.remove('route-planning');ui('routePlanner').hidden=true;ui('routeOptionsDock').hidden=true;togglePlacePanel(false,false);ui('findPlace').value=placeListText(d);ui('findPlace').blur();renderPlacePhoto(d);updateRoutePlanner();showFloor(d.floor,true);syncRoutePanels();requestAnimationFrame(focusReadableMap);};
  ui('clearPlaceSearch').onclick=()=>{ui('findPlace').blur();cancelDestination();togglePlacePanel(false,false);mapUI.plot=false;setSelectionMode('goal');showFloor(mapUI.manual?.floor||referenceFloor(mapUI.from)||3,true);syncSearchControls();};
  ui('openPlaceSearch').onclick=()=>{if(document.body.classList.contains('place-searching')){if(placeSearchView!=='home'){searchHome(false);return;}togglePlacePanel(false);ui('findPlace').blur();if(mapUI.goal)enterRoutePlanning();}else searchHome(true);};
  const travel=ui('travelChoice');let saved;try{saved=localStorage.getItem('maji-visitor-travel');}catch{}travel.value=saved==='elevator'?'elevator':'auto';travelMode=travel.value;const changed=travel.onchange;travel.onchange=()=>{try{localStorage.setItem('maji-visitor-travel',travel.value);}catch{}changed();};updateRoutePlanner();

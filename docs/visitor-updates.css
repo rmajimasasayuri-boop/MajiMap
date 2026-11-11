@@ -179,3 +179,5 @@ body.visitor-experience #facilityHours{gap:4px 10px}
 #facilityHours .facility-hours-regular>span{display:block;padding-top:4px}
 #facilityHours .facility-hours-regular[open]{max-height:22dvh;overflow:auto}
 #unifiedOverlay{overflow:hidden}
+
+body.visitor-experience #facilityDetails #detailRoute{background:#2580c5;border-color:#2580c5;color:white}

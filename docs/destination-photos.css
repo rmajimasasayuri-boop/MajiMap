@@ -103,10 +103,10 @@ body .place-preview:not([hidden]){display:flex!important;align-items:center;gap:
 body .place-preview[hidden]{display:none!important}body .place-preview[data-mode=start]:not([hidden]){border-color:#2580c5}
 .place-preview>img{width:82px;height:65px;flex:none;object-fit:cover;border-radius:6px}.place-preview>img[hidden]{display:none}.place-preview-copy{flex:1;min-width:0;padding-right:12px}.place-preview-copy strong{font-size:12px;line-height:1.4}.place-preview-copy small{display:block;font-size:8px;color:#738a93}.place-preview-copy small[hidden]{display:none}.place-preview-copy button{display:block;font-size:11px;border:0;background:transparent;padding:5px 0 0;color:#176f68;text-align:left;font-weight:700}.place-preview-close{position:absolute;right:3px;top:2px;border:0;background:transparent;font-size:17px;line-height:1;padding:3px;color:#657e87}.place-preview.preview-compact>img,.place-preview.preview-compact small{display:none}.place-preview.preview-compact{padding:7px 10px!important}.review-embedded .place-preview{display:none!important}
 
-.destination-photo-dialog[open]{display:grid;grid-template-rows:auto minmax(0,1fr) auto;width:calc(100vw - 12px);max-width:none;height:calc(100dvh - 16px);max-height:none;padding:8px;gap:6px}
+.destination-photo-dialog[open]{display:flex;flex-direction:column;width:calc(100vw - 12px);max-width:none;height:max-content;max-height:calc(100dvh - 16px);padding:8px;gap:6px}
 .destination-photo-dialog .dialog-heading{display:flex;align-items:center;gap:8px}
 .destination-photo-dialog .dialog-heading h2{flex:1;margin:0;font-size:clamp(15px,3.6vw,21px)}
 .destination-photo-dialog #destinationPhotoBadge:empty{display:none}
 .destination-photo-dialog #closeDestinationPhoto{flex:none;min-width:44px;min-height:44px;font-size:24px;padding:0}
-.destination-photo-dialog>img{height:100%;width:100%;max-height:none;min-height:0;object-fit:contain;margin:0}
+.destination-photo-dialog>img{height:auto;width:100%;max-height:calc(100dvh - 120px);min-height:0;object-fit:contain;margin:0}
 .destination-photo-dialog p{margin:0}

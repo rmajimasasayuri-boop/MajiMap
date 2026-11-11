@@ -12,10 +12,9 @@ function swapRoutePlaces(){
  choosePlace(start,true);updateCurrentLabel();routePlan();updateRoutePlanner();
 }
 function enterRoutePlanning(){
- if(!mapUI.goal)return;
  document.body.classList.add('route-planning');togglePlacePanel(false);ui('facilityDetails').hidden=true;updateRoutePlanner();
+ if(!mapUI.goal||!ensureIndoorStart(false)){syncRoutePanels();return;}
  if(routeEntranceNotice(mapUI.from,mapUI.goal.ref,null,[])?.blocked){routePlan();return;}
- if(!ensureIndoorStart())return;
  routePlan();if(navigationState.steps.length){const floor=referenceFloor(mapUI.from)||mapUI.manual?.floor;showFloor(floor,false);if(!document.body.classList.contains('view-3d')){const points=floorRouteLines(mapUI.graph,mapUI.path,floor).flat();const v=ui('mapViewport'),fit=fitNavigationBounds(points,{width:v.clientWidth-40,height:Math.max(160,v.clientHeight-300)});if(fit){const [w,h]=floorInfo(floor).size;mapUI.zoom=Math.max(.7,Math.min(8,fit.scale/mapUI.base));const scale=mapUI.base*mapUI.zoom;mapUI.pan=[(w/2-fit.center[0])*scale,(h/2-fit.center[1])*scale+30];applyMapTransform();}}}
  syncRoutePanels();
 }
