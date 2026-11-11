@@ -138,7 +138,7 @@ body.visitor-experience #facilityDetailName.inline-code-heading{font-size:var(--
 .inline-code-heading .facility-arrival-code{display:inline;margin:0 8px 0 0;vertical-align:baseline;font-size:13px}
 .inline-code-heading .facility-name-track,.inline-code-heading .facility-name-track>span{display:inline;white-space:normal;overflow-wrap:anywhere;line-height:1.4}
 #outdoorPositionPanel{position:absolute;z-index:55;left:8px;top:68px;width:min(340px,calc(100% - 76px));padding:10px;background:#fff;border:1px solid #bacfd7;border-radius:12px;box-shadow:0 3px 15px #24465326;font-size:14px}
-#outdoorPositionPanel[hidden]{display:none}#outdoorPositionPanel select{width:100%;margin-top:6px;min-height:40px}#outdoorPositionPanel p{margin:5px 0}#outdoorPositionPanel div{display:flex;flex-wrap:wrap;gap:4px}#outdoorPositionPanel button{min-height:40px;padding:5px 8px;font-size:13px}#outdoorPositionPanel small,#outdoorPositionPanel output{display:block;font-size:12px;margin-top:5px}.outdoor-position-editing #toggleMapView{visibility:hidden}
+#outdoorPositionPanel .outdoor-editor-heading{align-items:center;justify-content:space-between}#outdoorPositionPanel[hidden]{display:none}#outdoorPositionPanel select{width:100%;margin-top:6px;min-height:40px}#outdoorPositionPanel p{margin:5px 0}#outdoorPositionPanel div{display:flex;flex-wrap:wrap;gap:4px}#outdoorPositionPanel button{min-height:40px;padding:5px 8px;font-size:13px}#outdoorPositionPanel small,#outdoorPositionPanel output{display:block;font-size:12px;margin-top:5px}.outdoor-position-editing #toggleMapView{visibility:hidden}
 
 /* Prefer code on its own line with up to three complete name lines. */
 .facility-name-track.two-line{max-height:none}
