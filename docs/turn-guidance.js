@@ -10,6 +10,43 @@ function sevenApproachCorners(floor,points){
  if(endpoints.some(p=>close(p,[676.6,724]))&&endpoints.some(p=>close(p,[570,679])))return indices([611,679],[611,727]);
  return [];
 }
+function walkingBranchPoints(step){
+ const graph=mapUI.graph,nodes=step.nodes||[];
+ if(!graph||nodes.length<3)return [];
+ const start=step.routeStart||nodes[0],end=step.routeEnd||nodes.at(-1);
+ const via3F=routeNeeds3F(graph,start,end);
+ const allowedWalk=(from,edge)=>edge.kind==='walk'&&referenceFloor(edge.to)===step.floor&&routeEdgeAllowed(graph,from,edge,via3F,start,end);
+ const firstDirection=(from,to)=>{
+  const points=squareRoute(routeGeometry(graph,from,to));
+  if(points.length<2)return '';
+  const [a,b]=points;
+  return Math.sign(b[0]-a[0])+','+Math.sign(b[1]-a[1]);
+ };
+ const junctions=[];
+ for(let first=0;first<nodes.length;){
+  const point=displayPoint(nodes[first]);
+  let after=first+1;
+  // Some route edges join aliases drawn at the same point.
+  while(point&&after<nodes.length){
+   const nextPoint=displayPoint(nodes[after]);
+   if(!nextPoint||Math.hypot(point[0]-nextPoint[0],point[1]-nextPoint[1])>=.01)break;
+   after++;
+  }
+  if(point&&first>0&&after<nodes.length){
+   const group=nodes.slice(first,after),previous=nodes[first-1],next=nodes[after];
+   const used=new Set([firstDirection(group[0],previous),firstDirection(group.at(-1),next)]);
+   if(!used.has('')&&used.size===2&&group.some(id=>(graph.adj[id]||[]).some(edge=>{
+    if(group.includes(edge.to)||edge.to===previous||edge.to===next||!allowedWalk(id,edge))return false;
+    const direction=firstDirection(id,edge.to);
+    if(!direction||used.has(direction))return false;
+    // A destination spur alone does not provide another through corridor.
+    return (graph.adj[edge.to]||[]).some(onward=>!group.includes(onward.to)&&allowedWalk(edge.to,onward));
+   })))junctions.push(point);
+  }
+  first=after;
+ }
+ return junctions;
+}
 function walkingInstructionParts(step){
  const source=instructionSegments(step),runs=[];
  for(const segment of source){
@@ -22,6 +59,7 @@ function walkingInstructionParts(step){
    if(!run.length||Math.hypot(run.at(-1)[0]-point[0],run.at(-1)[1]-point[1])>.001)run.push(point);
   }
  }
+ const branches=walkingBranchPoints(step);
  const minorLeg=40; // Display-map units, shared with the EV approach cutoff.
  const result=[];
  for(const raw of runs){
@@ -46,13 +84,15 @@ function walkingInstructionParts(step){
   for(let i=1;i<ps.length;i++){
    const last=i===ps.length-1;
    const turn=last?'まっすぐ':turnWord(ps[i-1],ps[i],ps[i+1]);
-   const corner=!last&&turn!=='まっすぐ'&&!minor.has(i)&&length(i-1)>=minorLeg&&length(i)>=minorLeg;
+   const [x,y]=ps[i];
+   const corner=turn!=='まっすぐ'&&!minor.has(i)&&
+    branches.some(([bx,by])=>Math.hypot(bx-x,by-y)<.01);
    if(!last&&!corner){
     hasBend||=turn!=='まっすぐ';
     continue;
    }
    const maneuver=action==='まっすぐ'&&hasBend?'通路に沿って':action;
-   const target=last?(step.endLabel||'この区間の終点'):'次の曲がり角';
+   const target=last?(step.endLabel||'この区間の終点'):'地図に示した分岐';
    const title=!last&&maneuver==='まっすぐ'?target+'まで直進':maneuver+target+'まで進む';
    result.push({...step,title,description:step.description?.includes('要確認')?'要確認箇所を含みます。青線に沿って進んでください。':'地図の橙色の丸が、この手順で進む位置です。通路に沿ってそこまで進んでください。',segments:[{floor:step.floor,points:ps.slice(begin,i+1)}],maneuver});
    begin=i;action=turn;hasBend=false;
