@@ -66,7 +66,8 @@ function walkingInstructionParts(step){
   }
  }
  const branches=walkingBranchPoints(step);
- const minorLeg=40; // Display-map units, shared with the EV approach cutoff.
+ // Thresholds are in display-map coordinates. Keep the full path for arrows and progress.
+ const drawingOffset=6,shortApproach=32,evApproach=40;
  const result=[];
  for(const raw of runs){
   const ps=[];
@@ -77,12 +78,12 @@ function walkingInstructionParts(step){
   if(ps.length<2)continue;
   const length=i=>Math.hypot(ps[i+1][0]-ps[i][0],ps[i+1][1]-ps[i][1]);
   const minor=new Set(sevenApproachCorners(step.floor,ps));
-  if(step.startsAtEV&&length(0)<minorLeg)minor.add(1);
-  if(step.endsAtEV&&length(ps.length-2)<minorLeg)minor.add(ps.length-2);
+  if(length(0)<(step.startsAtEV?evApproach:shortApproach))minor.add(1);
+  if(length(ps.length-2)<(step.endsAtEV?evApproach:shortApproach))minor.add(ps.length-2);
   for(let i=1;i<ps.length-2;i++){
    const [a,b,c,d]=ps.slice(i-1,i+3);
    const u=[b[0]-a[0],b[1]-a[1]],v=[d[0]-c[0],d[1]-c[1]];
-   if(length(i)<minorLeg&&Math.abs(u[0]*v[1]-u[1]*v[0])<.001&&u[0]*v[0]+u[1]*v[1]>0){
+   if(length(i)<evApproach&&Math.abs(u[0]*v[1]-u[1]*v[0])<.001&&u[0]*v[0]+u[1]*v[1]>0){
     minor.add(i);minor.add(i+1);
    }
   }
@@ -91,7 +92,7 @@ function walkingInstructionParts(step){
    const last=i===ps.length-1;
    const turn=last?'まっすぐ':turnWord(ps[i-1],ps[i],ps[i+1]);
    const [x,y]=ps[i];
-   const corner=turn!=='まっすぐ'&&!minor.has(i)&&
+   const corner=turn!=='まっすぐ'&&!minor.has(i)&&length(i-1)>=drawingOffset&&length(i)>=drawingOffset&&
     branches.some(([bx,by])=>Math.hypot(bx-x,by-y)<.01);
    if(!last&&!corner){
     hasBend||=turn!=='まっすぐ';
