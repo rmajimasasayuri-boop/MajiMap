@@ -10,6 +10,11 @@ function sevenApproachCorners(floor,points){
  if(endpoints.some(p=>close(p,[676.6,724]))&&endpoints.some(p=>close(p,[570,679])))return indices([611,679],[611,727]);
  return [];
 }
+// These map points were confirmed as parts of a continuous walking instruction.
+const walkingPassThroughPoints={
+ 3:[[302.4,308]], // 3B: short approach from the corridor to the clinic.
+ 5:[[600,962],[1530,470]], // Outpatient EV approach and the bend beside the HCU entrance.
+};
 function walkingBranchPoints(step){
  const graph=mapUI.graph,nodes=step.nodes||[];
  if(!graph||nodes.length<3)return [];
@@ -22,6 +27,7 @@ function walkingBranchPoints(step){
   const [a,b]=points;
   return Math.sign(b[0]-a[0])+','+Math.sign(b[1]-a[1]);
  };
+ const passThrough=walkingPassThroughPoints[step.floor]||[];
  const junctions=[];
  for(let first=0;first<nodes.length;){
   const point=displayPoint(nodes[first]);
@@ -32,7 +38,7 @@ function walkingBranchPoints(step){
    if(!nextPoint||Math.hypot(point[0]-nextPoint[0],point[1]-nextPoint[1])>=.01)break;
    after++;
   }
-  if(point&&first>0&&after<nodes.length){
+  if(point&&first>0&&after<nodes.length&&!passThrough.some(([x,y])=>Math.hypot(x-point[0],y-point[1])<.1)){
    const group=nodes.slice(first,after),previous=nodes[first-1],next=nodes[after];
    const used=new Set([firstDirection(group[0],previous),firstDirection(group.at(-1),next)]);
    if(!used.has('')&&used.size===2&&group.some(id=>(graph.adj[id]||[]).some(edge=>{
