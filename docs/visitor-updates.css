@@ -223,3 +223,14 @@ body.visitor-experience:not(#original-type):not(#small-type):not(#tiny-type).nav
  min-height:44px!important;padding:0!important;border:0;box-shadow:none;background:#fffffff2;
  border-radius:50%;color:#31515d;
 }
+
+body.visitor-experience #placeResults .equipment-result-floor{
+ display:block;color:#31515d;font-size:13px;font-weight:700;text-align:left;
+}
+body.visitor-experience #placeResults .equipment-result-floor+strong{text-align:left}
+.has-clinic-card-sign{position:relative}
+.clinic-card-sign{
+ position:absolute;left:0;top:50%;transform:translateY(-50%);
+ display:grid;place-items:center;min-width:24px;height:18px;padding-inline:2px;
+ color:#fff;border-radius:4px;font:inherit;line-height:1;white-space:nowrap;
+}

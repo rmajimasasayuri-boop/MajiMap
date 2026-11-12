@@ -35,7 +35,17 @@ function styleCandidateCode(code,d){code.hidden=!(d.type==='clinic'||d.type==='w
 }
 function refreshResultDetails(){
  const rows=[...ui('placeResults').querySelectorAll('.place-row')];for(const row of rows){const d=destinationList.find(d=>row.dataset.placeRef===d.ref);if(!d)continue;
- const code=row.querySelector('.code');if(code)styleCandidateCode(code,d);row.querySelector('.place-row-copy small')?.remove();const icons=placeOfficialIcons(d);if(icons.length){const box=document.createElement('span');box.className='official-result-icons';box.innerHTML=icons.join('');row.prepend(box);}
+ const code=row.querySelector('.code');if(code)styleCandidateCode(code,d);const copy=row.querySelector('.place-row-copy');
+ copy.querySelector('small')?.remove();
+ if(['equipment','toilet'].includes(d.type)){
+  const name=copy.querySelector('strong');
+  const floor=document.createElement('span');
+  floor.className='equipment-result-floor';
+  floor.textContent=d.floor+'階';
+  name.textContent=destinationDisplayName(d).replace(/^\d+階\s+/,'');
+  name.before(floor);
+ }
+ const icons=placeOfficialIcons(d);if(icons.length){const box=document.createElement('span');box.className='official-result-icons';box.innerHTML=icons.join('');row.prepend(box);}
  const state=entranceAvailability(d.ref);if(state.label){const badge=document.createElement('span');badge.className='entrance-status';badge.dataset.state=state.state;badge.textContent=state.label;row.querySelector('.place-row-copy').append(badge);}
  }
 }
@@ -54,6 +64,13 @@ function updateCardHeading(d){
   styleCandidateCode(badge,d);
   title.classList.add('with-card-ward');
   code.replaceWith(badge);
+ }else if(d.type==='clinic'&&d.code&&code.textContent===d.code){
+  const sign=document.createElement('span');
+  sign.className='clinic-card-sign';
+  sign.setAttribute('aria-hidden','true');
+  styleCandidateCode(sign,d);
+  code.classList.add('has-clinic-card-sign');
+  code.append(sign);
  }else if(icons.length){
   code.textContent=d.floor+'階';
   const symbols=document.createElement('span');
