@@ -56,7 +56,8 @@ function previewManualDestination(point){return; /* Registered facilities only. 
 
 let facilityNameObserver=null;
 function updateCardHeading(d){
- if(!d)return;facilityNameObserver?.disconnect();const title=ui('facilityDetailName');title.classList.remove('inline-code-heading','with-card-equipment','with-card-ward');title.style.removeProperty('--heading-size');title.replaceChildren();const code=document.createElement('small');code.className='facility-arrival-code';code.textContent=d.detail?.mapCaption|| (d.ref==='outpatient:3::patientParking'?'屋外・駐車場':d.ref==='outpatient:3::building7Entrance'?'屋外・7号館':/^(?:[1-9]|10)(?:[A-Z]|[東西][AB])$/.test(d.code||'')?d.code:d.floor+'階');const track=document.createElement('span');track.className='facility-name-track';const name=document.createElement('span');name.textContent=['equipment','toilet'].includes(d.type)?destinationDisplayName(d).replace(/^\d+階\s+/,''):destinationDisplayName(d);track.append(name);title.append(code,track);
+ if(!d)return;facilityNameObserver?.disconnect();const title=ui('facilityDetailName');title.classList.remove('inline-code-heading','with-card-equipment','with-card-ward','with-large-clinic-sign');title.style.removeProperty('--heading-size');title.replaceChildren();const code=document.createElement('small');code.className='facility-arrival-code';code.textContent=d.detail?.mapCaption|| (d.ref==='outpatient:3::patientParking'?'屋外・駐車場':d.ref==='outpatient:3::building7Entrance'?'屋外・7号館':/^(?:[1-9]|10)(?:[A-Z]|[東西][AB])$/.test(d.code||'')?d.code:d.floor+'階');const track=document.createElement('span');track.className='facility-name-track';const name=document.createElement('span');name.textContent=['equipment','toilet'].includes(d.type)?destinationDisplayName(d).replace(/^\d+階\s+/,''):destinationDisplayName(d);track.append(name);title.append(code,track);
+ let clinicSign=null;
  const icons=placeOfficialIcons(d);
  if(d.type==='ward'&&d.code){
   const badge=document.createElement('span');
@@ -67,6 +68,7 @@ function updateCardHeading(d){
  }else if(d.type==='clinic'&&d.code&&code.textContent===d.code){
   const sign=document.createElement('span');
   sign.className='clinic-card-sign';
+  clinicSign=sign;
   sign.setAttribute('aria-hidden','true');
   styleCandidateCode(sign,d);
   code.classList.add('has-clinic-card-sign');
@@ -79,8 +81,21 @@ function updateCardHeading(d){
   title.classList.add('with-card-equipment');
   title.append(symbols);
  }
- const measure=()=>{if(!track.isConnected||track.clientWidth===0)return;title.classList.remove('inline-code-heading');track.className='facility-name-track two-line';title.style.removeProperty('--heading-size');track.style.maxHeight='none';name.style.fontSize='';track.replaceChildren(name);const base=Math.max(16,parseFloat(getComputedStyle(title).fontSize)||16);const fits=(lines)=>name.getBoundingClientRect().height<=parseFloat(getComputedStyle(name).fontSize)*1.4*lines+2;let done=false;for(let size=base;size>=16;size-=.5){name.style.fontSize=size+'px';if(fits(3)){done=true;break;}}if(!done){title.classList.add('inline-code-heading');track.classList.remove('two-line');for(let size=base;size>=12;size-=.5){title.style.setProperty('--heading-size',size+'px');name.style.fontSize=size+'px';if(fits(3))break;}}track.title=destinationDisplayName(d);};
- facilityNameObserver=new ResizeObserver(measure);facilityNameObserver.observe(track);requestAnimationFrame(measure);document.fonts?.ready.then(measure);
+ const measure=()=>{if(!track.isConnected||title.clientWidth===0)return;
+ title.classList.remove('with-large-clinic-sign');title.classList.remove('inline-code-heading');track.className='facility-name-track two-line';title.style.removeProperty('--heading-size');track.style.maxHeight='none';name.style.fontSize='';track.replaceChildren(name);const base=Math.max(16,parseFloat(getComputedStyle(title).fontSize)||16);const fits=(lines)=>name.getBoundingClientRect().height<=parseFloat(getComputedStyle(name).fontSize)*1.4*lines+2;let done=false;for(let size=base;size>=16;size-=.5){name.style.fontSize=size+'px';if(fits(3)){done=true;break;}}if(!done){title.classList.add('inline-code-heading');track.classList.remove('two-line');for(let size=base;size>=12;size-=.5){title.style.setProperty('--heading-size',size+'px');name.style.fontSize=size+'px';if(fits(3))break;}}track.title=destinationDisplayName(d);
+ if(clinicSign&&!title.classList.contains('inline-code-heading')){
+  const nameHeight=name.getBoundingClientRect().height;
+  title.classList.add('with-large-clinic-sign');
+  for(const size of [40,32,24]){
+   code.style.setProperty('--clinic-sign-size',size+'px');
+   if(name.getBoundingClientRect().height<=nameHeight+1&&title.getBoundingClientRect().height<=100)return;
+  }
+  title.classList.remove('with-large-clinic-sign');
+ }
+ };
+ let observedWidth=0;
+ facilityNameObserver=new ResizeObserver(()=>{if(title.clientWidth===observedWidth)return;observedWidth=title.clientWidth;measure();});
+ facilityNameObserver.observe(title);requestAnimationFrame(measure);document.fonts?.ready.then(measure);
 }
 function initVisitorUpdates(){
  if(reviewEmbedded)return;
