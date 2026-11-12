@@ -228,9 +228,9 @@ body.visitor-experience #placeResults .equipment-result-floor{
  display:block;color:#31515d;font-size:13px;font-weight:700;text-align:left;
 }
 body.visitor-experience #placeResults .equipment-result-floor+strong{text-align:left}
-.has-clinic-card-sign{position:relative}
-.clinic-card-sign{
+.has-clinic-card-sign{position:relative;color:transparent}
+body.visitor-experience:not(#original-type):not(#small-type):not(#tiny-type) #facilityDetailName .clinic-card-sign{
  position:absolute;left:0;top:50%;transform:translateY(-50%);
- display:grid;place-items:center;min-width:24px;height:18px;padding-inline:2px;
- color:#fff;border-radius:4px;font:inherit;line-height:1;white-space:nowrap;
+ display:grid;place-items:center;box-sizing:border-box;width:18px;height:18px;
+ color:#fff;border-radius:4px;font-size:12px!important;line-height:1;white-space:nowrap;
 }
