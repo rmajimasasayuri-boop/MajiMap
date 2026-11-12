@@ -228,19 +228,3 @@ body.visitor-experience #placeResults .equipment-result-floor{
  display:block;color:#31515d;font-size:13px;font-weight:700;text-align:left;
 }
 body.visitor-experience #placeResults .equipment-result-floor+strong{text-align:left}
-.has-clinic-card-sign{position:relative;color:transparent}
-body.visitor-experience:not(#original-type):not(#small-type):not(#tiny-type) #facilityDetailName .clinic-card-sign{
- position:absolute;left:0;top:50%;transform:translateY(-50%);
- display:grid;place-items:center;box-sizing:border-box;width:18px;height:18px;
- color:#fff;border-radius:4px;font-size:12px!important;line-height:1;white-space:nowrap;
-}
-
-body.visitor-experience #facilityDetailName.with-large-clinic-sign{
- display:flex!important;align-items:center;gap:4px;
-}
-.with-large-clinic-sign .facility-arrival-code{
- flex:none;width:var(--clinic-sign-size,40px);height:var(--clinic-sign-size,40px);margin:0;
-}
-body.visitor-experience:not(#original-type):not(#small-type):not(#tiny-type) #facilityDetailName.with-large-clinic-sign .clinic-card-sign{
- top:0;transform:none;width:100%;height:100%;font-size:13px!important;border-radius:5px;
-}
