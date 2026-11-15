@@ -53,6 +53,6 @@ function routeEntranceNotice(from,to,graph,path,date=new Date()){
  const usesAfterHours=path.some((ref,i)=>i>0&&deckEntranceCrossing(graph?.nodes[path[i-1]],graph?.nodes[ref])===afterHoursEntranceRef);
  if(!usesAfterHours)return null;
  const status=entranceAvailability(regularEntranceRefs[0],date);
- return status.closed?{blocked:false,text:status.closedToday?'通常の出入口は本日閉門です。3階の時間外出入口を通ります。':'通常の出入口は現在利用できないため、3階の時間外出入口を通ります。'}:null;
+ return status.closed?{blocked:false,planningOnly:true,text:status.closedToday?'通常の出入口は本日閉門です。3階の時間外出入口を通ります。':'通常の出入口は現在利用できないため、3階の時間外出入口を通ります。'}:null;
 }
 function placeNearestKind(d){return d.type==='entrance'?'entrance':d.type==='toilet'?'toilet':d.type==='equipment'?d.category:null;}

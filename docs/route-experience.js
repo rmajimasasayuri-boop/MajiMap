@@ -25,7 +25,7 @@ function syncEntranceNotice(notice,planning){
  if(key!==entranceNoticeState.key)Object.assign(entranceNoticeState,{key,dismissed:false});
  for(const [id,shown] of [
   ['routeEntranceNotice',planning&&!navigationState.active],
-  ['navigationEntranceNotice',navigationState.active],
+  ['navigationEntranceNotice',navigationState.active&&!notice?.planningOnly],
  ]){
   const element=ui(id);
   element.hidden=!notice||!shown||entranceNoticeState.dismissed;
