@@ -211,6 +211,21 @@ for (const [label, query] of [['病棟','病棟'], ['カンファレンス室','
 }
 staffMapControls.append(staffLegendButton);
 ui('mapViewport').append(staffMapControls);
+const returnToOfficial = document.createElement('button');
+returnToOfficial.type = 'button';
+returnToOfficial.textContent = '案内マップに戻る';
+returnToOfficial.onclick = () => {
+  const url = new URL('staff.html', document.baseURI);
+  url.searchParams.set('floor', mapUI.floor);
+  if (mapUI.startConfirmed && !mapUI.manual && !staffAdded.has(mapUI.from)) {
+    url.searchParams.set('from', mapUI.from);
+  }
+  if (mapUI.goal && !mapUI.manualGoal && !staffAdded.has(mapUI.goal.ref)) {
+    url.searchParams.set('goal', mapUI.goal.ref);
+  }
+  location.assign(url);
+};
+staffMapControls.prepend(returnToOfficial);
 
 const staffLegend=document.createElement('p');
 staffLegend.id='staffLegend';
@@ -346,8 +361,22 @@ renderResults();
 const staffQuery = new URLSearchParams(location.search);
 const staffLinkedStart = destinationList.find(d=>d.ref===staffQuery.get('from'));
 const staffLinkedGoal = destinationList.find(d=>d.ref===staffQuery.get('goal'));
+if (staffQuery.get('mode')==='stretcher') {
+  ui('travelChoice').value='stretcher';
+  ui('travelChoice').onchange();
+}
+if (staffQuery.has('from')) mapUI.startConfirmed=false;
 if (staffLinkedStart&&staffPoints.has(staffLinkedStart.ref)) selectStartPlace(staffLinkedStart);
+else if (staffQuery.has('from')) updateCurrentLabel();
 if (staffLinkedGoal&&staffPoints.has(staffLinkedGoal.ref)) {
   choosePlace(staffLinkedGoal);
   enterRoutePlanning();
+}
+
+if (staffQuery.get('find')==='カンファレンス室') {
+  ui('openPlaceSearch').click();
+  const search = ui('findPlace');
+  search.value = staffQuery.get('find');
+  search.dispatchEvent(new Event('input', {bubbles:true}));
+  search.dispatchEvent(new KeyboardEvent('keydown', {key:'Enter',code:'Enter',bubbles:true}));
 }
