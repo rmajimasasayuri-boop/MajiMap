@@ -40,3 +40,14 @@ body.staff-map.visitor-experience .route-planning-header .route-travel-tabs {
 .staff-map-controls button { color: #1c3952; font-weight: 700; }
 .staff-map-controls button[aria-pressed=true] { background: #e0ecff; border-color: #7a9fce; }
 .view-3d .staff-drawing-toggle { display: none; }
+
+.staff-map #mapViewport { background: #fff; }
+.staff-map #baseBadge.map-badge {
+  background: white;
+  color: #214d72;
+  border: 0;
+  box-shadow: none;
+  font-size: clamp(19px, 3vw, 34px);
+  font-weight: 700;
+  pointer-events: none;
+}

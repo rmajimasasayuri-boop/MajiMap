@@ -3,6 +3,7 @@
 const staffPlans = staffData.plans;
 let staffRecords = staffData.records;
 let staffRouteStatus = '';
+let staffRouteEndpoints = null;
 const staffPoints = new Map();
 const staffAdded = new Set();
 const staffPixels = (f, p) => [p[0] * staffPlans[f].width / 1000, p[1] * staffPlans[f].height / 1000];
@@ -25,7 +26,7 @@ function loadStaffLocations() {
        d.ref === 'hospital:7::rehab' && p.name.includes('リハビリ')));
     const ref = match?.ref || 'hospital:' + p.floor + '::staff-' + (p.id || index);
     if (!match) {
-      destinationList.push({ref, floor:p.floor, name:p.referenceOnly?p.name+'（入口未確認）':p.name, code:p.code || (p.kind==='elevator'?p.name:''),
+      destinationList.push({ref, floor:p.floor, name:p.referenceOnly?p.name+'（入口未確認・付近まで）':p.name, code:p.code || (p.kind==='elevator'?p.name:''),
         type:'staff-location', detail:{building:'病院棟'}});
       staffAdded.add(ref);
     }
@@ -36,7 +37,7 @@ function loadStaffLocations() {
 
 for (const [floor, plan] of Object.entries(staffPlans)) {
   Object.assign(unifiedMapModel.floors[floor], {
-    image:'staff-guide/maps/' + floor + '-navigation-map.webp',
+    image:'staff-guide/maps/' + floor + '-sign-guide.svg',
     size:[plan.width,plan.height],
   });
 }
@@ -46,7 +47,7 @@ showFloor = f => {
   patientShowFloor(f, false);
   const background = ui('mapBackground');
   background.alt = mapUI.floor + '階の' + '案内マップ';
-  ui('baseBadge').textContent = '職員用マップ';
+  ui('baseBadge').textContent = mapUI.floor + 'F';
 };
 visitorCropActive = () => false;
 focusWard = () => {
@@ -66,13 +67,9 @@ function staffLocation(d) {
 }
 displayPoint = ref => mapUI.graph?.nodes[ref]?.displayPoint || staffLocation(destinationList.find(d => d.ref===ref));
 navigationTargetReference = d => d.ref;
-isGuideOnly = d => Boolean(staffPoints.get(d?.ref)?.referenceOnly) || !staffLocation(d);
-routeStartPoint = () => mapUI.manual?.point || displayPoint(mapUI.from);
-routeGoalPoint = () => {
-  const destination = staffPoints.get(mapUI.goal?.ref);
-  return mapUI.manualGoal?.point || (destination?.approach && mapUI.path.length
-    ? staffPixels(destination.floor,destination.approach) : staffLocation(mapUI.goal));
-};
+isGuideOnly = d => !staffLocation(d);
+routeStartPoint = () => (mapUI.path.length && staffRouteEndpoints?.start) || mapUI.manual?.point || displayPoint(mapUI.from);
+routeGoalPoint = () => (mapUI.path.length && staffRouteEndpoints?.goal) || mapUI.manualGoal?.point || staffLocation(mapUI.goal);
 const patientResultCategoryMatches = resultCategoryMatches;
 resultCategoryMatches = d => d.type==='staff-location'
   ? mapUI.filter==='all' || (mapUI.filter==='equipment' && Boolean(staffPoints.get(d.ref)?.kind))
@@ -138,13 +135,18 @@ renderOverlay = () => {
     const target = svgNode('g',{class:'staff-marker',role:'button',tabindex:0,'aria-label':d.name,'data-place-ref':d.ref});
     target.append(svgNode('title',{},d.name));
     target.append(svgNode('circle',{cx:x,cy:y,r:11,fill:'transparent'}));
-    if (kind==='stairs') target.append(svgNode('polygon',{points:`${x},${y-8} ${x-8},${y+6} ${x+8},${y+6}`,fill:color,stroke:'white'}));
+    const zoomScale = mapUI.base * mapUI.zoom || 1;
+    if (kind==='elevator' && !primary) {
+      const iconSize = Math.max(20, 13/zoomScale);
+      target.append(svgNode('use',{href:'assets/equipment-pictograms.svg#elevator',
+        x:x-iconSize/2,y:y-iconSize/2,width:iconSize,height:iconSize,'pointer-events':'none'}));
+    } else if (kind==='stairs') target.append(svgNode('polygon',{points:`${x},${y-8} ${x-8},${y+6} ${x+8},${y+6}`,fill:color,stroke:'white'}));
     else target.append(svgNode('circle',{cx:x,cy:y,r:primary?9:5,fill:color,stroke:'white','stroke-width':2}));
     const showLabel = primary || (kind==='stairs'&&mapUI.zoom>=1.4) || mapUI.zoom>=2;
     if (showLabel) {
       const label = conference ? '会議室 ' + d.code : d.code || d.name;
       const position = staffLabelPosition(d,place,x,y);
-      target.append(svgNode('text',{...position,fill:color,'font-size':primary?23:16,
+      target.append(svgNode('text',{...position,fill:color,'font-size':primary?Math.max(22,11/zoomScale):Math.max(15,9/zoomScale),
         'font-weight':'bold',stroke:'white','stroke-width':5,'paint-order':'stroke','pointer-events':'none'},label));
     }
     target.onkeydown = e => {
@@ -155,7 +157,10 @@ renderOverlay = () => {
   }
   const from = routeStartPoint(), to = routeGoalPoint();
   if (hasVisibleStart()&&!navigationState.active&&referenceFloor(mapUI.from)===f&&from) addPin(from,'出発地','#2580c5');
-  if (mapUI.goal?.floor===f&&to) addPin(to,'目的地','#d83a40');
+  if (mapUI.goal?.floor===f&&to) {
+    const nearby = mapUI.path.length && staffPoints.get(mapUI.goal.ref)?.referenceOnly;
+    addPin(to,nearby?'付近の通路':'目的地','#d83a40');
+  }
   drawNavigationPosition();
   window.dispatchEvent(new Event('maji-map-update'));
 };
@@ -211,25 +216,10 @@ for (const [label, query] of [['病棟','病棟'], ['カンファレンス室','
 }
 staffMapControls.append(staffLegendButton);
 ui('mapViewport').append(staffMapControls);
-const returnToOfficial = document.createElement('button');
-returnToOfficial.type = 'button';
-returnToOfficial.textContent = '案内マップに戻る';
-returnToOfficial.onclick = () => {
-  const url = new URL('staff.html', document.baseURI);
-  url.searchParams.set('floor', mapUI.floor);
-  if (mapUI.startConfirmed && !mapUI.manual && !staffAdded.has(mapUI.from)) {
-    url.searchParams.set('from', mapUI.from);
-  }
-  if (mapUI.goal && !mapUI.manualGoal && !staffAdded.has(mapUI.goal.ref)) {
-    url.searchParams.set('goal', mapUI.goal.ref);
-  }
-  location.assign(url);
-};
-staffMapControls.prepend(returnToOfficial);
 
 const staffLegend=document.createElement('p');
 staffLegend.id='staffLegend';
-staffLegend.textContent='緑は病棟入口、紫はカンファレンス室です。壁線の切れ目で開口部を示します。青い実線は案内経路、青い破線は試算経路です。';
+staffLegend.textContent='緑は病棟入口、紫はカンファレンス室です。壁線の切れ目で開口部を示します。青い実線は案内経路、青い破線は試算経路です。入口未確認の施設は、登録された近くの通路まで案内します。';
 ui('mapInfoDialog').prepend(staffLegend);
 function staffNotice(message) {
   const node=ui('staffStatus');
@@ -242,7 +232,8 @@ function staffEndpoint(ref, manual) {
   if (manual) return {id:ref, floor:manual.floor, name:manual.name,
     point:staffNormalized(manual.floor,manual.point)};
   const d=destinationList.find(d=>d.ref===ref), p=staffPoints.get(ref);
-  return p&&!p.referenceOnly&&{...p,point:p.approach||p.point,id:ref,name:d.code&&!d.name.startsWith(d.code)?d.code+' '+d.name:d.name};
+  return p&&{...p,point:p.approach||p.point,id:ref,name:p.referenceOnly?p.name:
+    d.code&&!d.name.includes(d.code)?d.code+' '+d.name:d.name};
 }
 function requiredStaffLift(start, goal) {
   const names=[start.name,goal.name], ward={'西A':'EV9','西B':'EV8','東A':'EV11','東B':'EV7'};
@@ -254,6 +245,7 @@ function requiredStaffLift(start, goal) {
 }
 routePlan = () => {
   staffRouteStatus='';
+  staffRouteEndpoints=null;
   staffNotice('');
   navigationState.steps=[];
   mapUI.path=[];
@@ -266,16 +258,21 @@ routePlan = () => {
   if (!mapUI.goal||!ensureIndoorStart(false)) return renderOverlay();
   const start=staffEndpoint(mapUI.from,mapUI.manual), goal=staffEndpoint(mapUI.goal.ref,mapUI.manualGoal);
   const mode=({auto:'walk',elevator:'wheelchair',stretcher:'stretcher'})[ui('travelChoice').value];
+  const provisional = Boolean(start?.referenceOnly || goal?.referenceOnly);
   const result=start&&goal&&start.id!==goal.id
-    ? staffRoute(staffRecords,staffPlans,start,goal,mode,ui('staffPreview').checked,requiredStaffLift(start,goal))
-    : {error:start&&goal?'出発地と目的地は同じ場所です。':'この施設の職員用図面上の位置は未登録です。図面上で出発地・目的地を指定してください。'};
+    ? staffRoute(staffRecords,staffPlans,start,goal,mode,provisional||ui('staffPreview').checked,requiredStaffLift(start,goal))
+    : {error:start&&goal?'出発地と目的地は同じ場所です。':'この施設の位置は未登録です。地図上で出発地・目的地を指定してください。'};
   if (result.error) {staffNotice(result.error);return renderOverlay();}
-  if (result.uncertain) staffRouteStatus='試算 · 未確認区間を含みます';
+  staffRouteEndpoints = {start:result.path[0].p, goal:result.path.at(-1).p};
+  const entranceNotice = goal.referenceOnly ? '入口未確認 · 目的地付近の通路まで'
+    : start.referenceOnly ? '入口未確認 · 出発地付近の通路から' : '';
+  staffRouteStatus = [entranceNotice, result.uncertain && '試算 · 未確認区間を含みます']
+    .filter(Boolean).join('。');
   const graph={nodes:{},adj:{}}, refs=result.path.map((n,i)=>`hospital:${n.floor}::staff-route-${i}`);
   let run=[], transferIndex=0;
   function addWalk(points, f, title) {
     if (points.length) navigationState.steps.push({floor:f,kind:'walk',title,
-      description:staffRouteStatus||'図面の青線に沿って進んでください。',segments:[{floor:f,points:points.slice()}]});
+      description:staffRouteStatus||'地図の青線に沿って進んでください。',segments:[{floor:f,points:points.slice()}]});
   }
   for (const [i,node] of result.path.entries()) {
     const id=refs[i];
@@ -299,8 +296,8 @@ routePlan = () => {
     }
     run.push(node.p);
   }
-  addWalk(run,goal.floor,goal.name+(goal.approach?'の入口手前':'')+'まで');
-  if(staffRouteStatus) for(const step of navigationState.steps) step.title='試算｜'+step.title;
+  addWalk(run,goal.floor,goal.name+(goal.referenceOnly?'付近の通路':goal.approach?'の入口手前':'')+'まで');
+  if(result.uncertain || provisional) for(const step of navigationState.steps) step.title='試算｜'+step.title;
   mapUI.graph=graph;
   mapUI.path=refs;
   for(const step of navigationState.steps){
@@ -327,7 +324,7 @@ selectMapPoint = point => {
     const hit=nearestOnPolyline(point,r.points.map(p=>staffPixels(f,p)));
     if(hit&&hit.distance<distance){nearest=hit;distance=hit.distance;}
   }
-  if(!nearest){staffNotice('登録済みの通路線か施設マーカーを選んでください。');return;}
+  if(!nearest){staffNotice('通路上の位置か、地図の施設マークを選んでください。');return;}
   const named=window.prompt(start?'出発地の名前（任意）':'目的地の名前（任意）');
   if(named===null)return;
   mapUI.selectingEndpointOnMap=null;

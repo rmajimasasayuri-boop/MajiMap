@@ -50,21 +50,40 @@ function staffRoute(records, plans, start, goal, mode, includeUnconfirmed, requi
     const join=addNode(s.floor,s.a.map((v,k)=>v+t*a[k]));
     s.cuts.push([t,join]);o.cuts.push([u,join]);
   }
-  function attach(location,max,uncertain=false) {
+  function attachmentPoints(location,max) {
     const p=scale(location.floor,location.point);
-    let best;
-    for(const s of segments) {
-      if(s.floor!==location.floor)continue;
-      const hit=project(p,s.a,s.b);
-      if(hit.error<=max&&(!best||hit.error<best.error))best={...hit,s};
-    }
+    const hits=segments.filter(s=>s.floor===location.floor).map(s=>({...project(p,s.a,s.b),s}));
+    return hits.filter(hit=>hit.error<=max).sort((a,b)=>a.error-b.error);
+  }
+  function cutSegment(floor, hit) {
+    const join=addNode(floor,hit.point);
+    hit.s.cuts.push([hit.t,join]);
+    return join;
+  }
+  function attach(location,max,uncertain=false) {
+    const [best]=attachmentPoints(location,max);
     if(!best)return null;
-    const id=addNode(location.floor,p), join=addNode(location.floor,best.point);
-    best.s.cuts.push([best.t,join]);
+    const join=cutSegment(location.floor,best);
+    const id=addNode(location.floor,scale(location.floor,location.point));
     connect(id,join,best.error,uncertain||best.error>5);
     return id;
   }
-  const from=attach(start,includeUnconfirmed?34:5),to=attach(goal,includeUnconfirmed?34:5);
+  function attachEndpoint(location, isStart) {
+    if (!location.referenceOnly) return attach(location,includeUnconfirmed?34:5);
+    const {width,height}=plans[location.floor];
+    const hits=attachmentPoints(location,Math.hypot(width,height)*0.08);
+    if (!hits.length) return null;
+    const outside=addNode(location.floor,null);
+    // Try nearby reachable corridor points. The virtual edges only rank candidates
+    // and are excluded from both the displayed route and the doorway checks.
+    for (const hit of hits) {
+      const corridor=cutSegment(location.floor,hit);
+      const [from,to]=isStart?[outside,corridor]:[corridor,outside];
+      edges[from].push({to,cost:hit.error*20,virtual:true});
+    }
+    return outside;
+  }
+  const from=attachEndpoint(start,true),to=attachEndpoint(goal,false);
   if(from===null||to===null)return {error:'出発地または目的地の近くに、利用できる通路がありません。'};
   function parseFloors(value) {
     const text=value.normalize('NFKC');
@@ -99,6 +118,7 @@ function staffRoute(records, plans, start, goal, mode, includeUnconfirmed, requi
   // A recorded closed or unconfirmed opening blocks paths that cross it.
   const barriers=records.filter(r=>r.kind==='opening'&&!allowed(r)).map(r=>({floor:r.floor,points:r.points.map(p=>scale(r.floor,p))}));
   for(let i=0;i<edges.length;i++)edges[i]=edges[i].filter(edge=>{
+    if(edge.virtual)return true;
     const a=nodes[i],b=nodes[edge.to];
     if(a.floor!==b.floor)return true;
     return !barriers.some(({floor,points:[c,d]})=>{
@@ -136,5 +156,5 @@ function staffRoute(records, plans, start, goal, mode, includeUnconfirmed, requi
     id=step.id;
     path.unshift(nodes[id]);
   }
-  return {path,transfers,uncertain};
+  return {path:path.filter(node=>node.p),transfers,uncertain};
 }
