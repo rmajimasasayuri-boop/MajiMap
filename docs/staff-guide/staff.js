@@ -24,10 +24,11 @@ function loadStaffLocations() {
       (d.code && p.name.startsWith(d.code + ' ') ||
        d.ref === 'hospital:3::generalReception' && p.name.startsWith('総合受付') ||
        d.ref === 'hospital:7::rehab' && p.name.includes('リハビリ')));
+    const liftInfo = p.kind==='elevator' && staffData.liftInfo?.[p.name];
     const ref = match?.ref || 'hospital:' + p.floor + '::staff-' + (p.id || index);
     if (!match) {
-      destinationList.push({ref, floor:p.floor, name:p.referenceOnly?p.name+'（入口未確認・付近まで）':p.name, code:p.code || (p.kind==='elevator'?p.name:''),
-        type:'staff-location', detail:{building:'病院棟'}});
+      destinationList.push({ref, floor:p.floor, name:p.referenceOnly?p.name+'（入口未確認・付近まで）':liftInfo?p.name+' '+liftInfo.purpose:p.name, code:p.code || (p.kind==='elevator'?p.name:''),
+        type:'staff-location', detail:{building:'病院棟',aliases:liftInfo?.stops}});
       staffAdded.add(ref);
     }
     staffPoints.set(ref, p);
@@ -37,7 +38,7 @@ function loadStaffLocations() {
 
 for (const [floor, plan] of Object.entries(staffPlans)) {
   Object.assign(unifiedMapModel.floors[floor], {
-    image:'staff-guide/maps/' + floor + '-sign-guide.svg',
+    image:'staff-guide/maps/' + floor + '-verified-plan.webp',
     size:[plan.width,plan.height],
   });
 }
@@ -114,7 +115,8 @@ function staffLabelPosition(d, place, x, y) {
         'text-anchor':'middle',
       };
     }
-    return {x:x+12,y:y-8};
+    const scale = mapUI.base * mapUI.zoom || 1;
+    return {x:x+9/scale,y:y-6/scale};
 }
 renderOverlay = () => {
   const svg = ui('unifiedOverlay'), f = mapUI.floor;
@@ -133,11 +135,12 @@ renderOverlay = () => {
     const primary = conference || ward || /リハビリ|EVホール|総合受付/.test(d.name);
     const color = conference?'#7b3e9d':ward?'#177255':kind==='stairs'?'#564684':'#176489';
     const target = svgNode('g',{class:'staff-marker',role:'button',tabindex:0,'aria-label':d.name,'data-place-ref':d.ref});
-    target.append(svgNode('title',{},d.name));
+    const liftInfo = kind==='elevator' && staffData.liftInfo?.[place.name];
+    target.append(svgNode('title',{},liftInfo?d.name+' · '+liftInfo.stops:d.name));
     target.append(svgNode('circle',{cx:x,cy:y,r:11,fill:'transparent'}));
     const zoomScale = mapUI.base * mapUI.zoom || 1;
     if (kind==='elevator' && !primary) {
-      const iconSize = Math.max(20, 13/zoomScale);
+      const iconSize = 16/zoomScale;
       target.append(svgNode('use',{href:'assets/equipment-pictograms.svg#elevator',
         x:x-iconSize/2,y:y-iconSize/2,width:iconSize,height:iconSize,'pointer-events':'none'}));
     } else if (kind==='stairs') target.append(svgNode('polygon',{points:`${x},${y-8} ${x-8},${y+6} ${x+8},${y+6}`,fill:color,stroke:'white'}));
@@ -146,8 +149,8 @@ renderOverlay = () => {
     if (showLabel) {
       const label = conference ? '会議室 ' + d.code : d.code || d.name;
       const position = staffLabelPosition(d,place,x,y);
-      target.append(svgNode('text',{...position,fill:color,'font-size':primary?Math.max(22,11/zoomScale):Math.max(15,9/zoomScale),
-        'font-weight':'bold',stroke:'white','stroke-width':5,'paint-order':'stroke','pointer-events':'none'},label));
+      target.append(svgNode('text',{...position,fill:color,'font-size':(primary?14:11)/zoomScale,
+        'font-weight':'bold',stroke:'white','stroke-width':2.8/zoomScale,'paint-order':'stroke','pointer-events':'none'},label));
     }
     target.onkeydown = e => {
       if (e.key==='Enter'||e.key===' ') { e.preventDefault(); e.stopPropagation(); previewPlacePhoto(d,null,true); }
@@ -182,7 +185,7 @@ document.querySelector('.route-travel-tabs').append(stretcherChoice);
 
 const staffOptions = document.createElement('div');
 staffOptions.className='staff-options';
-staffOptions.innerHTML='<label><input type="checkbox" id="staffPreview"> 未確認区間も試算</label><label id="staffLiftField" hidden>使用EV <select id="staffLift"><option value="">搬送ルールに従う</option></select></label><p id="staffStatus" role="status" hidden></p>';
+staffOptions.innerHTML='<label><input type="checkbox" id="staffPreview" checked> 未確認の通路も含める（試算）</label><label id="staffLiftField" hidden>使用EV <select id="staffLift"><option value="">搬送ルールに従う</option></select></label><p id="staffStatus" role="status" hidden></p>';
 staffOptions.addEventListener('pointerdown', event => event.stopPropagation());
 ui('routeOptionsDock').append(staffOptions);
 for (const lift of staffData.rules.stretcherElevators) ui('staffLift').add(new Option(lift,lift));
@@ -219,7 +222,7 @@ ui('mapViewport').append(staffMapControls);
 
 const staffLegend=document.createElement('p');
 staffLegend.id='staffLegend';
-staffLegend.textContent='緑は病棟入口、紫はカンファレンス室です。壁線の切れ目で開口部を示します。青い実線は案内経路、青い破線は試算経路です。入口未確認の施設は、登録された近くの通路まで案内します。';
+staffLegend.textContent='緑は病棟入口、紫はカンファレンス室です。EVの用途・停止階はEV番号・用途図と照合しています。青い実線は案内経路、青い破線は試算経路です。入口未確認の施設は、登録された近くの通路まで案内します。';
 ui('mapInfoDialog').prepend(staffLegend);
 function staffNotice(message) {
   const node=ui('staffStatus');
@@ -260,7 +263,7 @@ routePlan = () => {
   const mode=({auto:'walk',elevator:'wheelchair',stretcher:'stretcher'})[ui('travelChoice').value];
   const provisional = Boolean(start?.referenceOnly || goal?.referenceOnly);
   const result=start&&goal&&start.id!==goal.id
-    ? staffRoute(staffRecords,staffPlans,start,goal,mode,provisional||ui('staffPreview').checked,requiredStaffLift(start,goal))
+    ? staffRoute(staffRecords,staffPlans,start,goal,mode,ui('staffPreview').checked,requiredStaffLift(start,goal))
     : {error:start&&goal?'出発地と目的地は同じ場所です。':'この施設の位置は未登録です。地図上で出発地・目的地を指定してください。'};
   if (result.error) {staffNotice(result.error);return renderOverlay();}
   staffRouteEndpoints = {start:result.path[0].p, goal:result.path.at(-1).p};
