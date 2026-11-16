@@ -20,7 +20,7 @@ function loadStaffLocations() {
     .filter(r => ['stairs','elevator'].includes(r.kind))
     .map(r => ({...r, point:r.points[0]}))];
   for (const [index, p] of locations.entries()) {
-    const match = !p.referenceOnly && !p.category && destinationList.find(d => d.floor === p.floor &&
+    const match = p.ref ? destinationList.find(d => d.ref===p.ref) : !p.referenceOnly && !p.category && destinationList.find(d => d.floor === p.floor &&
       (d.code && p.name.startsWith(d.code + ' ') ||
        d.ref === 'hospital:3::generalReception' && p.name.startsWith('総合受付') ||
        d.ref === 'hospital:7::rehab' && p.name.includes('リハビリ')));
@@ -132,7 +132,7 @@ renderOverlay = () => {
     const place = staffPoints.get(d.ref);
     const conference = place?.category==='conference';
     const ward = d.name.includes('病棟');
-    const primary = conference || ward || /リハビリ|EVホール|総合受付/.test(d.name);
+    const primary = conference || ward || d.ref==='outpatient:2::2S' || /リハビリ|EVホール|総合受付/.test(d.name);
     const color = conference?'#7b3e9d':ward?'#177255':kind==='stairs'?'#564684':'#176489';
     const target = svgNode('g',{class:'staff-marker',role:'button',tabindex:0,'aria-label':d.name,'data-place-ref':d.ref});
     const liftInfo = kind==='elevator' && staffData.liftInfo?.[place.name];

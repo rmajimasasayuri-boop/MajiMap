@@ -3,12 +3,13 @@
 // Coordinates are in the original staff drawing. These are labels, pending doorway verification.
 const staffPlanDestinations = [
   {floor:2, name:'2R 救命救急外来', pixel:[1030,904]},
+  {floor:2, ref:'outpatient:2::2S', name:'2S 中央放射線部・放射線診断科', pixel:[1730,891]},
   {floor:2, name:'第1撮影室（2S-9）', pixel:[1395,1103]},
   {floor:4, name:'中央手術部（EV20側）', pixel:[1497,1134]},
   {floor:5, name:'CCMC', pixel:[1307,1090]},
   {floor:5, name:'ICU', pixel:[1700,1130]},
-].map(({floor,name,pixel})=>({
-  floor, name, referenceOnly:true,
+].map(({floor,ref,name,pixel})=>({
+  floor, ref, name, referenceOnly:true,
   point:[pixel[0] * 1000 / staffData.plans[floor].width, pixel[1] * 1000 / staffData.plans[floor].height],
 }));
 
