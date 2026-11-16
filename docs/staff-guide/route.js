@@ -69,22 +69,24 @@ function staffRoute(records, plans, start, goal, mode, includeUnconfirmed, requi
     return id;
   }
   function attachEndpoint(location, isStart) {
-    if (!location.referenceOnly) return attach(location,includeUnconfirmed?34:5);
     const {width,height}=plans[location.floor];
-    const hits=attachmentPoints(location,Math.hypot(width,height)*0.08);
+    const range = location.referenceOnly ? Math.hypot(width,height)*0.08 : includeUnconfirmed ? 34 : 5;
+    const hits=attachmentPoints(location,range);
     if (!hits.length) return null;
-    const outside=addNode(location.floor,null);
+    const point=location.referenceOnly ? null : scale(location.floor,location.point);
+    const outside=addNode(location.floor,point);
     // Try nearby reachable corridor points. The virtual edges only rank candidates
     // and are excluded from both the displayed route and the doorway checks.
     for (const hit of hits) {
       const corridor=cutSegment(location.floor,hit);
       const [from,to]=isStart?[outside,corridor]:[corridor,outside];
-      edges[from].push({to,cost:hit.error*20,virtual:true});
+      edges[from].push({to,cost:hit.error*20,virtual:location.referenceOnly,
+        uncertain:!location.referenceOnly&&hit.error>5});
     }
     return outside;
   }
   const from=attachEndpoint(start,true),to=attachEndpoint(goal,false);
-  if(from===null||to===null)return {error:'出発地または目的地の近くに、利用できる通路がありません。'};
+  if(from===null||to===null)return {error:'出発地または目的地を、選択した移動方法で使える通路に接続できませんでした。'};
   function parseFloors(value) {
     const text=value.normalize('NFKC');
     const floors=new Set(text.match(/\d+/g)?.map(Number)||[]);
@@ -105,7 +107,11 @@ function staffRoute(records, plans, start, goal, mode, includeUnconfirmed, requi
     if(a.r.name!==b.r.name||a.r.floor===b.r.floor)continue;
     const explicit=a.stops.has(b.r.floor)&&b.stops.has(a.r.floor);
     const compatible=(!a.stops.size||a.stops.has(b.r.floor))&&(!b.stops.size||b.stops.has(a.r.floor));
-    if(!explicit&&(mode==='walk'||!includeUnconfirmed||!compatible))continue;
+    // Missing stop metadata is common in the stair annotations. A repeated stair
+    // identifier can be tried across adjacent annotated floors only.
+    const trialConnection=includeUnconfirmed&&compatible&&
+      (mode!=='walk'||Math.abs(a.r.floor-b.r.floor)===1);
+    if(!explicit&&!trialConnection)continue;
     connect(a.id,b.id,100+65*Math.abs(a.r.floor-b.r.floor),!explicit||a.r.modes[mode]!=='yes'||b.r.modes[mode]!=='yes',a.r.name);
   }
   for(const s of segments){
@@ -145,8 +151,8 @@ function staffRoute(records, plans, start, goal, mode, includeUnconfirmed, requi
     }
   }
   if(!Number.isFinite(costs[to]))return {error:mode==='walk'&&start.floor!==goal.floor
-    ?'経路が見つかりません。階段の接続階と通路への接続を確認してください。'
-    :'経路が見つかりません。通路のつながり、通行可否、EVの停止階を確認してください。'};
+    ?'徒歩経路をつなげませんでした。階段の前後の通路接続を確認してください。'
+    :'登録済みの通路をつなげませんでした。出発地・目的地の入口や、使うEVをご確認ください。'};
   const path=[nodes[to]],transfers=[];
   let uncertain=false;
   for(let id=to;id!==from;){
