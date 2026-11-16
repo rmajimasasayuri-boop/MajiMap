@@ -51,3 +51,5 @@ body.staff-map.visitor-experience .route-planning-header .route-travel-tabs {
   font-weight: 700;
   pointer-events: none;
 }
+
+.staff-map .staff-options[hidden] { display: none; }

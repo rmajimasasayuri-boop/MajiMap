@@ -185,15 +185,16 @@ document.querySelector('.route-travel-tabs').append(stretcherChoice);
 
 const staffOptions = document.createElement('div');
 staffOptions.className='staff-options';
-staffOptions.innerHTML='<label><input type="checkbox" id="staffPreview" checked> 未確認の通路も含める（試算）</label><label id="staffLiftField" hidden>使用EV <select id="staffLift"><option value="">搬送ルールに従う</option></select></label><p id="staffStatus" role="status" hidden></p>';
+staffOptions.innerHTML='<label id="staffLiftField" hidden>使用EV <select id="staffLift"><option value="">搬送ルールに従う</option></select></label><p id="staffStatus" role="status" hidden></p>';
 staffOptions.addEventListener('pointerdown', event => event.stopPropagation());
 ui('routeOptionsDock').append(staffOptions);
 for (const lift of staffData.rules.stretcherElevators) ui('staffLift').add(new Option(lift,lift));
-ui('staffPreview').onchange = ui('staffLift').onchange = () => routePlan();
+ui('staffLift').onchange = () => routePlan();
 const patientUpdatePlanner = updateRoutePlanner;
 updateRoutePlanner = () => {
   patientUpdatePlanner();
   ui('staffLiftField').hidden=ui('travelChoice').value!=='stretcher';
+  staffOptions.hidden=ui('staffLiftField').hidden&&ui('staffStatus').hidden;
 };
 window.addEventListener('maji-map-update',updateRoutePlanner);
 
@@ -263,7 +264,7 @@ routePlan = () => {
   const mode=({auto:'walk',elevator:'wheelchair',stretcher:'stretcher'})[ui('travelChoice').value];
   const provisional = Boolean(start?.referenceOnly || goal?.referenceOnly);
   const result=start&&goal&&start.id!==goal.id
-    ? staffRoute(staffRecords,staffPlans,start,goal,mode,ui('staffPreview').checked,requiredStaffLift(start,goal))
+    ? staffRoute(staffRecords,staffPlans,start,goal,mode,true,requiredStaffLift(start,goal))
     : {error:start&&goal?'出発地と目的地は同じ場所です。':'この施設の位置は未登録です。地図上で出発地・目的地を指定してください。'};
   if (result.error) {staffNotice(result.error);return renderOverlay();}
   staffRouteEndpoints = {start:result.path[0].p, goal:result.path.at(-1).p};
