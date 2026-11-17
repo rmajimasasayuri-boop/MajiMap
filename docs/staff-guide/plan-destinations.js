@@ -3,15 +3,45 @@
 // Coordinates are in the original staff drawing. These are labels, pending doorway verification.
 const staffPlanDestinations = [
   {floor:2, name:'2R 救命救急外来', pixel:[1030,904]},
-  {floor:2, ref:'outpatient:2::2S', name:'2S 中央放射線部・放射線診断科', pixel:[1730,891]},
+  {floor:2, ref:'outpatient:2::2S', name:'2S 中央放射線部・放射線診断科', pixel:[1730,891], approach:[1742,942]},
   {floor:2, name:'第1撮影室（2S-9）', pixel:[1395,1103]},
   {floor:4, name:'中央手術部（EV20側）', pixel:[1497,1134]},
   {floor:5, name:'CCMC', pixel:[1307,1090]},
   {floor:5, name:'ICU', pixel:[1700,1130]},
-].map(({floor,ref,name,pixel})=>({
+].map(({floor,ref,name,pixel,approach})=>({
   floor, ref, name, referenceOnly:true,
-  point:[pixel[0] * 1000 / staffData.plans[floor].width, pixel[1] * 1000 / staffData.plans[floor].height],
+  approach:approach && staffPlanPoint(floor,approach),
+  point:staffPlanPoint(floor,pixel),
 }));
+
+function staffPlanPoint(floor, [x,y]) {
+  const {width,height}=staffData.plans[floor];
+  return [x*1000/width,y*1000/height];
+}
+
+// The approach in each row sits on the annotated corridor on the door's approach side.
+const radiologyRooms = [
+  ['1','診察室',[1788,923],[1759.3,944.9]],
+  ['2','第1MRI室',[1639,1168],[1732.2,1164.6]],
+  ['3','第2MRI室',[1661,1037],[1744.8,1093.5]],
+  ['4','第3MRI室',[1831,1229],[1727.6,1190.7]],
+  ['5','第4MRI室',[1849,1102],[1741.4,1112.8]],
+  ['10','第1CT室',[1883,903],[1833.4,865.4]],
+  ['11','第2CT室',[1774,833],[1841.5,818.9]],
+  ['12','処置室',[1778,770],[1849.1,776.1]],
+  ['13','第3CT室',[1794,704],[1855.8,737.9]],
+  ['14','第2撮影室',[1798,568],[1775.3,611.4]],
+  ['15','第3撮影室',[1842,578],[1858.3,626]],
+  ['16','第4撮影室',[1894,587],[1872.1,628.5]],
+  ['17','第5撮影室',[1941,595],[1920.1,636.9]],
+];
+for (const [number,label,pixel,approach] of radiologyRooms) {
+  const code='2S-'+number;
+  staffPlanDestinations.push({
+    id:code, floor:2, name:code+' '+label, code, category:'radiology',
+    point:staffPlanPoint(2,pixel), approach:staffPlanPoint(2,approach), referenceOnly:true,
+  });
+}
 
 // Room labels use the aligned hospital drawings. Approach points are on the recorded corridor outside the door.
 const conferenceRooms = [

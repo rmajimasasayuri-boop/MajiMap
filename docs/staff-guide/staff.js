@@ -145,7 +145,7 @@ renderOverlay = () => {
         x:x-iconSize/2,y:y-iconSize/2,width:iconSize,height:iconSize,'pointer-events':'none'}));
     } else if (kind==='stairs') target.append(svgNode('polygon',{points:`${x},${y-8} ${x-8},${y+6} ${x+8},${y+6}`,fill:color,stroke:'white'}));
     else target.append(svgNode('circle',{cx:x,cy:y,r:primary?9:5,fill:color,stroke:'white','stroke-width':2}));
-    const showLabel = primary || (kind==='stairs'&&mapUI.zoom>=1.4) || mapUI.zoom>=2;
+    const showLabel = primary || (place.category==='radiology'&&mapUI.zoom>=1.65) || (kind==='stairs'&&mapUI.zoom>=1.4) || mapUI.zoom>=2;
     if (showLabel) {
       const label = conference ? '会議室 ' + d.code : d.code || d.name;
       const position = staffLabelPosition(d,place,x,y);
@@ -205,7 +205,7 @@ const staffLegendButton = document.createElement('button');
 staffLegendButton.type = 'button';
 staffLegendButton.textContent = '地図の凡例';
 staffLegendButton.onclick = () => ui('mapInfoDialog').showModal();
-for (const [label, query] of [['病棟','病棟'], ['カンファレンス室','カンファレンス室']]) {
+for (const [label, query] of [['病棟','病棟'], ['カンファレンス室','カンファレンス室'], ['2S周辺','2S']]) {
   const button = document.createElement('button');
   button.type = 'button';
   button.textContent = label;

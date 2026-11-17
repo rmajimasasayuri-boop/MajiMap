@@ -70,7 +70,8 @@ function staffRoute(records, plans, start, goal, mode, includeUnconfirmed, requi
   }
   function attachEndpoint(location, isStart) {
     const {width,height}=plans[location.floor];
-    const range = location.referenceOnly ? Math.hypot(width,height)*0.08 : includeUnconfirmed ? 34 : 5;
+    const range = location.referenceOnly && !location.approach ? Math.hypot(width,height)*0.08
+      : location.referenceOnly ? 12 : includeUnconfirmed ? 34 : 5;
     const hits=attachmentPoints(location,range);
     if (!hits.length) return null;
     const point=location.referenceOnly ? null : scale(location.floor,location.point);
