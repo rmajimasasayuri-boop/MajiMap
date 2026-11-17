@@ -4,12 +4,12 @@
 const staffPlanDestinations = [
   {floor:2, name:'2R 救命救急外来', pixel:[1030,904]},
   {floor:2, ref:'outpatient:2::2S', name:'2S 中央放射線部・放射線診断科', pixel:[1730,891], approach:[1742,942]},
-  {floor:2, name:'第1撮影室（2S-9）', pixel:[1395,1103]},
+  {floor:2, code:'2S-9', name:'第1撮影室', pixel:[1395,1103]},
   {floor:4, name:'中央手術部（EV20側）', pixel:[1497,1134]},
   {floor:5, name:'CCMC', pixel:[1307,1090]},
   {floor:5, name:'ICU', pixel:[1700,1130]},
-].map(({floor,ref,name,pixel,approach})=>({
-  floor, ref, name, referenceOnly:true,
+].map(({floor,ref,code,name,pixel,approach})=>({
+  floor, ref, code, name, referenceOnly:true,
   approach:approach && staffPlanPoint(floor,approach),
   point:staffPlanPoint(floor,pixel),
 }));
@@ -34,12 +34,29 @@ const radiologyRooms = [
   ['15','第3撮影室',[1842,578],[1858.3,626]],
   ['16','第4撮影室',[1894,587],[1872.1,628.5]],
   ['17','第5撮影室',[1941,595],[1920.1,636.9]],
+  ['19','第6撮影室',[1894,408]],
+  ['20','第7撮影室',[1932,416]],
+  ['21','第8撮影室',[1972,419]],
 ];
 for (const [number,label,pixel,approach] of radiologyRooms) {
   const code='2S-'+number;
   staffPlanDestinations.push({
-    id:code, floor:2, name:number==='13'?label:code+' '+label, code, category:'radiology',
-    point:staffPlanPoint(2,pixel), approach:staffPlanPoint(2,approach), referenceOnly:true,
+    id:code, floor:2, name:label, code, category:'radiology',
+    point:staffPlanPoint(2,pixel), approach:approach && staffPlanPoint(2,approach), referenceOnly:true,
+  });
+}
+
+for (const [id,name,pixel,approach] of [
+  ['reading','読影室',[1898,787],[1850,792]],
+  ['operation-1','操作室1',[1458,1053],[1461,1050]],
+  ['operation-2','操作室2',[1649,1115],[1649,1114]],
+  ['operation-3','操作室3',[1842,1177],[1843,1169]],
+  ['operation-4','操作室4',[1851,715],[1860,715]],
+  ['operation-5','操作室5',[1882,368],[1881,365]],
+]) {
+  staffPlanDestinations.push({
+    id:'2S-'+id, floor:2, name, category:'radiology', aliases:'2S', referenceOnly:true,
+    point:staffPlanPoint(2,pixel), approach:staffPlanPoint(2,approach),
   });
 }
 
@@ -89,12 +106,44 @@ for (const [floor, code, pixel, approach] of conferenceRooms) {
   });
 }
 
-// Door IDs from the 2F review and the patient corridors those doors face.
-const radiologyPatientEntrances = [
+// The access type comes from the corridor on the approach side of each door.
+const radiologyEntrances = [
+  ['099c87ed-5a05-44bf-a98f-e3c928789610', [
+    ['2S-2','f93320ec-7353-445f-ac8f-1cd2438fcc3a'],
+    ['2S-3','f29f539e-6e55-472c-9aad-de0a75f4ad82'],
+  ]],
+  ['d2533851-295b-4881-91e2-1f0518f78111', [
+    ['2S-4','769ec754-b6d1-4aa9-b250-10ef8f15d03e'],
+  ]],
+  ['346a21f1-3fac-4cfd-9005-08a2d59946a3', [
+    ['2S-5','10556df7-ee63-4e0f-99e6-2786884d7291'],
+  ]],
+  ['f5dabe7c-06c4-4aa0-af32-d824f4d8b2dd', [
+    ['2S-14','f99f46fb-fadd-4318-818c-a43755e3e725'],
+    ['2S-15','f688e006-f66d-4ddc-b092-a39adec137b2'],
+    ['2S-16','6a7659d9-d8ba-42de-a1b1-a539330de9be'],
+    ['2S-17','28334a13-34a0-4618-a238-d77483ad0500'],
+  ]],
+  ['c8a3fecc-db9e-4dd6-967d-a96c2bb691ef', [
+    ['2S-19','281894a8-043f-4f2f-98fe-cb8c95307271'],
+    ['2S-20','90614702-b427-430b-98a3-78424f347a6e'],
+    ['2S-21','70527308-2faa-498b-9fd4-9e2b0853be20'],
+  ]],
+  ['04dc7914-3381-4744-a505-dfa2bd4a29ab', [
+    ['2S-reading','8201ff75-8f54-488d-baf3-8419b5b1df3e'],
+  ]],
+  ['43a99009-8196-44ee-9a23-bb3c824ac822', [
+    ['2S-operation-2','004c0dae-2ada-42a4-8559-b4e9ddbd2aca'],
+  ]],
+  ['7efd8b76-8c0f-4e7d-8fb6-c9641d90352d', [
+    ['2S-operation-3','eadb5eb3-3204-43c8-ae36-3bf911702899'],
+  ]],
   ['3affd2cc-8b69-4954-9c69-832b589619ab', [
+    ['2S-operation-4','5b21db3d-e3f0-4859-addc-263fdf8cb6a4','職員用入口前'],
     ['2S-10','d9bd3497-ce93-420c-82b9-9200d78deb61'],
   ]],
   ['400ec46a-a640-40fc-9112-5defc21ede0c', [
+    ['2S-operation-5','18613b63-9795-48ad-a9af-e22cf911ba5f','職員用入口前'],
     ['2S-11','4821bbe5-3e22-401d-99fd-b2a27c143fd2'],
     ['2S-12','3304cad6-8525-40ec-9bd9-4e4ba9c941e0'],
     ['2S-13','b300a059-cb9b-4e6c-b36b-c1906dc6aaa7'],

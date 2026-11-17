@@ -52,7 +52,7 @@ function staffRoute(records, plans, start, goal, mode, includeUnconfirmed, requi
   }
   function attachmentPoints(location,max) {
     const p=scale(location.floor,location.point);
-    const hits=segments.filter(s=>s.floor===location.floor&&(!location.patientCorridorId||s.recordId===location.patientCorridorId)).map(s=>({...project(p,s.a,s.b),s}));
+    const hits=segments.filter(s=>s.floor===location.floor&&(!location.entranceCorridorId||s.recordId===location.entranceCorridorId)).map(s=>({...project(p,s.a,s.b),s}));
     return hits.filter(hit=>hit.error<=max).sort((a,b)=>a.error-b.error);
   }
   function cutSegment(floor, hit) {
