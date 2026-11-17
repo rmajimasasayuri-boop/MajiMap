@@ -9,6 +9,27 @@ const staffAdded = new Set();
 const staffPixels = (f, p) => [p[0] * staffPlans[f].width / 1000, p[1] * staffPlans[f].height / 1000];
 const staffNormalized = (f, p) => [p[0] * 1000 / staffPlans[f].width, p[1] * 1000 / staffPlans[f].height];
 
+function radiologyEntryPoints(records) {
+  const byId = new Map(records.map(record => [record.id,record]));
+  const entries = new Map();
+  for (const [corridorId,doors] of radiologyPatientEntrances) {
+    const corridor = byId.get(corridorId);
+    if (!corridor || corridor.floor!==2 || corridor.access!=='outpatient' || corridor.kind!=='corridor') continue;
+    const line = corridor.points.map(point => staffPixels(2,point));
+    for (const [room,doorId] of doors) {
+      const door = byId.get(doorId);
+      if (!door || door.floor!==2 || door.kind!=='opening' || door.points.length!==2) continue;
+      const [a,b] = door.points;
+      const center = a.map((value,axis) => (value+b[axis])/2);
+      const approach = nearestOnPolyline(staffPixels(2,center),line);
+      if (approach && approach.distance<=45) entries.set(room,{
+        approach:staffNormalized(2,approach.point), patientCorridorId:corridorId, patientDoorId:doorId,
+      });
+    }
+  }
+  return entries;
+}
+
 function loadStaffLocations() {
   for (let i = destinationList.length - 1; i >= 0; i--) {
     if (staffAdded.has(destinationList[i].ref)) destinationList.splice(i, 1);
@@ -16,7 +37,9 @@ function loadStaffLocations() {
   for (const option of [...ui('fromSelect').options]) if (staffAdded.has(option.value)) option.remove();
   staffAdded.clear();
   staffPoints.clear();
-  const locations = [...staffData.places, ...staffPlanDestinations, ...staffRecords
+  const patientEntries = radiologyEntryPoints(staffRecords);
+  const destinations = staffPlanDestinations.map(place => ({...place,...patientEntries.get(place.id)}));
+  const locations = [...staffData.places, ...destinations, ...staffRecords
     .filter(r => ['stairs','elevator'].includes(r.kind))
     .map(r => ({...r, point:r.points[0]}))];
   for (const [index, p] of locations.entries()) {
@@ -27,7 +50,7 @@ function loadStaffLocations() {
     const liftInfo = p.kind==='elevator' && staffData.liftInfo?.[p.name];
     const ref = match?.ref || 'hospital:' + p.floor + '::staff-' + (p.id || index);
     if (!match) {
-      destinationList.push({ref, floor:p.floor, name:p.referenceOnly?p.name+'（入口未確認・付近まで）':liftInfo?p.name+' '+liftInfo.purpose:p.name, code:p.code || (p.kind==='elevator'?p.name:''),
+      destinationList.push({ref, floor:p.floor, name:p.patientDoorId?p.name:p.category==='radiology'?p.name+'（患者側入口未特定）':p.referenceOnly?p.name+'（入口未確認・付近まで）':liftInfo?p.name+' '+liftInfo.purpose:p.name, code:p.code || (p.kind==='elevator'?p.name:''),
         type:'staff-location', detail:{building:'病院棟',aliases:liftInfo?.stops}});
       staffAdded.add(ref);
     }
@@ -147,7 +170,7 @@ renderOverlay = () => {
     else target.append(svgNode('circle',{cx:x,cy:y,r:primary?9:5,fill:color,stroke:'white','stroke-width':2}));
     const showLabel = primary || (place.category==='radiology'&&mapUI.zoom>=1.65) || (kind==='stairs'&&mapUI.zoom>=1.4) || mapUI.zoom>=2;
     if (showLabel) {
-      const label = conference ? '会議室 ' + d.code : d.code || d.name;
+      const label = conference ? '会議室 ' + d.code : d.ref==='hospital:2::staff-2S-13' ? d.name : d.code || d.name;
       const position = staffLabelPosition(d,place,x,y);
       target.append(svgNode('text',{...position,fill:color,'font-size':(primary?14:11)/zoomScale,
         'font-weight':'bold',stroke:'white','stroke-width':2.8/zoomScale,'paint-order':'stroke','pointer-events':'none'},label));
@@ -162,7 +185,8 @@ renderOverlay = () => {
   if (hasVisibleStart()&&!navigationState.active&&referenceFloor(mapUI.from)===f&&from) addPin(from,'出発地','#2580c5');
   if (mapUI.goal?.floor===f&&to) {
     const nearby = mapUI.path.length && staffPoints.get(mapUI.goal.ref)?.referenceOnly;
-    addPin(to,nearby?'付近の通路':'目的地','#d83a40');
+    const patientEntry = mapUI.path.length && staffPoints.get(mapUI.goal.ref)?.patientDoorId;
+    addPin(to,patientEntry?'患者側入口前':nearby?'付近の通路':'目的地','#d83a40');
   }
   drawNavigationPosition();
   window.dispatchEvent(new Event('maji-map-update'));
@@ -268,7 +292,7 @@ routePlan = () => {
     : {error:start&&goal?'出発地と目的地は同じ場所です。':'この施設の位置は未登録です。地図上で出発地・目的地を指定してください。'};
   if (result.error) {staffNotice(result.error);return renderOverlay();}
   staffRouteEndpoints = {start:result.path[0].p, goal:result.path.at(-1).p};
-  const entranceNotice = goal.referenceOnly ? '入口未確認 · 目的地付近の通路まで'
+  const entranceNotice = goal.patientDoorId ? '患者側入口前まで' : goal.category==='radiology' ? '患者側入口未特定 · 目的地付近の通路まで' : goal.referenceOnly ? '入口未確認 · 目的地付近の通路まで'
     : start.referenceOnly ? '入口未確認 · 出発地付近の通路から' : '';
   staffRouteStatus = [entranceNotice, result.uncertain && '試算 · 未確認区間を含みます']
     .filter(Boolean).join('。');
@@ -300,7 +324,7 @@ routePlan = () => {
     }
     run.push(node.p);
   }
-  addWalk(run,goal.floor,goal.name+(goal.referenceOnly?'付近の通路':goal.approach?'の入口手前':'')+'まで');
+  addWalk(run,goal.floor,goal.name+(goal.patientDoorId?'の患者側入口前':goal.referenceOnly?'付近の通路':goal.approach?'の入口手前':'')+'まで');
   if(result.uncertain || provisional) for(const step of navigationState.steps) step.title='試算｜'+step.title;
   mapUI.graph=graph;
   mapUI.path=refs;

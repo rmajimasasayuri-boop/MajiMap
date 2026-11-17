@@ -38,7 +38,7 @@ const radiologyRooms = [
 for (const [number,label,pixel,approach] of radiologyRooms) {
   const code='2S-'+number;
   staffPlanDestinations.push({
-    id:code, floor:2, name:code+' '+label, code, category:'radiology',
+    id:code, floor:2, name:number==='13'?label:code+' '+label, code, category:'radiology',
     point:staffPlanPoint(2,pixel), approach:staffPlanPoint(2,approach), referenceOnly:true,
   });
 }
@@ -88,3 +88,15 @@ for (const [floor, code, pixel, approach] of conferenceRooms) {
     approach:approach && normalize(approach), referenceOnly:!approach,
   });
 }
+
+// Door IDs from the 2F review and the patient corridors those doors face.
+const radiologyPatientEntrances = [
+  ['3affd2cc-8b69-4954-9c69-832b589619ab', [
+    ['2S-10','d9bd3497-ce93-420c-82b9-9200d78deb61'],
+  ]],
+  ['400ec46a-a640-40fc-9112-5defc21ede0c', [
+    ['2S-11','4821bbe5-3e22-401d-99fd-b2a27c143fd2'],
+    ['2S-12','3304cad6-8525-40ec-9bd9-4e4ba9c941e0'],
+    ['2S-13','b300a059-cb9b-4e6c-b36b-c1906dc6aaa7'],
+  ]],
+];

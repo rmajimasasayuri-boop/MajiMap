@@ -25,7 +25,7 @@ function staffRoute(records, plans, start, goal, mode, includeUnconfirmed, requi
     for (const p of points) {
       const node=addNode(r.floor,p);
       if (previous!==undefined && distance(nodes[previous].p,p)>0.001) {
-        segments.push({floor:r.floor,a:nodes[previous].p,b:p,cuts:[[0,previous],[1,node]],uncertain:r.modes[mode]!=='yes'});
+        segments.push({recordId:r.id,floor:r.floor,a:nodes[previous].p,b:p,cuts:[[0,previous],[1,node]],uncertain:r.modes[mode]!=='yes'});
       } else if (previous!==undefined) connect(previous,node,0);
       previous=node;
     }
@@ -52,7 +52,7 @@ function staffRoute(records, plans, start, goal, mode, includeUnconfirmed, requi
   }
   function attachmentPoints(location,max) {
     const p=scale(location.floor,location.point);
-    const hits=segments.filter(s=>s.floor===location.floor).map(s=>({...project(p,s.a,s.b),s}));
+    const hits=segments.filter(s=>s.floor===location.floor&&(!location.patientCorridorId||s.recordId===location.patientCorridorId)).map(s=>({...project(p,s.a,s.b),s}));
     return hits.filter(hit=>hit.error<=max).sort((a,b)=>a.error-b.error);
   }
   function cutSegment(floor, hit) {
