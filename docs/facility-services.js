@@ -55,14 +55,26 @@ function sayarinDepartures(date=new Date()){
 }
 function renderSayarinDepartures(host){
  const {next,later,final}=sayarinDepartures();
- const title='急行Bコース・近畿大学病院発（時刻表・日本時間）';
- const times=['次の発車 '+next,later.length?'その後 '+later.join('、'):'','本日の最終便 '+final].filter(Boolean).join(' ／ ');
- if(host.dataset.reference===sayarinStopRef&&host.textContent===title+times)return;
+ const title='急行Bコース｜近畿大学病院発';
+ const laterBeforeFinal=later.filter(time=>time!==final);
+ const rows=[['次の便',next],['本日の最終便',final]];
+ if(laterBeforeFinal.length)rows.push(['その後の便',laterBeforeFinal.join('、')]);
+ const text=title+rows.flat().join('');
+ if(host.dataset.reference===sayarinStopRef&&host.textContent===text)return;
  host.dataset.reference=sayarinStopRef;
  const heading=document.createElement('strong');
  heading.textContent=title;
- const schedule=document.createElement('span');
- schedule.textContent=times;
+ const schedule=document.createElement('dl');
+ schedule.className='bus-departure-times';
+ for(const [label,time] of rows){
+  const item=document.createElement('div');
+  const term=document.createElement('dt');
+  const value=document.createElement('dd');
+  term.textContent=label;
+  value.textContent=time;
+  item.append(term,value);
+  schedule.append(item);
+ }
  host.replaceChildren(heading,schedule);
  host.title='大阪狭山市の公式時刻表による予定時刻です。臨時変更は公式サイトをご確認ください。';
 }
