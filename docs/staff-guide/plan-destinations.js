@@ -60,7 +60,7 @@ for (const [id,name,pixel,approach] of [
   ['operation-5','操作室5',[1882,368],[1881,365]],
 ]) {
   staffPlanDestinations.push({
-    id:'2S-'+id, floor:2, name, mapLabel:id==='mri-toilet'?'トイレ':undefined,
+    id:'2S-'+id, floor:2, name, toiletIcons:id==='mri-toilet'?['01']:undefined,
     category:'radiology', aliases:'2S', referenceOnly:true,
     point:staffPlanPoint(2,pixel), approach:staffPlanPoint(2,approach),
   });
