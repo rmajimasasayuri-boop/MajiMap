@@ -110,7 +110,14 @@ function placeLabelPolygons(d){
 }
 
 // Resolve overlapping drawing regions consistently in both map views.
-function placeAtMapPoint(places,floor,point){const candidates=places.filter(d=>d.floor===floor&&placeHitPolygons(d).some(ps=>insideArea(point,ps))&&!wardCourtyardPolygons(d).some(ps=>insideArea(point,ps)));const distance=d=>Math.min(...placeLabelBounds(d).map(([x,y,w,h])=>Math.hypot(Math.max(x-point[0],0,point[0]-x-w),Math.max(y-point[1],0,point[1]-y-h))));return candidates.sort((a,b)=>distance(a)-distance(b))[0]||null;}
+function mapPlacesOnFloor(places,floor){
+ return places.flatMap(place=>{
+  if(place.floor===floor)return [place];
+  const labelBounds=place.mapLabelBoundsByFloor?.[floor];
+  return labelBounds?[{...place,floor,labelBounds,canonicalPlace:place}]:[];
+ });
+}
+function placeAtMapPoint(places,floor,point){const candidates=mapPlacesOnFloor(places,floor).filter(d=>placeHitPolygons(d).some(ps=>insideArea(point,ps))&&!wardCourtyardPolygons(d).some(ps=>insideArea(point,ps)));const distance=d=>Math.min(...placeLabelBounds(d).map(([x,y,w,h])=>Math.hypot(Math.max(x-point[0],0,point[0]-x-w),Math.max(y-point[1],0,point[1]-y-h))));return candidates.sort((a,b)=>distance(a)-distance(b))[0]||null;}
 function equipmentTapAudit(places){
  const items=places.filter(d=>['equipment','toilet'].includes(d.type)||d.ref==='outpatient:3::rotaryBusStop');
  const issues=[];let icons=0,checked=0;

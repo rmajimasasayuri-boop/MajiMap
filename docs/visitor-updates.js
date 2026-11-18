@@ -97,17 +97,10 @@ function initVisitorUpdates(){
   const parking=d?.ref==='outpatient:3::patientParking'&&!unifiedMapModel.floors[3].outdoorExtension.completed;
   route.textContent='出発地';
   route.disabled=!d||d.usage==='emergency-only'||isGuideOnly(d);
-  const mapChoice=mapUI.selectingEndpointOnMap;
   route.hidden=parking;
   navigate.textContent='目的地';
   navigate.disabled=!d||isGuideOnly(d);
   navigate.hidden=parking;
-  const website=ui('detailWebsite');
-  if((mapChoice||mapUI.previewPlace)&&d&&website.hidden){
-   website.href='https://www.med.kindai.ac.jp/floormap_facility.html';
-   website.onclick=null;
-   website.hidden=false;
-  }
   ui('facilityDetails').dataset.previewAction='endpoints';
  };
  ui('detailRoute').onclick=()=>{

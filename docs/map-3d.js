@@ -223,11 +223,11 @@
       if(key===previousKey){if(hoverPlace)highlight(hoverPlace);updateProgress();return;}
       const reset=previousKey!==key;previousKey=key;freeGroup();floorLevels=createMap3DLayout(data.maps);floorDepths=createMap3DDepths(data.maps);floorRegistration=createMap3DRegistration(data.maps,data.transfers);
       const box=new T.Box3();
-      const floorTextures=new Set(data.maps.map(map=>map.image+'?v=20261118c'));
+      const floorTextures=new Set(data.maps.map(map=>map.image+'?v=20261118e'));
       for(const [src,tex] of textures)if(!floorTextures.has(src)){tex.dispose();textures.delete(src);}
       for(const map of data.maps) {
         const [w,h]=map.size,active=map.floor===data.floor;
-        const mat=new T.MeshBasicMaterial({map:texture(map.image+'?v=20261118c'),side:T.DoubleSide,transparent:false,opacity:1,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2});
+        const mat=new T.MeshBasicMaterial({map:texture(map.image+'?v=20261118e'),side:T.DoubleSide,transparent:false,opacity:1,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2});
         const plane=new T.Mesh(new T.PlaneGeometry(w*S,h*S),mat);
         plane.rotation.x=-Math.PI/2;plane.position.copy(at(map.floor,[w/2,h/2],0));
         plane.userData={floor:map.floor,width:w,height:h};planes.push(plane);group.add(plane);
@@ -315,7 +315,7 @@
       const pressed=down;down=null;activePointers.delete(e.pointerId);if(!pressed||pressed.id!==e.pointerId||pressed.moved||e.button!==0)return;
       const hit=pointerHit(e);if(!hit)return;
       // A facility is selected on the first click, including on another visible floor.
-      if(hit.place)previewPlacePhoto(hit.place,{x:e.clientX,y:e.clientY},true);
+      if(hit.place)previewPlacePhoto(hit.place.canonicalPlace||hit.place,{x:e.clientX,y:e.clientY},true);
       else {if(mapUI.floor!==hit.floor)showFloor(hit.floor,false);selectMapPoint(hit.point);}
     });
     renderer.domElement.addEventListener('pointercancel',e=>{activePointers.delete(e.pointerId);down=null;});

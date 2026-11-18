@@ -40,7 +40,7 @@ body.visitor-experience #routeSummary,body.visitor-experience #showRouteSteps{di
 /* User withdrew waypoint functionality on 2026-10-30. */
 body.visitor-experience #routeAddWaypoint,body.visitor-experience #routeViaRow{display:none!important}
 
-body.visitor-experience:not(#original-type):not(#small-type):not(#tiny-type) :is(#favoritePlaceButton,.history-star,#clearPlaceSearch,#closeFacilityDetails,#openPlaceSearch,.entrance-route-notice button){font-size:24px!important;line-height:1!important;min-width:44px;min-height:44px}
+body.visitor-experience:not(#original-type):not(#small-type):not(#tiny-type) :is(#favoritePlaceButton,.history-star,#clearPlaceSearch,#closeFacilityDetails,#closeDepartmentWebsites,#openPlaceSearch,.entrance-route-notice button){font-size:24px!important;line-height:1!important;min-width:44px;min-height:44px}
 body.visitor-experience #favoritePlaceButton[aria-pressed=false],body.visitor-experience .history-star[data-saved=false]{color:#83969d!important}
 body.visitor-experience #favoritePlaceButton[aria-pressed=true],body.visitor-experience .history-star[data-saved=true],body.visitor-experience .favorite-place-row button:last-child{color:#f4c20d!important}
 body.visitor-experience #facilityDetails .facility-detail-body{grid-template-rows:minmax(88px,auto) auto auto!important}
@@ -228,3 +228,19 @@ body.visitor-experience #placeResults .equipment-result-floor{
  display:block;color:#31515d;font-size:13px;font-weight:700;text-align:left;
 }
 body.visitor-experience #placeResults .equipment-result-floor+strong{text-align:left}
+
+body.visitor-experience #facilityDetails #detailWebsite:disabled{
+ background:#edf2f4!important;
+ border-color:#d5dfe3!important;
+ color:#657780;
+ opacity:1;
+ cursor:default;
+}
+#closeDepartmentWebsites.facility-close{
+ position:static;
+ flex:0 0 44px;
+ width:44px;
+ height:44px;
+ font-size:24px;
+ line-height:1;
+}
