@@ -255,7 +255,7 @@ body.visitor-experience #facilityDetails #detailWebsite:disabled{
 #facilityHours .bus-first-label{color:#166534}
 #facilityHours .bus-final-label{color:#b42318}
 
-#facilityHours .nankai-departure-row{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:0 8px;width:100%;line-height:1.5;font-variant-numeric:tabular-nums}
+#facilityHours .nankai-departure-row{display:flex;align-items:baseline;flex-wrap:wrap;column-gap:8px;width:100%;line-height:1.5;font-variant-numeric:tabular-nums}
 body.visitor-experience #favoritePlaceButton[hidden]{display:none!important}
 
-#settings [data-filter="bus"] img{width:1em;height:1em;vertical-align:-.12em;margin-inline-end:.25em}
+#facilityHours .nankai-next-time{min-width:4ch}
