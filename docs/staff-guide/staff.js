@@ -162,18 +162,25 @@ renderOverlay = () => {
     target.append(svgNode('title',{},liftInfo?d.name+' · '+liftInfo.stops:d.name));
     target.append(svgNode('circle',{cx:x,cy:y,r:11,fill:'transparent'}));
     const zoomScale = mapUI.base * mapUI.zoom || 1;
-    if (kind==='elevator' && !primary) {
-      const iconSize = 16/zoomScale;
-      target.append(svgNode('use',{href:'assets/equipment-pictograms.svg#elevator',
-        x:x-iconSize/2,y:y-iconSize/2,width:iconSize,height:iconSize,'pointer-events':'none'}));
-    } else if (kind==='stairs') target.append(svgNode('polygon',{points:`${x},${y-8} ${x-8},${y+6} ${x+8},${y+6}`,fill:color,stroke:'white'}));
-    else target.append(svgNode('circle',{cx:x,cy:y,r:primary?9:5,fill:color,stroke:'white','stroke-width':2}));
-    const showLabel = primary || (place.category==='radiology'&&mapUI.zoom>=1.65) || (kind==='stairs'&&mapUI.zoom>=1.4) || mapUI.zoom>=2;
+    if (f!==2) {
+      if (kind==='elevator' && !primary) {
+        const iconSize = 16/zoomScale;
+        target.append(svgNode('use',{href:'assets/equipment-pictograms.svg#elevator',
+          x:x-iconSize/2,y:y-iconSize/2,width:iconSize,height:iconSize,'pointer-events':'none'}));
+      } else if (kind==='stairs') {
+        target.append(svgNode('polygon',{points:`${x},${y-8} ${x-8},${y+6} ${x+8},${y+6}`,fill:color,stroke:'white'}));
+      } else {
+        target.append(svgNode('circle',{cx:x,cy:y,r:primary?9:5,fill:color,stroke:'white','stroke-width':2}));
+      }
+    }
+    const showLabel = mapUI.goal?.ref===d.ref || primary || (place.category==='radiology'&&mapUI.zoom>=1.65) || (kind==='stairs'&&mapUI.zoom>=1.4) || mapUI.zoom>=2;
     if (showLabel) {
       const label = place.mapLabel || (conference ? '会議室 ' + d.code : place.category==='radiology' ? place.name : d.code || d.name);
-      const position = staffLabelPosition(d,place,x,y);
-      target.append(svgNode('text',{...position,fill:color,'font-size':(primary?14:11)/zoomScale,
-        'font-weight':'bold',stroke:'white','stroke-width':2.8/zoomScale,'paint-order':'stroke','pointer-events':'none'},label));
+      const position = f===2 ? {x,y,'text-anchor':'middle','dominant-baseline':'central'} : staffLabelPosition(d,place,x,y);
+      const reception = d.ref==='outpatient:2::2S';
+      target.append(svgNode('text',{...position,fill:reception?'white':color,'font-size':(primary?14:11)/zoomScale,
+        'font-weight':'bold',stroke:reception?color:'white','stroke-width':(reception?4:2.8)/zoomScale,
+        'paint-order':'stroke','pointer-events':f===2?'painted':'none'},label));
     }
     target.onkeydown = e => {
       if (e.key==='Enter'||e.key===' ') { e.preventDefault(); e.stopPropagation(); previewPlacePhoto(d,null,true); }
