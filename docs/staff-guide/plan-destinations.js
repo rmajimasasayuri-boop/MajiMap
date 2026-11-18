@@ -65,6 +65,25 @@ for (const [id,name,pixel,approach] of [
   });
 }
 
+// Same local axes as the 2S schematic. The room body is selectable up to its walls.
+const radiologyRoomAngle = Math.PI / 18;
+function radiologyRoomPixel(x,y) {
+  const u=(x-32)/2.25-195, v=(y-147)/2.25-355;
+  return [1740+Math.cos(radiologyRoomAngle)*u-Math.sin(radiologyRoomAngle)*v,
+    900+Math.sin(radiologyRoomAngle)*u+Math.cos(radiologyRoomAngle)*v];
+}
+for (const [id,name,[x,y,r,b]] of [
+  ['changing','更衣室',[420,320,510,409]],
+  ['supply','器材室',[510,320,617,409]],
+  ['staff-room','スタッフ室',[695,312,870,420]],
+]) {
+  staffPlanDestinations.push({
+    id:'2S-'+id, floor:2, name, category:'radiology', aliases:'2S', referenceOnly:true,
+    point:staffPlanPoint(2,radiologyRoomPixel((x+r)/2,(y+b)/2)),
+    hitPolygon:[[x,y],[r,y],[r,b],[x,b]].map(([u,v])=>radiologyRoomPixel(u,v)),
+  });
+}
+
 // Room labels use the aligned hospital drawings. Approach points are on the recorded corridor outside the door.
 const conferenceRooms = [
   [1, '1Y-1', [1052, 780]],
@@ -137,6 +156,9 @@ const radiologyEntrances = [
     ['2S-21','70527308-2faa-498b-9fd4-9e2b0853be20'],
   ]],
   ['04dc7914-3381-4744-a505-dfa2bd4a29ab', [
+    ['2S-changing','dfdbf9bf-a932-46f8-9bf1-83d163884b5e'],
+    ['2S-supply','3b6f49f8-b64f-41a2-b508-1fa1644ccd2b'],
+    ['2S-staff-room','a0481e88-43d7-4fa3-a9be-1dfdde97023a'],
     ['2S-reading','8201ff75-8f54-488d-baf3-8419b5b1df3e'],
     ['2S-technologist','5a522d3d-edce-41ec-a560-ebf9f8b17f1e'],
   ]],
@@ -152,8 +174,3 @@ const radiologyEntrances = [
   ]],
 ];
 
-const radiologyMapLabels = [
-  ['更衣室',1782.3,645.4],
-  ['器材室',1825.2,652.9],
-  ['スタッフ室',1921,670.3],
-];

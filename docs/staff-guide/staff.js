@@ -61,7 +61,7 @@ function loadStaffLocations() {
 
 for (const [floor, plan] of Object.entries(staffPlans)) {
   Object.assign(unifiedMapModel.floors[floor], {
-    image:'staff-guide/maps/' + floor + (Number(floor)===2 ? '-simple-plan.webp?v=20261118g' : '-verified-plan.webp'),
+    image:'staff-guide/maps/' + floor + (Number(floor)===2 ? '-simple-plan.webp?v=20261118i' : '-verified-plan.webp'),
     size:[plan.width,plan.height],
   });
 }
@@ -107,7 +107,10 @@ function staffRegions(d) {
   return p ? [[p[0]-16,p[1]-11,32,22]] : [];
 }
 placeHitBounds = staffRegions;
-placeHitPolygons = d => staffRegions(d).map(([x,y,w,h]) => [[x,y],[x+w,y],[x+w,y+h],[x,y+h]]);
+placeHitPolygons = d => {
+  const polygon = staffPoints.get(d.ref)?.hitPolygon;
+  return polygon ? [polygon] : staffRegions(d).map(([x,y,w,h]) => [[x,y],[x+w,y],[x+w,y+h],[x,y+h]]);
+};
 placeLabelFrames = staffRegions;
 wardCourtyardPolygons = () => [];
 placeAtMapPoint = (places, floor, point) => {
@@ -116,7 +119,12 @@ placeAtMapPoint = (places, floor, point) => {
     if (place.floor!==floor) continue;
     const p = staffLocation(place);
     if (!p) continue;
-    const targets = staffPoints.get(place.ref)?.toiletIconPoints || [p];
+    const location = staffPoints.get(place.ref);
+    if (location?.hitPolygon) {
+      if (insideArea(point,location.hitPolygon)) return place;
+      continue;
+    }
+    const targets = location?.toiletIconPoints || [p];
     const distance = Math.min(...targets.map(([x,y])=>Math.hypot(point[0]-x,point[1]-y)));
     if (distance < min) { min = distance; nearest = place; }
   }
@@ -164,14 +172,6 @@ function radiologyReceptionLabel(x,y,zoomScale,destination) {
 renderOverlay = () => {
   const svg = ui('unifiedOverlay'), f = mapUI.floor;
   svg.replaceChildren();
-  if (f===2&&mapUI.zoom>=1.65) {
-    const zoomScale = mapUI.base*mapUI.zoom || 1;
-    for (const [label,x,y] of radiologyMapLabels) {
-      const name = staffRoomLabel(x,y,zoomScale,label);
-      name.setAttribute('pointer-events','none');
-      svg.append(name);
-    }
-  }
   for (const line of floorRouteLines(mapUI.graph,mapUI.path,f)) {
     svg.append(staffPolyline(line,'white',8),staffPolyline(line,'#0878d1',4.5,staffRouteStatus?'7 3':''));
   }
@@ -188,7 +188,11 @@ renderOverlay = () => {
     const target = svgNode('g',{class:'staff-marker',role:'button',tabindex:0,'aria-label':d.name,'data-place-ref':d.ref});
     const liftInfo = kind==='elevator' && staffData.liftInfo?.[place.name];
     target.append(svgNode('title',{},liftInfo?d.name+' · '+liftInfo.stops:d.name));
-    target.append(svgNode('circle',{cx:x,cy:y,r:11,fill:'transparent'}));
+    if (place.hitPolygon) {
+      target.append(svgNode('polygon',{points:place.hitPolygon.map(p=>p.join(',')).join(' '),fill:'transparent'}));
+    } else {
+      target.append(svgNode('circle',{cx:x,cy:y,r:11,fill:'transparent'}));
+    }
     const zoomScale = mapUI.base * mapUI.zoom || 1;
     const overview = mapUI.zoom<1.65;
     if (f!==2) {
