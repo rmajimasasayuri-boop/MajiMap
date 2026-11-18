@@ -2,9 +2,7 @@
 
 // Coordinates are in the original staff drawing. These are labels, pending doorway verification.
 const staffPlanDestinations = [
-  {floor:2, name:'2R 救命救急外来', pixel:[1030,904]},
   {floor:2, ref:'outpatient:2::2S', name:'2S 中央放射線部・放射線診断科', pixel:[1741,903], approach:[1742,942], mapLabel:'2S 受付'},
-  {floor:2, code:'2S-9', name:'第1撮影室', pixel:[1395,1103]},
   {floor:4, name:'中央手術部（EV20側）', pixel:[1497,1134]},
   {floor:5, name:'CCMC', pixel:[1307,1090]},
   {floor:5, name:'ICU', pixel:[1700,1130]},
@@ -72,6 +70,9 @@ function radiologyRoomPixel(x,y) {
   return [1740+Math.cos(radiologyRoomAngle)*u-Math.sin(radiologyRoomAngle)*v,
     900+Math.sin(radiologyRoomAngle)*u+Math.cos(radiologyRoomAngle)*v];
 }
+function diagnosisRoomPolygon(x,y,r,b) {
+  return [[x,y],[r,y],[r,b],[x,b]].map(([u,v])=>radiologyRoomPixel(u,v));
+}
 for (const [id,name,[x,y,r,b]] of [
   ['changing','更衣室',[420,320,510,409]],
   ['supply','器材室',[510,320,617,409]],
@@ -80,7 +81,44 @@ for (const [id,name,[x,y,r,b]] of [
   staffPlanDestinations.push({
     id:'2S-'+id, floor:2, name, category:'radiology', aliases:'2S', referenceOnly:true,
     point:staffPlanPoint(2,radiologyRoomPixel((x+r)/2,(y+b)/2)),
-    hitPolygon:[[x,y],[r,y],[r,b],[x,b]].map(([u,v])=>radiologyRoomPixel(u,v)),
+    hitPolygon:diagnosisRoomPolygon(x,y,r,b),
+  });
+}
+
+for (const [id,name,bounds,palette] of diagnosis2Layout.rooms) {
+  if (!id) continue;
+  const [x,y,r,b]=bounds;
+  const conference=id.startsWith('2Y-');
+  staffPlanDestinations.push({
+    id:conference?'conference-'+id:id, floor:2, name, code:id,
+    category:conference?'conference':'diagnosis', aliases:id.startsWith('2S-')?'2S':palette,
+    referenceOnly:true, point:staffPlanPoint(2,radiologyRoomPixel((x+r)/2,(y+b)/2)),
+    hitPolygon:diagnosisRoomPolygon(...bounds),
+  });
+}
+// EV1–6 have 2F positions in the hospital's elevator-use drawing. The existing
+// transport graph remains the authority for which floors can use each lift.
+for (const [name,center,approach] of diagnosis2Layout.elevators) {
+  staffPlanDestinations.push({
+    id:'diagnosis-'+name, floor:2, name, kind:'elevator', referenceOnly:true,
+    point:staffPlanPoint(2,radiologyRoomPixel(...center)),
+    approach:staffPlanPoint(2,radiologyRoomPixel(...approach)),
+  });
+}
+for (const [code,name,center,approach] of diagnosis2Layout.receptions) {
+  staffPlanDestinations.push({
+    id:code, ref:'outpatient:2::'+code, floor:2, code, name:code+' '+name,
+    receptionLines:[name], referenceOnly:true,
+    point:staffPlanPoint(2,radiologyRoomPixel(...center)),
+    approach:staffPlanPoint(2,radiologyRoomPixel(...approach)),
+  });
+}
+for (const [id,name,centers,toiletIcons,approach] of diagnosis2Layout.toilets) {
+  const toiletIconPoints=centers.map(point=>radiologyRoomPixel(...point));
+  staffPlanDestinations.push({
+    id:'diagnosis-toilet-'+id, floor:2, name, toiletIcons, toiletIconPoints, referenceOnly:true,
+    point:staffPlanPoint(2,toiletIconPoints[0]),
+    approach:staffPlanPoint(2,radiologyRoomPixel(...approach)),
   });
 }
 
@@ -90,8 +128,6 @@ const conferenceRooms = [
   [1, '1Y-2', [1853, 1097]],
   [1, '1Y-3', [1726, 357]],
   [1, '1X-1', [587, 820]],
-  [2, '2Y-1', [1480, 532]],
-  [2, '2Y-2', [1760, 350]],
   [2, '2Y-3', [1889, 843]],
   [2, '2X-1', [425, 802]],
   [2, '2X-2', [217, 979]],
@@ -132,6 +168,12 @@ for (const [floor, code, pixel, approach] of conferenceRooms) {
 
 // The access type comes from the corridor on the approach side of each door.
 const radiologyEntrances = [
+  ['2b66b0df-787e-4bbd-aaab-4007e43cf654', [
+    ['2L-1','4788a031-30fd-4740-ad5e-6c68837ef214','入口前の共用通路'],
+  ]],
+  ['71408767-a325-4d9e-b701-273e019ae0a0', [
+    ['2P-10','c1e29811-1cc9-4357-8f5f-b52c170554b6'],
+  ]],
   ['099c87ed-5a05-44bf-a98f-e3c928789610', [
     ['2S-2','f93320ec-7353-445f-ac8f-1cd2438fcc3a'],
     ['2S-3','f29f539e-6e55-472c-9aad-de0a75f4ad82'],
