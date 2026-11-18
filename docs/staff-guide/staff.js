@@ -61,7 +61,7 @@ function loadStaffLocations() {
 
 for (const [floor, plan] of Object.entries(staffPlans)) {
   Object.assign(unifiedMapModel.floors[floor], {
-    image:'staff-guide/maps/' + floor + (Number(floor)===2 ? '-simple-plan.webp' : '-verified-plan.webp'),
+    image:'staff-guide/maps/' + floor + (Number(floor)===2 ? '-simple-plan.webp?v=20261118g' : '-verified-plan.webp'),
     size:[plan.width,plan.height],
   });
 }
@@ -116,7 +116,8 @@ placeAtMapPoint = (places, floor, point) => {
     if (place.floor!==floor) continue;
     const p = staffLocation(place);
     if (!p) continue;
-    const distance = Math.hypot(point[0]-p[0],point[1]-p[1]);
+    const targets = staffPoints.get(place.ref)?.toiletIconPoints || [p];
+    const distance = Math.min(...targets.map(([x,y])=>Math.hypot(point[0]-x,point[1]-y)));
     if (distance < min) { min = distance; nearest = place; }
   }
   return nearest;
@@ -148,13 +149,14 @@ function staffRoomLabel(x,y,zoomScale,label) {
 }
 function radiologyReceptionLabel(x,y,zoomScale,destination) {
   const badge = document.createElement('span');
+  badge.className = 'code staff-map-code';
   styleCandidateCode(badge,destination);
-  const color = badge.style.getPropertyValue('--sign-color');
   const group = svgNode('g', {});
-  group.append(svgNode('rect',{x:x-13/zoomScale,y:y-16/zoomScale,width:26/zoomScale,
-    height:26/zoomScale,rx:3.25/zoomScale,fill:color}));
-  group.append(svgNode('text',{x,y:y-3/zoomScale,'text-anchor':'middle','dominant-baseline':'central',
-    fill:'white','font-size':8.45/zoomScale,'font-weight':'bold'},'2S'));
+  const displayScale = (mapUI.zoom<1.65?20:26)/40/zoomScale;
+  const tile = svgNode('foreignObject',{width:40,height:40,'pointer-events':'none',
+    transform:`translate(${x-20*displayScale} ${y-24*displayScale}) scale(${displayScale})`});
+  tile.append(badge);
+  group.append(tile);
   group.append(staffRoomLabel(x,y+18/zoomScale,zoomScale,'中央放射線部・'));
   group.append(staffRoomLabel(x,y+30/zoomScale,zoomScale,'放射線診断科'));
   return group;
@@ -188,9 +190,10 @@ renderOverlay = () => {
     target.append(svgNode('title',{},liftInfo?d.name+' · '+liftInfo.stops:d.name));
     target.append(svgNode('circle',{cx:x,cy:y,r:11,fill:'transparent'}));
     const zoomScale = mapUI.base * mapUI.zoom || 1;
+    const overview = mapUI.zoom<1.65;
     if (f!==2) {
       if (kind==='elevator' && !primary) {
-        const iconSize = 16/zoomScale;
+        const iconSize = (overview?12:16)/zoomScale;
         target.append(svgNode('use',{href:'assets/equipment-pictograms.svg#elevator',
           x:x-iconSize/2,y:y-iconSize/2,width:iconSize,height:iconSize,'pointer-events':'none'}));
       } else if (kind==='stairs') {
@@ -204,10 +207,17 @@ renderOverlay = () => {
     if (d.ref==='outpatient:2::2S') {
       target.append(radiologyReceptionLabel(x,y,zoomScale,d));
     } else if (place.toiletIcons) {
-      const size = 19/zoomScale;
-      target.append(svgNode('image',{href:'assets/legend-toilet-'+place.toiletIcons[0]+'.svg?v=20261110l',
-        x:x-size/2,y:y-size/2,width:size,height:size}));
-    } else if (detailRoom && (mapUI.zoom>=1.65 || selected)) {
+      const points = place.toiletIconPoints || [[x,y]];
+      let size = (overview?13:19)/zoomScale;
+      if (points.length>1) {
+        const spacing = points.flatMap(([px,py],i)=>points.slice(i+1).map(([qx,qy])=>Math.hypot(px-qx,py-qy)));
+        size = Math.min(size,Math.min(...spacing)*0.83);
+      }
+      for (const [i,[px,py]] of points.entries()) {
+        target.append(svgNode('image',{href:'assets/legend-toilet-'+place.toiletIcons[i]+'.svg?v=20261110l',
+          x:px-size/2,y:py-size/2,width:size,height:size}));
+      }
+    } else if (detailRoom && !place.hideMapLabel && (!overview || selected)) {
       target.append(staffRoomLabel(x,y,zoomScale,conference?'カンファレンス室 '+d.code:(place.mapLabel || place.name)));
     } else if (!detailRoom && (selected || primary || (kind==='stairs'&&mapUI.zoom>=1.4) || mapUI.zoom>=2)) {
       const position = f===2 ? {x,y,'text-anchor':'middle','dominant-baseline':'central'} : staffLabelPosition(d,place,x,y);

@@ -53,3 +53,17 @@ body.staff-map.visitor-experience .route-planning-header .route-travel-tabs {
 }
 
 .staff-map .staff-options[hidden] { display: none; }
+.staff-map .staff-map-code {
+  box-sizing: border-box;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}

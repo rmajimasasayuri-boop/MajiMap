@@ -48,19 +48,18 @@ for (const [number,label,pixel,approach] of radiologyRooms) {
 }
 
 for (const [id,name,pixel,approach] of [
-  ['mri-toilet','第4MRI室横のトイレ',[1840,1014],[1839,959]],
+  ['mri-toilet','第4MRI室横のトイレ',[1840,1014],[1859,962]],
   ['mri-ante-1','MRI前室1',[1702,1097],[1745,1093]],
   ['mri-ante-2','MRI前室2',[1788,1172],[1741,1113]],
   ['technologist','技師室',[1911,717],[1860,725]],
   ['reading','読影室',[1898,787],[1850,792]],
-  ['operation-1','操作室1',[1458,1053],[1461,1050]],
-  ['operation-2','操作室2',[1649,1115],[1649,1114]],
-  ['operation-3','操作室3',[1842,1177],[1843,1169]],
-  ['operation-4','操作室4',[1851,715],[1860,715]],
-  ['operation-5','操作室5',[1882,368],[1881,365]],
 ]) {
   staffPlanDestinations.push({
-    id:'2S-'+id, floor:2, name, toiletIcons:id==='mri-toilet'?['01']:undefined,
+    id:'2S-'+id, floor:2, name,
+    ...(id==='mri-toilet' ? {
+      toiletIcons:['01','02','05'],
+      toiletIconPoints:[[1841.6,1025.9],[1874.6,1038.5],[1857.1,993.9]],
+    } : {hideMapLabel:id.startsWith('mri-ante-')}),
     category:'radiology', aliases:'2S', referenceOnly:true,
     point:staffPlanPoint(2,pixel), approach:staffPlanPoint(2,approach),
   });
@@ -141,19 +140,11 @@ const radiologyEntrances = [
     ['2S-reading','8201ff75-8f54-488d-baf3-8419b5b1df3e'],
     ['2S-technologist','5a522d3d-edce-41ec-a560-ebf9f8b17f1e'],
   ]],
-  ['43a99009-8196-44ee-9a23-bb3c824ac822', [
-    ['2S-operation-2','004c0dae-2ada-42a4-8559-b4e9ddbd2aca'],
-  ]],
-  ['7efd8b76-8c0f-4e7d-8fb6-c9641d90352d', [
-    ['2S-operation-3','eadb5eb3-3204-43c8-ae36-3bf911702899'],
-  ]],
   ['3affd2cc-8b69-4954-9c69-832b589619ab', [
-    ['2S-mri-toilet','ce551989-3a54-4544-b51b-d9321a2f4722'],
-    ['2S-operation-4','5b21db3d-e3f0-4859-addc-263fdf8cb6a4','職員用入口前'],
+    ['2S-mri-toilet','1ce13aa3-1b7b-4129-92ec-767c9a6cf02c','車椅子対応トイレ入口前の通路'],
     ['2S-10','d9bd3497-ce93-420c-82b9-9200d78deb61'],
   ]],
   ['400ec46a-a640-40fc-9112-5defc21ede0c', [
-    ['2S-operation-5','18613b63-9795-48ad-a9af-e22cf911ba5f','職員用入口前'],
     ['2S-18','20538e67-cd41-495a-86ae-af542cc6d007'],
     ['2S-11','4821bbe5-3e22-401d-99fd-b2a27c143fd2'],
     ['2S-12','3304cad6-8525-40ec-9bd9-4e4ba9c941e0'],
@@ -165,5 +156,4 @@ const radiologyMapLabels = [
   ['更衣室',1782.3,645.4],
   ['器材室',1825.2,652.9],
   ['スタッフ室',1921,670.3],
-  ['EPS4',1735.3,873.6],
 ];
