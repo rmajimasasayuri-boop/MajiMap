@@ -147,7 +147,7 @@ function staffRoomLabel(x,y,zoomScale,label) {
     'stroke-width':2.8/zoomScale,'paint-order':'stroke','pointer-events':'painted'},label);
 }
 function radiologyReceptionLabel(x,y,zoomScale) {
-  const group = svgNode('g');
+  const group = svgNode('g', {});
   group.append(svgNode('rect',{x:x-13/zoomScale,y:y-16/zoomScale,width:26/zoomScale,
     height:17/zoomScale,rx:4/zoomScale,fill:'#176489'}));
   group.append(svgNode('text',{x,y:y-4/zoomScale,'text-anchor':'middle',
