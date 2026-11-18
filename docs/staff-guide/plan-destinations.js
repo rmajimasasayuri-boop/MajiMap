@@ -3,13 +3,13 @@
 // Coordinates are in the original staff drawing. These are labels, pending doorway verification.
 const staffPlanDestinations = [
   {floor:2, name:'2R 救命救急外来', pixel:[1030,904]},
-  {floor:2, ref:'outpatient:2::2S', name:'2S 中央放射線部・放射線診断科', pixel:[1730,891], approach:[1742,942]},
+  {floor:2, ref:'outpatient:2::2S', name:'2S 中央放射線部・放射線診断科', pixel:[1741,903], approach:[1742,942], mapLabel:'2S 受付'},
   {floor:2, code:'2S-9', name:'第1撮影室', pixel:[1395,1103]},
   {floor:4, name:'中央手術部（EV20側）', pixel:[1497,1134]},
   {floor:5, name:'CCMC', pixel:[1307,1090]},
   {floor:5, name:'ICU', pixel:[1700,1130]},
-].map(({floor,ref,code,name,pixel,approach})=>({
-  floor, ref, code, name, referenceOnly:true,
+].map(({floor,ref,code,name,pixel,approach,mapLabel})=>({
+  floor, ref, code, name, mapLabel, referenceOnly:true,
   approach:approach && staffPlanPoint(floor,approach),
   point:staffPlanPoint(floor,pixel),
 }));
@@ -34,6 +34,7 @@ const radiologyRooms = [
   ['15','第3撮影室',[1842,578],[1858.3,626]],
   ['16','第4撮影室',[1894,587],[1872.1,628.5]],
   ['17','第5撮影室',[1941,595],[1920.1,636.9]],
+  ['18','X-TV',[1848,397]],
   ['19','第6撮影室',[1894,408]],
   ['20','第7撮影室',[1932,416]],
   ['21','第8撮影室',[1972,419]],
@@ -47,6 +48,7 @@ for (const [number,label,pixel,approach] of radiologyRooms) {
 }
 
 for (const [id,name,pixel,approach] of [
+  ['technologist','技師室',[1911,717],[1860,725]],
   ['reading','読影室',[1898,787],[1850,792]],
   ['operation-1','操作室1',[1458,1053],[1461,1050]],
   ['operation-2','操作室2',[1649,1115],[1649,1114]],
@@ -131,6 +133,7 @@ const radiologyEntrances = [
   ]],
   ['04dc7914-3381-4744-a505-dfa2bd4a29ab', [
     ['2S-reading','8201ff75-8f54-488d-baf3-8419b5b1df3e'],
+    ['2S-technologist','5a522d3d-edce-41ec-a560-ebf9f8b17f1e'],
   ]],
   ['43a99009-8196-44ee-9a23-bb3c824ac822', [
     ['2S-operation-2','004c0dae-2ada-42a4-8559-b4e9ddbd2aca'],
@@ -144,6 +147,7 @@ const radiologyEntrances = [
   ]],
   ['400ec46a-a640-40fc-9112-5defc21ede0c', [
     ['2S-operation-5','18613b63-9795-48ad-a9af-e22cf911ba5f','職員用入口前'],
+    ['2S-18','20538e67-cd41-495a-86ae-af542cc6d007'],
     ['2S-11','4821bbe5-3e22-401d-99fd-b2a27c143fd2'],
     ['2S-12','3304cad6-8525-40ec-9bd9-4e4ba9c941e0'],
     ['2S-13','b300a059-cb9b-4e6c-b36b-c1906dc6aaa7'],

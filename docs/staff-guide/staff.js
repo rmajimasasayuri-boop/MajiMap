@@ -61,7 +61,7 @@ function loadStaffLocations() {
 
 for (const [floor, plan] of Object.entries(staffPlans)) {
   Object.assign(unifiedMapModel.floors[floor], {
-    image:'staff-guide/maps/' + floor + '-verified-plan.webp',
+    image:'staff-guide/maps/' + floor + (Number(floor)===2 ? '-simple-plan.webp' : '-verified-plan.webp'),
     size:[plan.width,plan.height],
   });
 }
@@ -156,7 +156,7 @@ renderOverlay = () => {
     const conference = place?.category==='conference';
     const ward = d.name.includes('病棟');
     const primary = conference || ward || d.ref==='outpatient:2::2S' || /リハビリ|EVホール|総合受付/.test(d.name);
-    const color = conference?'#7b3e9d':ward?'#177255':kind==='stairs'?'#564684':'#176489';
+    const color = f===2?'#176489':conference?'#7b3e9d':ward?'#177255':kind==='stairs'?'#564684':'#176489';
     const target = svgNode('g',{class:'staff-marker',role:'button',tabindex:0,'aria-label':d.name,'data-place-ref':d.ref});
     const liftInfo = kind==='elevator' && staffData.liftInfo?.[place.name];
     target.append(svgNode('title',{},liftInfo?d.name+' · '+liftInfo.stops:d.name));
@@ -170,7 +170,7 @@ renderOverlay = () => {
     else target.append(svgNode('circle',{cx:x,cy:y,r:primary?9:5,fill:color,stroke:'white','stroke-width':2}));
     const showLabel = primary || (place.category==='radiology'&&mapUI.zoom>=1.65) || (kind==='stairs'&&mapUI.zoom>=1.4) || mapUI.zoom>=2;
     if (showLabel) {
-      const label = conference ? '会議室 ' + d.code : place.category==='radiology' ? place.name : d.code || d.name;
+      const label = place.mapLabel || (conference ? '会議室 ' + d.code : place.category==='radiology' ? place.name : d.code || d.name);
       const position = staffLabelPosition(d,place,x,y);
       target.append(svgNode('text',{...position,fill:color,'font-size':(primary?14:11)/zoomScale,
         'font-weight':'bold',stroke:'white','stroke-width':2.8/zoomScale,'paint-order':'stroke','pointer-events':'none'},label));
