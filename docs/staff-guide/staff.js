@@ -59,9 +59,10 @@ function loadStaffLocations() {
   for (const d of destinationList.filter(d=>staffAdded.has(d.ref))) ui('fromSelect').add(new Option(d.floor+'階 '+d.name,d.ref));
 }
 
+const staffAssetVersion = new URL(document.currentScript.src).search;
 for (const [floor, plan] of Object.entries(staffPlans)) {
   Object.assign(unifiedMapModel.floors[floor], {
-    image:'staff-guide/maps/' + floor + (Number(floor)===2 ? '-simple-plan.webp?v=20261118j' : '-verified-plan.webp'),
+    image:'staff-guide/maps/' + floor + (Number(floor)===2 ? '-simple-plan.webp'+staffAssetVersion : '-verified-plan.webp'),
     size:[plan.width,plan.height],
   });
 }
