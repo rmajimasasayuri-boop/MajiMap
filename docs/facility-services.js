@@ -87,7 +87,10 @@ function renderSayarinDepartures(host){
  };
  nextRow.append(departure(next,nextLabel),heading);
  if(isHourlySchedule(sayarinHospitalDepartures)){
-  laterRow.append('毎時'+departureMinute(first)%60+'分発　',departure(final,'最終'));
+  const frequency=document.createElement('span');
+  frequency.className='bus-departure-frequency';
+  frequency.textContent='毎時'+departureMinute(first)%60+'分発';
+  laterRow.append(frequency,'　',departure(final,'最終'));
  }else{
   later.forEach((time,index)=>{
    if(index)laterRow.append('、');
