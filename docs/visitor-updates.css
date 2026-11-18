@@ -254,3 +254,6 @@ body.visitor-experience #facilityDetails #detailWebsite:disabled{
 #facilityHours .bus-first-label,#facilityHours .bus-final-label{margin-inline-start:.25em;font-size:.8em;font-weight:400}
 #facilityHours .bus-first-label{color:#166534}
 #facilityHours .bus-final-label{color:#b42318}
+
+#facilityHours .nankai-departure-row{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:0 8px;width:100%;line-height:1.5;font-variant-numeric:tabular-nums}
+body.visitor-experience #favoritePlaceButton[hidden]{display:none!important}

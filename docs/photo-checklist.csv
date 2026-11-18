@@ -29,7 +29,7 @@
 "3","施設","防災センター（落とし物案内）","services::lost"
 "3","7号館","7号館 入口","outpatient:3::building7Entrance"
 "3","駐車場","患者駐車場","outpatient:3::patientParking"
-"3","バス","さやりんバス停留所（仮位置）","outpatient:3::rotaryBusStop"
+"3","バス","さやりんバス　近畿大学病院（仮位置）","outpatient:3::rotaryBusStop"
 "3","屋外","ロータリー","outpatient:3::rotary"
 "3","EV","7号館 西側エレベーター","outpatient:3::building7EV"
 "3","WC","外来中央 トイレ","outpatient:3::publicToilet-central"

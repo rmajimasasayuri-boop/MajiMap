@@ -9,6 +9,7 @@ const facilityInformation={
  'services::hair':{url:facilityFragment('スヴェンソン近大ヘアケアステーション'),hours:'平日・第2/第4土曜9:30–18:00',rule:'hair',weekday:[570,1080]},
  'services::restaurant':{url:facilityFragment('ffields（エフフィールド）'),hours:'月–土10:00–18:00（日祝休）',rule:'restaurant',weekday:[600,1080]},
  'services::cafe':{url:facilityFragment('CAFE CORE（カフェ·コア）'),hours:'平日8:00–18:00（土日祝休）',rule:'weekday',weekday:[480,1080]},
+ 'outpatient:3::nankaiBusStop':{url:'https://transfer-cloud.navitime.biz/nankaibus/courses?busstop=00320794'},
  'outpatient:3::rotaryBusStop':{url:'https://www.city.osakasayama.osaka.jp/kurashi_anshin/doro_kotsu/2/1/index.html'},
  'services::lost':{url:facilityFragment('落とし物案内'),hours:'平日9:00–17:00／土曜9:00–14:00',rule:'lost',weekday:[540,1020],saturday:[540,840]},
  'services::information':{url:facilityPage+'#cell_f3info04'},
@@ -101,9 +102,53 @@ function renderSayarinDepartures(host){
  if(later.length)host.append(laterRow);
  host.title='大阪狭山市の公式時刻表による予定時刻です。臨時変更は公式サイトをご確認ください。';
 }
+const nankaiStopRef='outpatient:3::nankaiBusStop';
+// Official stop timetable: https://static-transfer-cloud.navitime.biz/nankaibus/ja/busstop-timetable/20260518/0700200_01.pdf
+const nankaiTimetables=[
+ {label:'213 三原台回り（泉ヶ丘駅経由）',
+  weekday:["6:15","6:32","7:01","7:11","7:34","7:52","8:11","8:28","9:01","9:25","9:59","10:27","10:57","11:22","11:52","12:22","12:52","13:22","13:52","14:22","14:52","15:22","15:52","16:22","16:53","17:23","17:54","18:06","18:30","18:51","19:03","19:25","19:45","20:18","20:56","21:17","21:53","22:18","22:43","23:04"],
+  weekend:["6:22","6:47","7:17","7:47","8:17","8:47","9:17","9:47","10:17","10:47","11:17","11:47","12:17","12:47","13:17","13:47","14:17","14:47","15:17","15:47","16:17","16:52","17:18","17:53","18:19","18:54","19:30","19:53","20:17","20:57","21:18","21:43","22:28","22:57"]},
+ {label:'270 金剛駅前行き（急行）',
+  weekday:["7:23","7:45","8:30","8:42","9:32","10:02","10:32","11:02","11:32","12:02","12:32","13:02","13:32","14:02","14:32","15:02","15:32","16:02","16:32","17:02","17:45","18:16","18:40","19:06"],
+  weekend:["7:27","7:59","8:27","8:42","9:37","10:07","10:37","11:07","11:37","12:07","12:37","13:07","13:32","14:07","14:37","15:07","15:37","16:07","16:42","17:09","17:48","18:14","18:37","19:03"]}
+];
+
+function nankaiDepartureRows(date=new Date()){
+ const t=japanClock(date),holidays=japanHolidayDates[t.year];
+ const day=t.weekday===0||t.weekday===6||holidays?.includes(t.key)?'weekend':holidays?'weekday':null;
+ return nankaiTimetables.map(({label,[day]:times})=>{
+  if(!times)return {label,time:'公式時刻表で確認',final:''};
+  const next=times.find(time=>departureMinute(time)>=t.minute);
+  return {label,time:next||'本日の運行終了',final:times.at(-1)};
+ });
+}
+function renderNankaiDepartures(host){
+ const rows=nankaiDepartureRows();
+ const key=JSON.stringify(rows);
+ if(host.dataset.reference===nankaiStopRef&&host.dataset.departures===key)return;
+ host.dataset.reference=nankaiStopRef;
+ host.dataset.departures=key;
+ host.replaceChildren(...rows.map(({label,time,final})=>{
+  const row=document.createElement('div');
+  row.className='nankai-departure-row';
+  const route=document.createElement('span');
+  route.textContent=label;
+  const times=document.createElement('span');
+  const next=document.createElement('strong');
+  next.textContent=time;
+  times.append(next);
+  if(final&&final!==time)times.append('　'+final+' 最終');
+  if(final===time)times.append(' 最終');
+  row.append(route,times);
+  return row;
+ }));
+ host.title='南海バスの公式時刻表による予定時刻です。臨時変更は公式サイトをご確認ください。';
+}
+
 function updateFacilityHours(d){
  const host=document.getElementById('facilityHours');if(!host)return;
  if(d?.ref===sayarinStopRef){host.hidden=false;renderSayarinDepartures(host);return;}
+ if(d?.ref===nankaiStopRef){host.hidden=false;renderNankaiDepartures(host);return;}
  const model=facilityHoursModel(d);host.hidden=!model;if(!model)return;const expanded=host.dataset.reference===d.ref&&Boolean(host.querySelector('details')?.open);host.dataset.reference=d.ref;host.replaceChildren();
  const badge=document.createElement('strong');badge.className='business-state';badge.dataset.state=model.state;badge.textContent=model.label;
  const today=document.createElement('span');today.className='facility-hours-today';today.textContent='本日 '+model.today;if(model.closedToday)today.dataset.state='closed';
