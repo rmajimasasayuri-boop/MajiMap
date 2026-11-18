@@ -9,7 +9,7 @@ const facilityInformation={
  'services::hair':{url:facilityFragment('スヴェンソン近大ヘアケアステーション'),hours:'平日・第2/第4土曜9:30–18:00',rule:'hair',weekday:[570,1080]},
  'services::restaurant':{url:facilityFragment('ffields（エフフィールド）'),hours:'月–土10:00–18:00（日祝休）',rule:'restaurant',weekday:[600,1080]},
  'services::cafe':{url:facilityFragment('CAFE CORE（カフェ·コア）'),hours:'平日8:00–18:00（土日祝休）',rule:'weekday',weekday:[480,1080]},
- 'services::laundry':{url:facilityFragment('コインランドリー')},
+ 'outpatient:3::rotaryBusStop':{url:'https://www.city.osakasayama.osaka.jp/kurashi_anshin/doro_kotsu/2/1/index.html'},
  'services::lost':{url:facilityFragment('落とし物案内'),hours:'平日9:00–17:00／土曜9:00–14:00',rule:'lost',weekday:[540,1020],saturday:[540,840]},
  'services::information':{url:facilityPage+'#cell_f3info04'},
  'services::medicine':{url:facilityPage+'#cell_f3info02'},
