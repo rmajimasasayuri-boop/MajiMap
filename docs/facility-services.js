@@ -62,7 +62,8 @@ function renderSayarinDepartures(host){
  if(host.dataset.reference===sayarinStopRef&&host.dataset.departures===scheduleKey)return;
  host.dataset.reference=sayarinStopRef;
  host.dataset.departures=scheduleKey;
- const heading=document.createElement('strong');
+ const heading=document.createElement('span');
+ heading.className='bus-route-heading';
  heading.textContent=title;
  const nextRow=document.createElement('div');
  nextRow.className='bus-next-departure';
@@ -80,12 +81,12 @@ function renderSayarinDepartures(host){
   }
   return item;
  };
- nextRow.append(departure(next,nextLabel));
+ nextRow.append(departure(next,nextLabel),heading);
  later.forEach((time,index)=>{
   if(index)laterRow.append('、');
   laterRow.append(departure(time,time===final?'最終':''));
  });
- host.replaceChildren(heading,nextRow);
+ host.replaceChildren(nextRow);
  if(later.length)host.append(laterRow);
  host.title='大阪狭山市の公式時刻表による予定時刻です。臨時変更は公式サイトをご確認ください。';
 }
