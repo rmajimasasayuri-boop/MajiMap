@@ -45,7 +45,7 @@ function refreshResultDetails(){
   name.textContent=destinationDisplayName(d).replace(/^\d+階\s+/,'');
   name.before(floor);
  }
- const icons=placeOfficialIcons(d);if(icons.length){const box=document.createElement('span');box.className='official-result-icons';box.innerHTML=icons.join('');row.prepend(box);}
+ const icons=busCandidateRefs.includes(d.ref)?['<img class="facility-pict" src="assets/legend-bus.svg" alt="">']:placeOfficialIcons(d);if(icons.length){const box=document.createElement('span');box.className='official-result-icons';box.innerHTML=icons.join('');row.prepend(box);}
  const state=entranceAvailability(d.ref);if(state.label){const badge=document.createElement('span');badge.className='entrance-status';badge.dataset.state=state.state;badge.textContent=state.label;row.querySelector('.place-row-copy').append(badge);}
  }
 }
@@ -56,7 +56,7 @@ function previewManualDestination(point){return; /* Registered facilities only. 
 
 let facilityNameObserver=null;
 function updateCardHeading(d){
- if(!d)return;facilityNameObserver?.disconnect();const title=ui('facilityDetailName');title.classList.remove('inline-code-heading','with-card-equipment','with-card-ward');title.style.removeProperty('--heading-size');title.replaceChildren();const code=document.createElement('small');code.className='facility-arrival-code';code.textContent=d.detail?.mapCaption|| (d.ref==='outpatient:3::patientParking'?'屋外・駐車場':d.ref==='outpatient:3::building7Entrance'?'屋外・7号館':/^(?:[1-9]|10)(?:[A-Z]|[東西][AB])$/.test(d.code||'')?d.code:d.floor+'階');const track=document.createElement('span');track.className='facility-name-track';const name=document.createElement('span');name.textContent=['equipment','toilet'].includes(d.type)?destinationDisplayName(d).replace(/^\d+階\s+/,''):destinationDisplayName(d);track.append(name);title.append(code,track);
+ if(!d)return;facilityNameObserver?.disconnect();const title=ui('facilityDetailName');title.classList.remove('inline-code-heading','with-card-equipment','with-card-ward');title.style.removeProperty('--heading-size');title.replaceChildren();const code=document.createElement('small');code.className='facility-arrival-code';code.textContent=d.detail?.mapCaption|| (d.ref==='outpatient:3::patientParking'?'屋外・駐車場':d.ref==='outpatient:3::building7Entrance'?'屋外・7号館':/^(?:[1-9]|10)(?:[A-Z]|[東西][AB])$/.test(d.code||'')?d.code:d.floor+'階');const track=document.createElement('span');track.className='facility-name-track';const name=document.createElement('span');name.textContent=['equipment','toilet'].includes(d.type)?destinationDisplayName(d).replace(/^\d+階\s+/,''):destinationDisplayName(d);if(d.ref===nankaiStopRef){code.textContent='南海バス';name.textContent='近大おおさかメディカルキャンパス前';}track.append(name);title.append(code,track);
  const icons=placeOfficialIcons(d);
  if(d.type==='ward'&&d.code){
   const badge=document.createElement('span');

@@ -43,7 +43,7 @@ const placeNameReadings={
 };
 // Add the Japanese reading for each new destination and update it when the name changes.
 const placeKanaReadings={
- 'outpatient:3::nankaiBusStop':['なんかいばすきんだいおおさかめでぃかるきゃんぱすまえ','なんかいばすていりゅうしょ','ばすてい','ていりゅうしょ','なんかいばす','いずみがおかえき','みはらだい','こんごうえきまえ'],
+ 'outpatient:3::nankaiBusStop':['なんかいばすきんだいおおさかめでぃかるきゃんぱすまえ','なんかいばすていりゅうしょ','ばすてい','ていりゅうしょ','ていりゅうじょ','なんかいばす','いずみがおかえき','みはらだい','こんごうえきまえ'],
  "outpatient:1::1A":["ほうしゃせんちりょうしつ"],
  "outpatient:1::1E":["あいそとーぷ・ぺっと"],
  "outpatient:2::2A":["げか"],
@@ -120,7 +120,7 @@ const placeKanaReadings={
  "outpatient:4::4P":["ちゅうおうしゅじゅつぶ(がいらいしゅじゅつ)","ちゅうおうしゅじゅつぶ"],
  "outpatient:3::patientParking":["ちゅうしゃじょう"],
  "outpatient:3::parkingPaymentOutdoor":["かんじゃちゅうしゃじょう ちゅうしゃじょうせいさんき"],
- "outpatient:3::rotaryBusStop":["さやりんばすきんきだいがくびょういん","さやりんばすていりゅうしょ","ばすてい","ていりゅうしょ","きゅうこうびーこーす","きんきだいがくびょういん"],
+ "outpatient:3::rotaryBusStop":["さやりんばすきんきだいがくびょういん","さやりんばすていりゅうしょ","ばすてい","ていりゅうしょ","ていりゅうじょ","きゅうこうびーこーす","きんきだいがくびょういん"],
  "outpatient:3::rotary":["ろーたりー"],
  "hospital:3::southWestEntrance":["さんかいでいりぐち(がいらいとうにしがわ)","さんかいでいりぐち"],
  "hospital:3::southEastEntrance":["さんかいでいりぐち(いんふぉめーしょんまえ)","さんかいでいりぐち"],

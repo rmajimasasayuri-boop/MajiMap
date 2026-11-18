@@ -1,4 +1,21 @@
-function resultCategoryMatches(d){if(d.usage==='emergency-only')return mapUI.filter==='equipment'&&mapUI.pickMode!=='start';if(mapUI.filter==='amenity')return ['services::restaurant','services::cafe','services::seven','services::green','services::cosmetics','services::glasses','services::hair'].includes(d.ref);if(mapUI.filter==='equipment'&&d.ref==='services::laundry')return true;if(mapUI.filter==='counter')return d.type==='reception'||['services::information','services::medicine','services::admission','services::lost'].includes(d.ref);if(mapUI.filter==='food')return ['services::restaurant','services::cafe'].includes(d.ref);if(mapUI.filter==='shopping')return ['services::seven','services::green','services::cosmetics','services::glasses','services::hair'].includes(d.ref);return mapUI.filter==='all'||d.type===mapUI.filter||mapUI.filter==='equipment'&&d.type==='toilet'||mapUI.filter==='service'&&['reception','entrance'].includes(d.type)||mapUI.filter==='ward'&&d.type==='rehab';}
+const busCandidateRefs=['outpatient:3::rotaryBusStop','outpatient:3::nankaiBusStop'];
+const candidateCategories=['clinic','ward','counter','amenity','equipment','bus','entrance'];
+function candidateCategory(d){
+ if(busCandidateRefs.includes(d.ref))return 'bus';
+ if(['ward','rehab'].includes(d.type))return 'ward';
+ if(['equipment','toilet'].includes(d.type)||d.ref==='services::laundry')return 'equipment';
+ if(d.type==='reception'||['services::information','services::medicine','services::admission','services::lost'].includes(d.ref))return 'counter';
+ if(['services::restaurant','services::cafe','services::seven','services::green','services::cosmetics','services::glasses','services::hair'].includes(d.ref))return 'amenity';
+ return d.type;
+}
+function compareCandidateCategories(a,b){
+ const category=candidateCategory(a);
+ const first=candidateCategories.indexOf(category);
+ const second=candidateCategories.indexOf(candidateCategory(b));
+ return (first<0?candidateCategories.length:first)-(second<0?candidateCategories.length:second)
+  ||(category==='bus'&&first===second?busCandidateRefs.indexOf(a.ref)-busCandidateRefs.indexOf(b.ref):0);
+}
+function resultCategoryMatches(d){if(d.usage==='emergency-only')return mapUI.filter==='equipment'&&mapUI.pickMode!=='start';if(mapUI.filter==='amenity')return ['services::restaurant','services::cafe','services::seven','services::green','services::cosmetics','services::glasses','services::hair'].includes(d.ref);if(mapUI.filter==='equipment'&&d.ref==='services::laundry')return true;if(mapUI.filter==='counter')return d.type==='reception'||['services::information','services::medicine','services::admission','services::lost'].includes(d.ref);if(mapUI.filter==='bus')return candidateCategory(d)==='bus';if(mapUI.filter==='food')return ['services::restaurant','services::cafe'].includes(d.ref);if(mapUI.filter==='shopping')return ['services::seven','services::green','services::cosmetics','services::glasses','services::hair'].includes(d.ref);return mapUI.filter==='all'||d.type===mapUI.filter||mapUI.filter==='equipment'&&d.type==='toilet'||mapUI.filter==='service'&&['reception','entrance'].includes(d.type)||mapUI.filter==='ward'&&d.type==='rehab';}
 function routeProximityFor(matches){
  const scores=new Map();if(!mapUI.startConfirmed||mapUI.pickMode==='start'||!matches.length||!(mapUI.filter==='equipment'||mapUI.filter==='entrance'||matches.every(d=>placeNearestKind(d))))return scores;
  travelMode=ui('travelChoice').value;const graph=attachManualSelections(buildNetwork()),from=mapUI.manual?'hospital:'+mapUI.manual.floor+'::__manualStart':entryReference(mapUI.from),starts=typeof navigationStartOptions==='function'?navigationStartOptions(graph,from):(typeof additionalNavigation!=='undefined'&&additionalNavigation.arrivalOptions?.[from]||[from]),trees=new Map();
