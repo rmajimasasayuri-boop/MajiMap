@@ -56,26 +56,37 @@ function sayarinDepartures(date=new Date()){
 function renderSayarinDepartures(host){
  const {next,later,final}=sayarinDepartures();
  const title='急行Bコース｜近畿大学病院発';
- const laterBeforeFinal=later.filter(time=>time!==final);
- const rows=[['次の便',next],['本日の最終便',final]];
- if(laterBeforeFinal.length)rows.push(['その後の便',laterBeforeFinal.join('、')]);
- const text=title+rows.flat().join('');
- if(host.dataset.reference===sayarinStopRef&&host.textContent===text)return;
+ const first=sayarinHospitalDepartures[0];
+ const nextLabel=next===final?'最終':next===first||next==='翌日 '+first?'始発':'';
+ const scheduleKey=[next,nextLabel,...later].join('|');
+ if(host.dataset.reference===sayarinStopRef&&host.dataset.departures===scheduleKey)return;
  host.dataset.reference=sayarinStopRef;
+ host.dataset.departures=scheduleKey;
  const heading=document.createElement('strong');
  heading.textContent=title;
- const schedule=document.createElement('dl');
- schedule.className='bus-departure-times';
- for(const [label,time] of rows){
-  const item=document.createElement('div');
-  const term=document.createElement('dt');
-  const value=document.createElement('dd');
-  term.textContent=label;
-  value.textContent=time;
-  item.append(term,value);
-  schedule.append(item);
- }
- host.replaceChildren(heading,schedule);
+ const nextRow=document.createElement('div');
+ nextRow.className='bus-next-departure';
+ const laterRow=document.createElement('div');
+ laterRow.className='bus-later-departures';
+ const departure=(time,label)=>{
+  const item=document.createElement('span');
+  item.className='bus-departure';
+  item.append(time);
+  if(label){
+   const tag=document.createElement('span');
+   tag.className=label==='始発'?'bus-first-label':'bus-final-label';
+   tag.textContent=label;
+   item.append(tag);
+  }
+  return item;
+ };
+ nextRow.append(departure(next,nextLabel));
+ later.forEach((time,index)=>{
+  if(index)laterRow.append('、');
+  laterRow.append(departure(time,time===final?'最終':''));
+ });
+ host.replaceChildren(heading,nextRow);
+ if(later.length)host.append(laterRow);
  host.title='大阪狭山市の公式時刻表による予定時刻です。臨時変更は公式サイトをご確認ください。';
 }
 function updateFacilityHours(d){

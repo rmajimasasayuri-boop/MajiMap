@@ -246,8 +246,9 @@ body.visitor-experience #facilityDetails #detailWebsite:disabled{
 }
 
 #facilityHours[data-reference="outpatient:3::rotaryBusStop"]>strong{width:100%}
-#facilityHours .bus-departure-times{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;margin:0;line-height:1.4}
-#facilityHours .bus-departure-times>div:nth-child(3){grid-column:1 / -1}
-#facilityHours .bus-departure-times dt{font-size:.9em;color:#466574}
-#facilityHours .bus-departure-times dd{margin:0;font-variant-numeric:tabular-nums}
-#facilityHours .bus-departure-times>div:nth-child(-n+2) dd{font-size:1.25em;font-weight:700}
+#facilityHours .bus-next-departure,#facilityHours .bus-later-departures{width:100%;line-height:1.5;font-variant-numeric:tabular-nums}
+#facilityHours .bus-next-departure{font-size:1.25em;font-weight:700}
+#facilityHours .bus-departure{white-space:nowrap}
+#facilityHours .bus-first-label,#facilityHours .bus-final-label{margin-inline-start:.25em;font-size:.8em;font-weight:400}
+#facilityHours .bus-first-label{color:#166534}
+#facilityHours .bus-final-label{color:#b42318}
