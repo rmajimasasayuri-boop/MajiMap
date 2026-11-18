@@ -244,3 +244,6 @@ body.visitor-experience #facilityDetails #detailWebsite:disabled{
  font-size:24px;
  line-height:1;
 }
+
+#facilityHours[data-reference="outpatient:3::rotaryBusStop"]>strong{width:100%}
+#facilityHours[data-reference="outpatient:3::rotaryBusStop"]>span{line-height:1.5}

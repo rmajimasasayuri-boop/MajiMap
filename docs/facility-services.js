@@ -41,8 +41,35 @@ function facilityHoursModel(d,date=new Date()){
  const info=facilityInformation[d?.ref],status=facilityBusinessState(info,date);if(!status)return null;
  return {...status,today:status.today||(status.state==='unknown'?'要確認':'休業'),closedToday:status.state==='closed'&&!status.today,regular:info.hours,extra:info.extra,note:'日本時間・通常の時間による目安。臨時変更は公式案内でご確認ください。'};
 }
+const sayarinStopRef='outpatient:3::rotaryBusStop';
+// Osaka-Sayama City's Express B timetable, Kindai University Hospital departure row.
+// https://www.city.osakasayama.osaka.jp/material/files/group/29/kyukou.pdf
+const sayarinHospitalDepartures=['9:50','10:50','11:50','12:50','13:50','14:50','15:50','16:50','17:50'];
+function sayarinDepartures(date=new Date()){
+ const {minute}=japanClock(date);
+ const [next,...later]=sayarinHospitalDepartures.filter(time=>{
+  const [hour,minutes]=time.split(':').map(Number);
+  return hour*60+minutes>=minute;
+ });
+ return {next:next||'翌日 '+sayarinHospitalDepartures[0],later,final:sayarinHospitalDepartures.at(-1)};
+}
+function renderSayarinDepartures(host){
+ const {next,later,final}=sayarinDepartures();
+ const title='急行Bコース・近畿大学病院発（時刻表・日本時間）';
+ const times=['次の発車 '+next,later.length?'その後 '+later.join('、'):'','本日の最終便 '+final].filter(Boolean).join(' ／ ');
+ if(host.dataset.reference===sayarinStopRef&&host.textContent===title+times)return;
+ host.dataset.reference=sayarinStopRef;
+ const heading=document.createElement('strong');
+ heading.textContent=title;
+ const schedule=document.createElement('span');
+ schedule.textContent=times;
+ host.replaceChildren(heading,schedule);
+ host.title='大阪狭山市の公式時刻表による予定時刻です。臨時変更は公式サイトをご確認ください。';
+}
 function updateFacilityHours(d){
- const host=document.getElementById('facilityHours');if(!host)return;const model=facilityHoursModel(d);host.hidden=!model;if(!model)return;const expanded=host.dataset.reference===d.ref&&Boolean(host.querySelector('details')?.open);host.dataset.reference=d.ref;host.replaceChildren();
+ const host=document.getElementById('facilityHours');if(!host)return;
+ if(d?.ref===sayarinStopRef){host.hidden=false;renderSayarinDepartures(host);return;}
+ const model=facilityHoursModel(d);host.hidden=!model;if(!model)return;const expanded=host.dataset.reference===d.ref&&Boolean(host.querySelector('details')?.open);host.dataset.reference=d.ref;host.replaceChildren();
  const badge=document.createElement('strong');badge.className='business-state';badge.dataset.state=model.state;badge.textContent=model.label;
  const today=document.createElement('span');today.className='facility-hours-today';today.textContent='本日 '+model.today;if(model.closedToday)today.dataset.state='closed';
  const regular=document.createElement('details');regular.className='facility-hours-regular';const toggle=document.createElement('summary');toggle.textContent='通常の時間';const hours=document.createElement('span');hours.textContent=model.regular;regular.append(toggle,hours);regular.open=expanded;toggle.onpointerdown=e=>e.stopPropagation();toggle.onclick=e=>{e.preventDefault();e.stopPropagation();regular.open=!regular.open;};

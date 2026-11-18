@@ -138,7 +138,7 @@ function initVisitorUpdates(){
  const oldPlan=routePlan;routePlan=function(){const notice=mapUI.goal&&routeEntranceNotice(mapUI.from,mapUI.goal.ref,null,[]);if(notice?.blocked){clearRouteSelection();if(!reviewEmbedded)syncRoutePanels();return;}return oldPlan();};
  updateSearchChoices();updateVisitorFavorites();renderResults();syncVisitorRefinements();updateCardHeading(destinationPhotoState.place);if(mapUI.goal&&!document.body.classList.contains('place-searching'))ui('findPlace').value=placeListText(mapUI.goal);
 
- let last=regularEntranceRefs.map(r=>entranceAvailability(r).state).join();setInterval(()=>{const next=regularEntranceRefs.map(r=>entranceAvailability(r).state).join();if(next!==last){last=next;renderResults();updateFacilityHours(destinationPhotoState.place);updatePreviewActions();if(mapUI.goal){stopNavigation();routePlan();}}},15000);
+ let last=regularEntranceRefs.map(r=>entranceAvailability(r).state).join();setInterval(()=>{if(!ui('facilityDetails').hidden&&destinationPhotoState.place?.ref===sayarinStopRef)updateFacilityHours(destinationPhotoState.place);const next=regularEntranceRefs.map(r=>entranceAvailability(r).state).join();if(next!==last){last=next;renderResults();updateFacilityHours(destinationPhotoState.place);updatePreviewActions();if(mapUI.goal){stopNavigation();routePlan();}}},15000);
 }
 initVisitorUpdates();
 
