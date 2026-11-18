@@ -60,7 +60,7 @@ function sayarinDepartures(date=new Date()){
 }
 function renderSayarinDepartures(host){
  const {next,later,final}=sayarinDepartures();
- const title='急行Bコース｜近畿大学病院発';
+ const title='急行Bコース';
  const first=sayarinHospitalDepartures[0];
  const nextLabel=next===final?'最終':next===first||next==='翌日 '+first?'始発':'';
  const scheduleKey=[next,nextLabel,...later].join('|');
