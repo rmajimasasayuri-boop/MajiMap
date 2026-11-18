@@ -45,12 +45,16 @@ const sayarinStopRef='outpatient:3::rotaryBusStop';
 // Osaka-Sayama City's Express B timetable, Kindai University Hospital departure row.
 // https://www.city.osakasayama.osaka.jp/material/files/group/29/kyukou.pdf
 const sayarinHospitalDepartures=['9:50','10:50','11:50','12:50','13:50','14:50','15:50','16:50','17:50'];
+function departureMinute(time){
+ const [hour,minute]=time.split(':').map(Number);
+ return hour*60+minute;
+}
+function isHourlySchedule(times){
+ return times.length>1&&times.slice(1).every((time,index)=>departureMinute(time)-departureMinute(times[index])===60);
+}
 function sayarinDepartures(date=new Date()){
  const {minute}=japanClock(date);
- const [next,...later]=sayarinHospitalDepartures.filter(time=>{
-  const [hour,minutes]=time.split(':').map(Number);
-  return hour*60+minutes>=minute;
- });
+ const [next,...later]=sayarinHospitalDepartures.filter(time=>departureMinute(time)>=minute);
  return {next:next||'翌日 '+sayarinHospitalDepartures[0],later,final:sayarinHospitalDepartures.at(-1)};
 }
 function renderSayarinDepartures(host){
@@ -82,12 +86,16 @@ function renderSayarinDepartures(host){
   return item;
  };
  nextRow.append(departure(next,nextLabel),heading);
- later.forEach((time,index)=>{
-  if(index)laterRow.append('、');
-  laterRow.append(departure(time,time===final?'最終':''));
- });
+ if(isHourlySchedule(sayarinHospitalDepartures)){
+  laterRow.append('毎時'+departureMinute(first)%60+'分発　',departure(final,'最終'));
+ }else{
+  later.forEach((time,index)=>{
+   if(index)laterRow.append('、');
+   laterRow.append(departure(time,time===final?'最終':''));
+  });
+ }
  host.replaceChildren(nextRow);
- if(later.length)host.append(laterRow);
+ if(laterRow.hasChildNodes())host.append(laterRow);
  host.title='大阪狭山市の公式時刻表による予定時刻です。臨時変更は公式サイトをご確認ください。';
 }
 function updateFacilityHours(d){
