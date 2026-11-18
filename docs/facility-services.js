@@ -98,7 +98,7 @@ function renderSayarinDepartures(host){
   });
  }
  host.replaceChildren(nextRow);
- if(laterRow.hasChildNodes())host.append(laterRow);
+ if(later.length)host.append(laterRow);
  host.title='大阪狭山市の公式時刻表による予定時刻です。臨時変更は公式サイトをご確認ください。';
 }
 function updateFacilityHours(d){
