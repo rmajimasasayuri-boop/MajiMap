@@ -48,6 +48,7 @@ for (const [number,label,pixel,approach] of radiologyRooms) {
 }
 
 for (const [id,name,pixel,approach] of [
+  ['mri-toilet','第4MRI室横のトイレ',[1840,1014],[1839,959]],
   ['mri-ante-1','MRI前室1',[1702,1097],[1745,1093]],
   ['mri-ante-2','MRI前室2',[1788,1172],[1741,1113]],
   ['technologist','技師室',[1911,717],[1860,725]],
@@ -59,7 +60,8 @@ for (const [id,name,pixel,approach] of [
   ['operation-5','操作室5',[1882,368],[1881,365]],
 ]) {
   staffPlanDestinations.push({
-    id:'2S-'+id, floor:2, name, category:'radiology', aliases:'2S', referenceOnly:true,
+    id:'2S-'+id, floor:2, name, mapLabel:id==='mri-toilet'?'トイレ':undefined,
+    category:'radiology', aliases:'2S', referenceOnly:true,
     point:staffPlanPoint(2,pixel), approach:staffPlanPoint(2,approach),
   });
 }
@@ -146,6 +148,7 @@ const radiologyEntrances = [
     ['2S-operation-3','eadb5eb3-3204-43c8-ae36-3bf911702899'],
   ]],
   ['3affd2cc-8b69-4954-9c69-832b589619ab', [
+    ['2S-mri-toilet','ce551989-3a54-4544-b51b-d9321a2f4722'],
     ['2S-operation-4','5b21db3d-e3f0-4859-addc-263fdf8cb6a4','職員用入口前'],
     ['2S-10','d9bd3497-ce93-420c-82b9-9200d78deb61'],
   ]],

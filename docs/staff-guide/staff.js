@@ -201,7 +201,7 @@ renderOverlay = () => {
     if (d.ref==='outpatient:2::2S') {
       target.append(radiologyReceptionLabel(x,y,zoomScale));
     } else if (detailRoom && (mapUI.zoom>=1.65 || selected)) {
-      target.append(staffRoomLabel(x,y,zoomScale,conference?'カンファレンス室 '+d.code:place.name));
+      target.append(staffRoomLabel(x,y,zoomScale,conference?'カンファレンス室 '+d.code:(place.mapLabel || place.name)));
     } else if (!detailRoom && (selected || primary || (kind==='stairs'&&mapUI.zoom>=1.4) || mapUI.zoom>=2)) {
       const position = f===2 ? {x,y,'text-anchor':'middle','dominant-baseline':'central'} : staffLabelPosition(d,place,x,y);
       target.append(svgNode('text',{...position,fill:color,'font-size':(primary?14:11)/zoomScale,
