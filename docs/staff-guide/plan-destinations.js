@@ -48,6 +48,8 @@ for (const [number,label,pixel,approach] of radiologyRooms) {
 }
 
 for (const [id,name,pixel,approach] of [
+  ['mri-ante-1','MRI前室1',[1702,1097],[1745,1093]],
+  ['mri-ante-2','MRI前室2',[1788,1172],[1741,1113]],
   ['technologist','技師室',[1911,717],[1860,725]],
   ['reading','読影室',[1898,787],[1850,792]],
   ['operation-1','操作室1',[1458,1053],[1461,1050]],
@@ -113,12 +115,14 @@ const radiologyEntrances = [
   ['099c87ed-5a05-44bf-a98f-e3c928789610', [
     ['2S-2','f93320ec-7353-445f-ac8f-1cd2438fcc3a'],
     ['2S-3','f29f539e-6e55-472c-9aad-de0a75f4ad82'],
+    ['2S-mri-ante-1','0e8aecec-a6b3-4ed9-ae4f-e4f96224767d'],
   ]],
   ['d2533851-295b-4881-91e2-1f0518f78111', [
     ['2S-4','769ec754-b6d1-4aa9-b250-10ef8f15d03e'],
   ]],
   ['346a21f1-3fac-4cfd-9005-08a2d59946a3', [
     ['2S-5','10556df7-ee63-4e0f-99e6-2786884d7291'],
+    ['2S-mri-ante-2','9bad690e-5f1a-4287-bac3-ab153aae4d11'],
   ]],
   ['f5dabe7c-06c4-4aa0-af32-d824f4d8b2dd', [
     ['2S-14','f99f46fb-fadd-4318-818c-a43755e3e725'],
@@ -152,4 +156,11 @@ const radiologyEntrances = [
     ['2S-12','3304cad6-8525-40ec-9bd9-4e4ba9c941e0'],
     ['2S-13','b300a059-cb9b-4e6c-b36b-c1906dc6aaa7'],
   ]],
+];
+
+const radiologyMapLabels = [
+  ['更衣室',1782.3,645.4],
+  ['器材室',1825.2,652.9],
+  ['スタッフ室',1921,670.3],
+  ['EPS4',1735.3,873.6],
 ];

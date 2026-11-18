@@ -141,9 +141,32 @@ function staffLabelPosition(d, place, x, y) {
     const scale = mapUI.base * mapUI.zoom || 1;
     return {x:x+9/scale,y:y-6/scale};
 }
+function staffRoomLabel(x,y,zoomScale,label) {
+  return svgNode('text',{x,y,'text-anchor':'middle','dominant-baseline':'central',
+    fill:'#176489','font-size':11/zoomScale,'font-weight':'bold',stroke:'white',
+    'stroke-width':2.8/zoomScale,'paint-order':'stroke','pointer-events':'painted'},label);
+}
+function radiologyReceptionLabel(x,y,zoomScale) {
+  const group = svgNode('g');
+  group.append(svgNode('rect',{x:x-13/zoomScale,y:y-16/zoomScale,width:26/zoomScale,
+    height:17/zoomScale,rx:4/zoomScale,fill:'#176489'}));
+  group.append(svgNode('text',{x,y:y-4/zoomScale,'text-anchor':'middle',
+    fill:'white','font-size':11/zoomScale,'font-weight':'bold'},'2S'));
+  group.append(staffRoomLabel(x,y+9/zoomScale,zoomScale,'中央放射線部・'));
+  group.append(staffRoomLabel(x,y+21/zoomScale,zoomScale,'放射線診断科'));
+  return group;
+}
 renderOverlay = () => {
   const svg = ui('unifiedOverlay'), f = mapUI.floor;
   svg.replaceChildren();
+  if (f===2&&mapUI.zoom>=1.65) {
+    const zoomScale = mapUI.base*mapUI.zoom || 1;
+    for (const [label,x,y] of radiologyMapLabels) {
+      const name = staffRoomLabel(x,y,zoomScale,label);
+      name.setAttribute('pointer-events','none');
+      svg.append(name);
+    }
+  }
   for (const line of floorRouteLines(mapUI.graph,mapUI.path,f)) {
     svg.append(staffPolyline(line,'white',8),staffPolyline(line,'#0878d1',4.5,staffRouteStatus?'7 3':''));
   }
@@ -173,14 +196,17 @@ renderOverlay = () => {
         target.append(svgNode('circle',{cx:x,cy:y,r:primary?9:5,fill:color,stroke:'white','stroke-width':2}));
       }
     }
-    const showLabel = mapUI.goal?.ref===d.ref || primary || (place.category==='radiology'&&mapUI.zoom>=1.65) || (kind==='stairs'&&mapUI.zoom>=1.4) || mapUI.zoom>=2;
-    if (showLabel) {
-      const label = place.mapLabel || (conference ? '会議室 ' + d.code : place.category==='radiology' ? place.name : d.code || d.name);
+    const detailRoom = conference || place.category==='radiology';
+    const selected = mapUI.goal?.ref===d.ref;
+    if (d.ref==='outpatient:2::2S') {
+      target.append(radiologyReceptionLabel(x,y,zoomScale));
+    } else if (detailRoom && (mapUI.zoom>=1.65 || selected)) {
+      target.append(staffRoomLabel(x,y,zoomScale,conference?'カンファレンス室 '+d.code:place.name));
+    } else if (!detailRoom && (selected || primary || (kind==='stairs'&&mapUI.zoom>=1.4) || mapUI.zoom>=2)) {
       const position = f===2 ? {x,y,'text-anchor':'middle','dominant-baseline':'central'} : staffLabelPosition(d,place,x,y);
-      const reception = d.ref==='outpatient:2::2S';
-      target.append(svgNode('text',{...position,fill:reception?'white':color,'font-size':(primary?14:11)/zoomScale,
-        'font-weight':'bold',stroke:reception?color:'white','stroke-width':(reception?4:2.8)/zoomScale,
-        'paint-order':'stroke','pointer-events':f===2?'painted':'none'},label));
+      target.append(svgNode('text',{...position,fill:color,'font-size':(primary?14:11)/zoomScale,
+        'font-weight':'bold',stroke:'white','stroke-width':2.8/zoomScale,
+        'paint-order':'stroke','pointer-events':f===2?'painted':'none'},place.mapLabel || d.code || d.name));
     }
     target.onkeydown = e => {
       if (e.key==='Enter'||e.key===' ') { e.preventDefault(); e.stopPropagation(); previewPlacePhoto(d,null,true); }
