@@ -99,7 +99,6 @@ function renderBusDepartureGroups(host,reference,groups,note){
 }
 function renderSayarinDepartures(host){
  const departures=upcomingBusDepartures(sayarinHospitalDepartures);
- if(!departures.length)departures.push({time:'翌日 '+sayarinHospitalDepartures[0],label:'始発'});
  renderBusDepartureGroups(host,sayarinStopRef,[{label:'急行Bコース',departures}],
   '大阪狭山市の公式時刻表による予定時刻です。臨時変更は公式サイトをご確認ください。');
 }
