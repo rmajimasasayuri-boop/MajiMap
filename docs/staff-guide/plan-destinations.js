@@ -117,6 +117,7 @@ for (const [id,name,centers,toiletIcons,approach] of diagnosis2Layout.toilets) {
   const toiletIconPoints=centers.map(point=>radiologyRoomPixel(...point));
   staffPlanDestinations.push({
     id:'diagnosis-toilet-'+id, floor:2, name, toiletIcons, toiletIconPoints, referenceOnly:true,
+    toiletIconMaxSize:id.startsWith('endoscopy-staff')?10:id.startsWith('endoscopy-hwc')?18:undefined,
     point:staffPlanPoint(2,toiletIconPoints[0]),
     approach:staffPlanPoint(2,radiologyRoomPixel(...approach)),
   });

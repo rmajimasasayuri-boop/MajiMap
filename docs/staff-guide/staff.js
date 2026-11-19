@@ -59,6 +59,11 @@ function loadStaffLocations() {
   for (const d of destinationList.filter(d=>staffAdded.has(d.ref))) ui('fromSelect').add(new Option(d.floor+'階 '+d.name,d.ref));
 }
 
+const patientPlaceOfficialIcons = placeOfficialIcons;
+placeOfficialIcons = destination => destination.detail?.toiletIcons?.includes('wc')
+  ? ['<svg class="facility-pict" viewBox="0 0 40 40" role="img" aria-label="トイレ"><use href="assets/equipment-pictograms.svg#toilet" width="40" height="40"></use></svg>']
+  : patientPlaceOfficialIcons(destination);
+
 const staffAssetVersion = new URL(document.currentScript.src).search;
 for (const [floor, plan] of Object.entries(staffPlans)) {
   Object.assign(unifiedMapModel.floors[floor], {
@@ -212,13 +217,16 @@ renderOverlay = () => {
       target.append(staffReceptionLabel(x,y,zoomScale,d,place.receptionLines || ['中央放射線部・','放射線診断科']));
     } else if (place.toiletIcons) {
       const points = place.toiletIconPoints || [[x,y]];
-      let size = (overview?13:19)/zoomScale;
+      let size = Math.min((overview?13:19)/zoomScale,place.toiletIconMaxSize || Infinity);
       if (points.length>1) {
         const spacing = points.flatMap(([px,py],i)=>points.slice(i+1).map(([qx,qy])=>Math.hypot(px-qx,py-qy)));
         size = Math.min(size,Math.min(...spacing)*0.83);
       }
       for (const [i,[px,py]] of points.entries()) {
-        target.append(svgNode('image',{href:'assets/legend-toilet-'+place.toiletIcons[i]+'.svg?v=20261110l',
+        const icon = place.toiletIcons[i];
+        target.append(svgNode(icon==='wc'?'use':'image',{href:icon==='wc'
+          ? 'assets/equipment-pictograms.svg#toilet'
+          : 'assets/legend-toilet-'+icon+'.svg?v=20261110l',
           x:px-size/2,y:py-size/2,width:size,height:size}));
       }
     } else if (detailRoom && !place.hideMapLabel && (!overview || selected)) {
