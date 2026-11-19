@@ -245,17 +245,12 @@ body.visitor-experience #facilityDetails #detailWebsite:disabled{
  line-height:1;
 }
 
-#facilityHours .bus-next-departure,#facilityHours .bus-later-departures{width:100%;line-height:1.5;font-variant-numeric:tabular-nums}
-#facilityHours .bus-next-departure{display:flex;align-items:baseline;flex-wrap:wrap;gap:0 .65em}
-#facilityHours .bus-next-departure>.bus-departure,#facilityHours .bus-departure-frequency{font-size:1.25em}
-#facilityHours .bus-next-departure>.bus-departure{font-weight:700}
-#facilityHours .bus-route-heading{font-size:.9em}
+
+#facilityHours .bus-departure-group{width:100%;line-height:1.5}
+#facilityHours .bus-route-heading{font-weight:400}
+#facilityHours .bus-departure-list{font-variant-numeric:tabular-nums}
 #facilityHours .bus-departure{white-space:nowrap}
 #facilityHours .bus-first-label,#facilityHours .bus-final-label{margin-inline-start:.25em;font-size:.8em;font-weight:400}
 #facilityHours .bus-first-label{color:#166534}
 #facilityHours .bus-final-label{color:#b42318}
-
-#facilityHours .nankai-departure-row{display:flex;align-items:baseline;flex-wrap:wrap;column-gap:8px;width:100%;line-height:1.5;font-variant-numeric:tabular-nums}
 body.visitor-experience #favoritePlaceButton[hidden]{display:none!important}
-
-#facilityHours .nankai-next-time{min-width:4ch}

@@ -58,57 +58,58 @@ function sayarinDepartures(date=new Date()){
  const [next,...later]=sayarinHospitalDepartures.filter(time=>departureMinute(time)>=minute);
  return {next:next||'翌日 '+sayarinHospitalDepartures[0],later,final:sayarinHospitalDepartures.at(-1)};
 }
-function renderSayarinDepartures(host){
- const {next,later,final}=sayarinDepartures();
- const title='急行Bコース';
- const first=sayarinHospitalDepartures[0];
- const nextLabel=next===final?'最終':next===first||next==='翌日 '+first?'始発':'';
- const scheduleKey=[next,nextLabel,...later].join('|');
- if(host.dataset.reference===sayarinStopRef&&host.dataset.departures===scheduleKey)return;
- host.dataset.reference=sayarinStopRef;
- host.dataset.departures=scheduleKey;
- const heading=document.createElement('span');
- heading.className='bus-route-heading';
- heading.textContent=title;
- const nextRow=document.createElement('div');
- nextRow.className='bus-next-departure';
- const laterRow=document.createElement('div');
- laterRow.className='bus-later-departures';
- const departure=(time,label)=>{
-  const item=document.createElement('span');
-  item.className='bus-departure';
-  item.append(time);
-  if(label){
-   const tag=document.createElement('span');
-   tag.className=label==='始発'?'bus-first-label':'bus-final-label';
-   tag.textContent=label;
-   item.append(tag);
-  }
-  return item;
- };
- nextRow.append(departure(next,nextLabel),heading);
- if(isHourlySchedule(sayarinHospitalDepartures)){
-  const frequency=document.createElement('span');
-  frequency.className='bus-departure-frequency';
-  frequency.textContent='毎時'+departureMinute(first)%60+'分発';
-  laterRow.append(frequency,'　',departure(final,'最終'));
- }else{
-  later.forEach((time,index)=>{
-   if(index)laterRow.append('、');
-   laterRow.append(departure(time,time===final?'最終':''));
+function upcomingBusDepartures(times,date=new Date()){
+ const {minute}=japanClock(date);
+ const remaining=times.filter(time=>departureMinute(time)>=minute);
+ return remaining.slice(0,3).map(time=>({time,label:time===times[0]?'始発':time===times.at(-1)?'最終':''}));
+}
+function renderBusDepartureGroups(host,reference,groups,note){
+ const key=JSON.stringify(groups);
+ if(host.dataset.reference===reference&&host.dataset.departures===key)return;
+ host.dataset.reference=reference;
+ host.dataset.departures=key;
+ host.replaceChildren(...groups.map(({label,departures,message})=>{
+  const group=document.createElement('div');
+  group.className='bus-departure-group';
+  const heading=document.createElement('div');
+  heading.className='bus-route-heading';
+  heading.textContent=label;
+  const times=document.createElement('div');
+  times.className='bus-departure-list';
+  departures.forEach(({time,label},index)=>{
+   if(index)times.append(' / ');
+   const item=document.createElement('span');
+   item.className='bus-departure';
+   const value=document.createElement(index===0?'strong':'span');
+   value.textContent=time;
+   item.append(value);
+   if(label){
+    const tag=document.createElement('span');
+    tag.className=label==='始発'?'bus-first-label':'bus-final-label';
+    tag.textContent=label;
+    item.append(tag);
+   }
+   times.append(item);
   });
- }
- host.replaceChildren(nextRow);
- if(later.length)host.append(laterRow);
- host.title='大阪狭山市の公式時刻表による予定時刻です。臨時変更は公式サイトをご確認ください。';
+  if(!departures.length)times.textContent=message||'本日の運行終了';
+  group.append(heading,times);
+  return group;
+ }));
+ host.title=note;
+}
+function renderSayarinDepartures(host){
+ const departures=upcomingBusDepartures(sayarinHospitalDepartures);
+ if(!departures.length)departures.push({time:'翌日 '+sayarinHospitalDepartures[0],label:'始発'});
+ renderBusDepartureGroups(host,sayarinStopRef,[{label:'急行Bコース',departures}],
+  '大阪狭山市の公式時刻表による予定時刻です。臨時変更は公式サイトをご確認ください。');
 }
 const nankaiStopRef='outpatient:3::nankaiBusStop';
 // Official stop timetable: https://static-transfer-cloud.navitime.biz/nankaibus/ja/busstop-timetable/20260518/0700200_01.pdf
 const nankaiTimetables=[
- {label:'213　三原台まわり',
+ {label:'213 三原台回り',
   weekday:["6:15","6:32","7:01","7:11","7:34","7:52","8:11","8:28","9:01","9:25","9:59","10:27","10:57","11:22","11:52","12:22","12:52","13:22","13:52","14:22","14:52","15:22","15:52","16:22","16:53","17:23","17:54","18:06","18:30","18:51","19:03","19:25","19:45","20:18","20:56","21:17","21:53","22:18","22:43","23:04"],
   weekend:["6:22","6:47","7:17","7:47","8:17","8:47","9:17","9:47","10:17","10:47","11:17","11:47","12:17","12:47","13:17","13:47","14:17","14:47","15:17","15:47","16:17","16:52","17:18","17:53","18:19","18:54","19:30","19:53","20:17","20:57","21:18","21:43","22:28","22:57"]},
- {label:'270　急行　金剛駅前行き',
+ {label:'270 急行 金剛駅前ゆき',
   weekday:["7:23","7:45","8:30","8:42","9:32","10:02","10:32","11:02","11:32","12:02","12:32","13:02","13:32","14:02","14:32","15:02","15:32","16:02","16:32","17:02","17:45","18:16","18:40","19:06"],
   weekend:["7:27","7:59","8:27","8:42","9:37","10:07","10:37","11:07","11:37","12:07","12:37","13:07","13:32","14:07","14:37","15:07","15:37","16:07","16:42","17:09","17:48","18:14","18:37","19:03"]}
 ];
@@ -117,38 +118,14 @@ function nankaiDepartureRows(date=new Date()){
  const t=japanClock(date),holidays=japanHolidayDates[t.year];
  const day=t.weekday===0||t.weekday===6||holidays?.includes(t.key)?'weekend':holidays?'weekday':null;
  return nankaiTimetables.map(({label,[day]:times})=>{
-  if(!times)return {label,time:'公式時刻表で確認',final:''};
+  if(!times)return {label,time:'公式時刻表で確認',final:'',departures:[],message:'公式時刻表で確認'};
   const next=times.find(time=>departureMinute(time)>=t.minute);
-  return {label,time:next||'本日の運行終了',final:times.at(-1)};
+  return {label,time:next||'本日の運行終了',final:times.at(-1),departures:upcomingBusDepartures(times,date)};
  });
 }
 function renderNankaiDepartures(host){
- const rows=nankaiDepartureRows();
- const key=JSON.stringify(rows);
- if(host.dataset.reference===nankaiStopRef&&host.dataset.departures===key)return;
- host.dataset.reference=nankaiStopRef;
- host.dataset.departures=key;
- host.replaceChildren(...rows.map(({label,time,final})=>{
-  const row=document.createElement('div');
-  row.className='nankai-departure-row';
-  const route=document.createElement('span');
-  route.textContent=label;
-  const next=document.createElement('strong');
-  next.className='nankai-next-time';
-  next.textContent=time;
-  row.append(next,route);
-  if(final){
-   const last=document.createElement('span');
-   const badge=document.createElement('span');
-   badge.className='bus-final-label';
-   badge.textContent='最終';
-   if(final!==time)last.append(final);
-   last.append(badge);
-   row.append(last);
-  }
-  return row;
- }));
- host.title='南海バスの公式時刻表による予定時刻です。臨時変更は公式サイトをご確認ください。';
+ renderBusDepartureGroups(host,nankaiStopRef,nankaiDepartureRows(),
+  '南海バスの公式時刻表による予定時刻です。臨時変更は公式サイトをご確認ください。');
 }
 
 function updateFacilityHours(d){
