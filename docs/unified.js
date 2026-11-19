@@ -199,7 +199,7 @@ function routePlan(){if(!mapUI.goal)return;if(typeof ensureIndoorStart==='functi
  if(target.detail?.routeStopsAt)arrivalNote=target.detail.routeStopsAt+'まで案内しました。食堂の入口までは館内表示を確認してください。';
  else if(target.detail?.actualFloor)arrivalNote='7号館入口に到着です。目的の施設は'+target.detail.actualFloor+'階です。館内の経路は未確認のため、館内表示で確認してください。';
  if(target.ref==='outpatient:3::rotary'){arrivalNote='ロータリー北側の歩道に到着です。車道へは入らないでください。';if(navigationState.steps.length)navigationState.steps.at(-1).title='ロータリー北側の歩道まで';}
- if(target.ref==='outpatient:3::rotaryBusStop')arrivalNote='バス停付近の仮位置です。実際の乗り場を確認してください。';
+ if(target.ref==='outpatient:3::rotaryBusStop')arrivalNote='さやりんバスの乗り場に到着です。';
  if(arrivalNote&&navigationState.steps.length){navigationState.steps.at(-1).description=(navigationState.steps.at(-1).description||'')+' '+arrivalNote;const li=list.lastElementChild;let p=li.querySelector('p');if(!p){p=document.createElement('p');li.append(p);}p.textContent=navigationState.steps.at(-1).description;}
 
  panel.append(list);ui('beginNavigation').disabled=false;ui('routeSummary').hidden=false;ui('routeSummaryText').textContent=ui('currentName').textContent+(mapUI.waypoint?' → '+destinationDisplayName(mapUI.waypoint)+'（経由）':'')+' → '+destinationDisplayName(target);ui('routeJourney').replaceChildren();for(const step of list.querySelectorAll('li > button')){const b=document.createElement('button');b.textContent=step.textContent;b.onclick=step.onclick;ui('routeJourney').append(b);}const note=document.createElement('p');note.className='route-note';note.textContent='乗り換えが少ない経路の中で最短になることを、登録済みの通路と出入口で毎回照合しています。お見舞いは病棟入口までの案内です。';panel.append(note);renderOverlay();updateMapMessage();}
