@@ -246,9 +246,9 @@ body.visitor-experience #facilityDetails #detailWebsite:disabled{
 }
 
 
-#facilityHours .bus-departure-group{width:100%;line-height:1.5}
-#facilityHours .bus-route-heading{font-weight:400}
-#facilityHours .bus-departure-list{font-variant-numeric:tabular-nums}
+#facilityHours .bus-departure-group{width:100%;font-size:16px;line-height:1.5}
+#facilityHours .bus-route-heading{font-size:inherit;font-weight:400}
+#facilityHours .bus-departure-list{font-size:inherit;font-variant-numeric:tabular-nums}
 #facilityHours .bus-departure{white-space:nowrap}
 #facilityHours .bus-first-label,#facilityHours .bus-final-label{margin-inline-start:.25em;font-size:.8em;font-weight:400}
 #facilityHours .bus-first-label{color:#166534}
