@@ -108,7 +108,7 @@ for (const [name,center,approach] of diagnosis2Layout.elevators) {
 for (const [code,name,center,approach] of diagnosis2Layout.receptions) {
   staffPlanDestinations.push({
     id:code, ref:'outpatient:2::'+code, floor:2, code, name:code+' '+name,
-    receptionLines:code==='2L'?[name,'受付']:[name], referenceOnly:true,
+    receptionLines:code==='2L'?[name+' 受付']:[name], referenceOnly:true,
     point:staffPlanPoint(2,radiologyRoomPixel(...center)),
     approach:staffPlanPoint(2,radiologyRoomPixel(...approach)),
   });
