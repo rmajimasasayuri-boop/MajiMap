@@ -228,6 +228,11 @@ renderOverlay = () => {
           ? 'assets/equipment-pictograms.svg#toilet'
           : 'assets/legend-toilet-'+icon+'.svg?v=20261110l',
           x:px-size/2,y:py-size/2,width:size,height:size}));
+        if (icon==='wc' && !overview) {
+          const label = staffRoomLabel(px-14/zoomScale,py,zoomScale,place.name.replace(/^2L /,''));
+          label.setAttribute('text-anchor','end');
+          target.append(label);
+        }
       }
     } else if (detailRoom && !place.hideMapLabel && (!overview || selected)) {
       if (place.category==='diagnosis' && place.name.endsWith(' '+d.code)) {
