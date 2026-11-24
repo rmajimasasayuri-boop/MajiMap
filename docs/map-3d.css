@@ -9,7 +9,7 @@
 .map-3d-controls label{display:flex;flex-direction:column;gap:4px;font-size:11px}.map-3d-controls select{padding:5px;font-size:12px}
 .map-3d-controls p{margin:0;font-size:10px;line-height:1.5}.map-3d-controls small{display:block;font-size:10px;color:#597681}
 .map-3d-actions{display:flex;gap:4px;justify-content:center}.map-3d-actions button{padding:5px 9px}
-.view-3d .zoom-tools,.view-3d .map-badge{display:none!important}
+.view-3d .zoom-tools{display:none!important}
 .view-3d #wardFocus{display:none}.view-3d #mapPlaceCard{z-index:6}
 .review-embedded .view-switch,.corridor-editing .view-switch,.arrow-editing .view-switch{display:none}
 @media(max-width:700px){.view-switch{bottom:165px;right:10px}.map-3d-controls{right:10px;top:165px;width:136px}.map-3d-controls p{font-size:9px}.map-3d-controls label{font-size:10px}}

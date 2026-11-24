@@ -27,18 +27,11 @@ body.visitor-experience #placeResults .place-row-copy strong{display:-webkit-box
 body.visitor-experience .official-result-icons{display:flex;align-items:center;gap:3px;flex-wrap:wrap;max-width:108px;flex:none}
 body.visitor-experience .official-result-icons .facility-pict{width:32px;height:32px;flex:none}
 body.visitor-experience .official-result-icons .facility-pict:only-child{width:44px;height:44px}
-body.visitor-experience #routeViaRow{position:relative;border:0;border-radius:0;padding:0 0 0 8px}
-body.visitor-experience #routeViaRow .route-via-copy{display:flex;flex-direction:row;align-items:center;gap:10px}
-body.visitor-experience #routeViaRow .route-via-copy small{width:14px;flex:0 0 14px;text-align:center}
 body.visitor-experience .route-place-fields{position:relative}
-body.visitor-experience #routeViaRow::before,body.visitor-experience #routeViaRow::after{content:'';position:absolute;left:14px;width:0;height:11px;border-left:2px dotted #81939b}
-body.visitor-experience #routeViaRow::before{top:-6px}body.visitor-experience #routeViaRow::after{bottom:-6px}
 body.visitor-experience #routeSummary,body.visitor-experience #showRouteSteps{display:none!important}
 .place-map-target:hover polygon,.place-map-target:focus polygon{fill:var(--selection-tint);stroke:var(--selection-color);stroke-width:2;vector-effect:non-scaling-stroke}
 .place-map-target[data-selected=goal] polygon{stroke:#d83a40;stroke-width:2;vector-effect:non-scaling-stroke;fill:#d83a4010}
 .place-map-target[data-selected=start] polygon{stroke:#2580c5;stroke-width:2;vector-effect:non-scaling-stroke;fill:#2580c510}
-/* User withdrew waypoint functionality on 2026-10-30. */
-body.visitor-experience #routeAddWaypoint,body.visitor-experience #routeViaRow{display:none!important}
 
 body.visitor-experience:not(#original-type):not(#small-type):not(#tiny-type) :is(#favoritePlaceButton,.history-star,#clearPlaceSearch,#closeFacilityDetails,#closeDepartmentWebsites,#openPlaceSearch,.entrance-route-notice button){font-size:24px!important;line-height:1!important;min-width:44px;min-height:44px}
 body.visitor-experience #favoritePlaceButton[aria-pressed=false],body.visitor-experience .history-star[data-saved=false]{color:#83969d!important}
